@@ -357,109 +357,93 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 
 /* --- src/entities/Enemy.js --- */
-// Reusable single Enemy Invader sprite component
+// Reusable Falling Meteorite obstacle sprite component
 class Enemy extends Phaser.Physics.Arcade.Sprite {
-  // Construct enemy invader with row tier texture and point value
+  // Construct falling meteorite obstacle with texture key and points reward
   constructor(scene, x, y, textureKey, points) {
-    super(scene, x, y, textureKey); // Call parent Sprite constructor
+    const key = (typeof textureKey === 'string' && textureKey) ? textureKey : 'stone'; // Default to stone texture
+    super(scene, x, y, key); // Call parent Sprite constructor
     scene.add.existing(this); // Render sprite in active scene
-    scene.physics.add.existing(this); // Register static body in Arcade physics engine
+    scene.physics.add.existing(this); // Register body with Arcade physics engine
 
-    this.setScale(0.65); // Scale sprite graphic
-    this.points = points; // Assign score point reward value
+    this.points = points || 20; // Assign score point reward value
+    this.resetMeteor(); // Initialize random position, scale, and velocity parameters
+  }
+
+  // Reset meteorite parameters for spawning/recycling
+  resetMeteor() {
+    const textures = ['stone', 'stoneBig']; // Available stone meteor textures
+    const chosenTexture = Phaser.Utils.Array.GetRandom(textures); // Pick random texture
+    this.setTexture(chosenTexture); // Assign valid texture to sprite
+    if (this.body) {
+      this.body.setSize(this.width, this.height); // Refresh physics body size
+    }
+
+    const x = Phaser.Math.Between(40, GAME_CONFIG.width - 40); // Pick random horizontal position
+    const y = Phaser.Math.Between(-80, -40); // Pick random off-screen vertical spawn height
+    this.setPosition(x, y); // Set sprite coordinates
+
+    const scale = Phaser.Math.FloatBetween(0.7, 1.2); // Pick random scale factor
+    this.setScale(scale); // Set sprite graphic scale
+
+    this.speedY = Phaser.Math.Between(180, 340); // Pick random downward fall speed
+    this.speedX = Phaser.Math.Between(-40, 40); // Pick random slight horizontal drift
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05); // Pick random spin rotation rate
+
+    this.setActive(true); // Enable object in active pool
+    this.setVisible(true); // Show sprite graphics
+  }
+
+  // Frame update lifecycle to move meteorite downwards and spin
+  update(time, delta) {
+    if (!this.active) return; // Guard clause if inactive
+
+    const deltaSec = delta / 1000; // Convert time delta to seconds
+    this.y += this.speedY * deltaSec; // Fall downwards through space
+    this.x += this.speedX * deltaSec; // Apply slight horizontal drift
+    this.rotation += this.rotationSpeed; // Spin meteorite graphic
+
+    // Recycle meteorite when it passes below bottom screen boundary
+    if (this.y > GAME_CONFIG.height + 60) {
+      this.resetMeteor(); // Respawn meteorite at top of screen
+    }
   }
 }
 
-// Manager class orchestrating enemy invader swarm formation and movement
+// Manager class orchestrating continuous random meteorite spawning and wave progression
 class EnemyGroup {
-  // Construct enemy formation grid inside given scene
+  // Construct meteorite swarm manager inside given scene
   constructor(scene) {
     this.scene = scene; // Store scene reference
-    this.group = scene.physics.add.group(); // Create physics arcade group container
-    this.direction = 1; // Movement direction (1 = right, -1 = left)
-    this.moveSpeed = GAME_CONFIG.enemyBaseSpeed; // Initial horizontal movement speed
-    this.lastFired = 0; // Timestamp of previous enemy shot
+    this.group = scene.physics.add.group({ classType: Enemy, runChildUpdate: true }); // Create physics group container
+    this.nextSpawnTime = 0; // Timestamp of next meteorite spawn
+    this.spawnInterval = 800; // Spawn delay in milliseconds
+    this.destroyedCount = 0; // Track count of meteorites destroyed by player
+    this.targetCount = 25; // Target count needed to trigger victory
 
-    this.createGrid(); // Construct initial matrix grid of enemies
+    this.initialSpawn(); // Spawn initial wave of falling meteorites
   }
 
-  // Build grid layout matrix of invader enemies
-  createGrid() {
-    const startX = 120; // Starting horizontal margin offset
-    const startY = 80; // Starting vertical top offset
-    const spacingX = 65; // Horizontal gap between column centers
-    const spacingY = 50; // Vertical gap between row centers
-
-    const textures = ['enemyRed', 'enemyGreen', 'enemyGreen', 'enemyBlue']; // Texture list per row tier
-    const pointValues = [30, 20, 20, 10]; // Score values awarded per row tier
-
-    for (let row = 0; row < GAME_CONFIG.enemyRows; row++) {
-      for (let col = 0; col < GAME_CONFIG.enemyCols; col++) {
-        const x = startX + col * spacingX; // Compute enemy column x coordinate
-        const y = startY + row * spacingY; // Compute enemy row y coordinate
-        const texture = textures[row % textures.length]; // Pick row tier sprite texture
-        const points = pointValues[row % pointValues.length]; // Pick row tier point value
-
-        const enemy = new Enemy(this.scene, x, y, texture, points); // Instantiate custom Enemy object
-        this.group.add(enemy); // Add enemy to group container
+  // Spawn initial cluster of meteorites staggered vertically above the screen
+  initialSpawn() {
+    for (let i = 0; i < 6; i++) {
+      const meteor = this.group.get(); // Fetch free meteorite from group pool
+      if (meteor) {
+        meteor.resetMeteor(); // Reset meteorite to top of screen
+        meteor.y -= i * 60; // Stagger vertical spawn positions
       }
     }
   }
 
-  // Update enemy swarm movement and boundary checking
+  // Update loop for continuous random meteorite spawning
   update(time, delta) {
-    const enemies = this.group.getChildren(); // Fetch all active enemy instances
-    if (enemies.length === 0) return; // Exit early if all enemies are defeated
-
-    let shiftDown = false; // Flag indicating if swarm hit boundary
-    const deltaSeconds = delta / 1000; // Convert time delta to seconds fraction
-
-    // Check if any enemy has reached screen horizontal edges
-    for (let enemy of enemies) {
-      if (enemy.active) {
-        if ((this.direction === 1 && enemy.x >= GAME_CONFIG.width - 50) ||
-            (this.direction === -1 && enemy.x <= 50)) {
-          shiftDown = true; // Trigger row step down
-          break; // Stop scanning after finding edge collision
-        }
+    // Continuously spawn meteorites at random intervals
+    if (time > this.nextSpawnTime) {
+      const meteor = this.group.get(); // Fetch free meteorite from group pool
+      if (meteor) {
+        meteor.resetMeteor(); // Reset meteorite to random spawn location
       }
-    }
-
-    if (shiftDown) {
-      this.direction *= -1; // Reverse horizontal swarm direction
-      for (let enemy of enemies) {
-        if (enemy.active) {
-          enemy.y += GAME_CONFIG.enemyStepDown; // Shift enemy down by step offset
-        }
-      }
-      // Speed up swarm movement as fewer enemies remain
-      const totalEnemies = GAME_CONFIG.enemyRows * GAME_CONFIG.enemyCols; // Maximum initial count
-      const remainingRatio = enemies.length / totalEnemies; // Remaining percentage fraction
-      this.moveSpeed = GAME_CONFIG.enemyBaseSpeed + (1 - remainingRatio) * 120; // Accelerate movement speed
-    } else {
-      for (let enemy of enemies) {
-        if (enemy.active) {
-          enemy.x += this.direction * this.moveSpeed * deltaSeconds; // Move enemy horizontally
-        }
-      }
-    }
-
-    // Fire random alien bullet at intervals
-    if (time > this.lastFired) {
-      this.fireRandomBullet(time); // Attempt firing enemy laser
-    }
-  }
-
-  // Pick a random lowest enemy in a column to shoot a laser
-  fireRandomBullet(time) {
-    const enemies = this.group.getChildren().filter(e => e.active); // Filter active enemies
-    if (enemies.length === 0) return; // Exit if no enemies remain
-
-    const randomEnemy = Phaser.Utils.Array.GetRandom(enemies); // Select random active enemy shooter
-    const bullet = this.scene.enemyBullets.get(); // Fetch free bullet from enemy bullet pool
-    if (bullet) {
-      bullet.fire(randomEnemy.x, randomEnemy.y + 20, GAME_CONFIG.enemyBulletSpeed, false); // Launch laser downwards
-      this.lastFired = time + GAME_CONFIG.enemyFireRate; // Set next allowed enemy firing timestamp
+      this.nextSpawnTime = time + Phaser.Math.Between(500, 1100); // Schedule next random spawn timestamp
     }
   }
 }
@@ -570,61 +554,96 @@ class UIScene extends Phaser.Scene {
     }
   }
 
-  // Show Game Over dialog modal with CTA button
+  // Show Game Over dialog modal with TRY AGAIN and PLAY NOW buttons
   showGameOverModal() {
-    this.showModal('MISSION FAILED', '#ff4444', 'TRY AGAIN'); // Render failure modal window
+    this.showModal('MISSION FAILED', '#ff4444', false); // Render failure modal window
   }
 
-  // Show Game Win dialog modal with CTA button
+  // Show Game Win dialog modal with PLAY NOW button
   showWinModal() {
-    this.showModal('VICTORY ACHIEVED!', '#00ffcc', 'PLAY NOW'); // Render victory modal window
+    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true); // Render victory modal window
   }
 
-  // Generic modal display container with AppLovin CTA redirect action
-  showModal(title, titleColor, buttonText) {
+  // Modal dialog popup container separating local TRY AGAIN from AppLovin CTA redirect
+  showModal(title, titleColor, isWin) {
     const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75); // Dark semi-transparent overlay
 
     // Modal background card frame
-    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 420, 260, 0x111122, 0.95); // Dark blue card container
+    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95); // Dark blue card container
     card.setStrokeStyle(3, 0x00ffcc); // Add neon cyan frame border
 
     // Title label on modal dialog card
-    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 70, title, {
+    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 75, title, {
       fontFamily: 'Arial Black, Arial, sans-serif',
       fontSize: '28px',
       color: titleColor
     }).setOrigin(0.5);
 
     // Final score summary display text
-    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 20, `FINAL SCORE: ${this.score}`, {
+    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 25, `FINAL SCORE: ${this.score}`, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Interactive CTA button rectangle
-    const ctaButton = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 50, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
-    ctaButton.setStrokeStyle(2, 0xffffff); // White outline border
+    if (!isWin) {
+      // 1. Interactive "TRY AGAIN" button (restarts game locally without redirecting)
+      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true }); // Blue Try Again button
+      retryBtn.setStrokeStyle(2, 0xffffff); // White outline border
 
-    // Interactive CTA button label text
-    const ctaText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 50, buttonText, {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '22px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+      this.add.text(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 'TRY AGAIN', {
+        fontFamily: 'Arial Black, Arial, sans-serif',
+        fontSize: '18px',
+        color: '#ffffff'
+      }).setOrigin(0.5);
 
-    // Hover effect animations on CTA button
-    ctaButton.on('pointerover', () => ctaButton.setFillStyle(0x00ff88)); // Highlight brighter green on hover
-    ctaButton.on('pointerout', () => ctaButton.setFillStyle(0x00cc66)); // Restore original button color
+      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff)); // Hover highlight
+      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc)); // Normal color
+      retryBtn.on('pointerdown', () => this.restartGame()); // Restart game locally on click!
 
-    // Execute AppLovin ad redirect on CTA click
-    ctaButton.on('pointerdown', () => {
-      if (window.mraid && typeof window.mraid.open === 'function') {
-        window.mraid.open(GAME_CONFIG.ctaUrl); // Trigger AppLovin MRAID ad click event
-      } else {
-        window.open(GAME_CONFIG.ctaUrl, '_blank'); // Open CTA landing page in browser window
-      }
-    });
+      // 2. Interactive "PLAY NOW" CTA button (ad landing page redirect)
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
+      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+
+      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+        fontFamily: 'Arial Black, Arial, sans-serif',
+        fontSize: '18px',
+        color: '#ffffff'
+      }).setOrigin(0.5);
+
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
+      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+    } else {
+      // Single centered "PLAY NOW" CTA button for Victory modal
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
+      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+
+      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+        fontFamily: 'Arial Black, Arial, sans-serif',
+        fontSize: '22px',
+        color: '#ffffff'
+      }).setOrigin(0.5);
+
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
+      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+    }
+  }
+
+  // Restart game scenes locally for Try Again replay
+  restartGame() {
+    this.scene.get('GameScene').scene.restart(); // Restart GameScene
+    this.scene.restart(); // Restart UIScene
+  }
+
+  // Execute AppLovin CTA redirect action
+  openCtaUrl() {
+    if (window.mraid && typeof window.mraid.open === 'function') {
+      window.mraid.open(GAME_CONFIG.ctaUrl); // Trigger AppLovin MRAID ad click event
+    } else {
+      window.open(GAME_CONFIG.ctaUrl, '_blank'); // Open CTA landing page in browser window
+    }
   }
 }
 
@@ -645,12 +664,11 @@ class GameScene extends Phaser.Scene {
 
     this.audioManager = new AudioManager(); // Instantiate procedural WebAudio sound manager
 
-    // Render scrolling background image tile
+    // Render fast scrolling background image tile for forward space flight
     this.bg = this.add.tileSprite(0, 0, GAME_CONFIG.width, GAME_CONFIG.height, 'background').setOrigin(0, 0); // Render tiled space background image
 
-    // Instantiate bullet object pools for physics collisions
-    this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 10, runChildUpdate: true }); // Player bullet pool
-    this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true }); // Enemy bullet pool
+    // Instantiate bullet object pool for player laser projectiles
+    this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 12, runChildUpdate: true }); // Player bullet pool
 
     // Instantiate custom Player starship entity
     this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70); // Create player ship object
@@ -658,8 +676,8 @@ class GameScene extends Phaser.Scene {
     // Instantiate defense bunker shields
     this.createShields(); // Spawn defensive barrier bunkers
 
-    // Instantiate custom EnemyGroup swarm manager
-    this.enemyGroup = new EnemyGroup(this); // Build invader formation grid
+    // Instantiate dynamic falling MeteorGroup spawner
+    this.enemyGroup = new EnemyGroup(this); // Build falling meteorite swarm spawner
 
     // Set up Arcade Physics collision handling rules
     this.setupCollisions(); // Register physics overlap and collision listeners
@@ -671,9 +689,9 @@ class GameScene extends Phaser.Scene {
     const shieldPositions = [150, 310, 490, 650]; // X positions for 4 shield bunkers
 
     shieldPositions.forEach(x => {
-      for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 5; col++) {
-          const shieldBlock = new Shield(this, x + col * 12, GAME_CONFIG.height - 150 + row * 12); // Build individual shield tile block
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 4; col++) {
+          const shieldBlock = new Shield(this, x + col * 14, GAME_CONFIG.height - 140 + row * 14); // Build individual shield tile block
           this.shields.add(shieldBlock); // Add block to static shield group
         }
       }
@@ -682,44 +700,38 @@ class GameScene extends Phaser.Scene {
 
   // Register all collision and overlap handlers between game entities
   setupCollisions() {
-    // Player bullet hits enemy invader
-    this.physics.add.overlap(this.playerBullets, this.enemyGroup.group, (bullet, enemy) => {
-      if (bullet.active && enemy.active) {
+    // Player bullet hits falling meteorite
+    this.physics.add.overlap(this.playerBullets, this.enemyGroup.group, (bullet, meteor) => {
+      if (bullet.active && meteor.active) {
         bullet.kill(); // Recycle player bullet back to object pool
-        this.createExplosion(enemy.x, enemy.y); // Spawn particle explosion effect
-        this.score += enemy.points; // Add points awarded by enemy type
+        this.createExplosion(meteor.x, meteor.y); // Spawn particle explosion effect
+        this.score += meteor.points; // Add points awarded by meteorite
+        this.enemyGroup.destroyedCount += 1; // Increment count of destroyed meteorites
         this.events.emit('scoreChanged', this.score); // Emit score update event to UIScene
         this.audioManager.playExplosion(); // Play explosion audio effect
-        enemy.destroy(); // Destroy hit enemy sprite
+        meteor.resetMeteor(); // Respawn meteorite at top of screen
 
-        // Check if all invaders are destroyed (Win State)
-        if (this.enemyGroup.group.countActive() === 0) {
+        // Check if player reached target meteorite count (Win State)
+        if (this.enemyGroup.destroyedCount >= this.enemyGroup.targetCount) {
           this.triggerWin(); // Handle game win victory state
         }
       }
     });
 
-    // Player bullet hits defense shield block
-    this.physics.add.overlap(this.playerBullets, this.shields, (bullet, shieldBlock) => {
-      if (bullet.active && shieldBlock.active) {
-        bullet.kill(); // Recycle bullet back to pool
+    // Falling meteorite hits defense shield block
+    this.physics.add.overlap(this.enemyGroup.group, this.shields, (meteor, shieldBlock) => {
+      if (meteor.active && shieldBlock.active) {
+        this.createExplosion(meteor.x, meteor.y); // Spawn blast explosion effect
         shieldBlock.takeDamage(); // Damage shield barrier block
+        meteor.resetMeteor(); // Respawn meteorite at top of screen
       }
     });
 
-    // Enemy bullet hits defense shield block
-    this.physics.add.overlap(this.enemyBullets, this.shields, (bullet, shieldBlock) => {
-      if (bullet.active && shieldBlock.active) {
-        bullet.kill(); // Recycle enemy bullet back to pool
-        shieldBlock.takeDamage(); // Damage shield barrier block
-      }
-    });
-
-    // Enemy bullet hits player ship
-    this.physics.add.overlap(this.enemyBullets, this.player, (player, bullet) => {
-      if (bullet.active && !this.isGameOver) {
-        bullet.kill(); // Recycle enemy bullet back to pool
-        this.createExplosion(player.x, player.y); // Spawn explosion particle effect at player location
+    // Falling meteorite collides directly with player ship
+    this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
+      if (meteor.active && !this.isGameOver) {
+        this.createExplosion(meteor.x, meteor.y); // Spawn explosion particle effect at player location
+        meteor.resetMeteor(); // Respawn meteorite at top of screen
         this.lives -= 1; // Decrement player lives
         this.events.emit('livesChanged', this.lives); // Emit lives update event to UIScene
         this.audioManager.playHit(); // Play player damage audio effect
@@ -753,22 +765,13 @@ class GameScene extends Phaser.Scene {
     this.time.delayedCall(250, () => emitter.destroy()); // Clean up particle emitter instance
   }
 
-  // Main frame update loop for scrolling background and swarm updates
+  // Main frame update loop for scrolling background and meteor updates
   update(time, delta) {
     if (this.isGameOver) return; // Stop update loop logic if game is over
 
-    this.bg.tilePositionY -= 0.5; // Scroll background graphics slowly vertically for starfield effect
+    this.bg.tilePositionY -= 3.5; // Scroll background graphics rapidly for forward space flight sensation
     this.player.update(time, delta); // Call update method on player ship entity
-    this.enemyGroup.update(time, delta); // Call update method on enemy swarm manager
-
-    // Check if any invading enemy reached player bottom line (Game Over State)
-    const enemies = this.enemyGroup.group.getChildren(); // Fetch remaining active enemies
-    for (let enemy of enemies) {
-      if (enemy.active && enemy.y >= GAME_CONFIG.height - 110) {
-        this.triggerGameOver(); // Trigger game over when invaders reach player base
-        break; // Exit loop after triggering game over
-      }
-    }
+    this.enemyGroup.update(time, delta); // Call update method on meteorite spawner
   }
 
   // Trigger Victory Win State
