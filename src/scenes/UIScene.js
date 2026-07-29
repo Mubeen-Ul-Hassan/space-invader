@@ -71,60 +71,95 @@ class UIScene extends Phaser.Scene {
     }
   }
 
-  // Show Game Over dialog modal with CTA button
+  // Show Game Over dialog modal with TRY AGAIN and PLAY NOW buttons
   showGameOverModal() {
-    this.showModal('MISSION FAILED', '#ff4444', 'TRY AGAIN'); // Render failure modal window
+    this.showModal('MISSION FAILED', '#ff4444', false); // Render failure modal window
   }
 
-  // Show Game Win dialog modal with CTA button
+  // Show Game Win dialog modal with PLAY NOW button
   showWinModal() {
-    this.showModal('VICTORY ACHIEVED!', '#00ffcc', 'PLAY NOW'); // Render victory modal window
+    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true); // Render victory modal window
   }
 
-  // Generic modal display container with AppLovin CTA redirect action
-  showModal(title, titleColor, buttonText) {
+  // Modal dialog popup container separating local TRY AGAIN from AppLovin CTA redirect
+  showModal(title, titleColor, isWin) {
     const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75); // Dark semi-transparent overlay
 
     // Modal background card frame
-    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 420, 260, 0x111122, 0.95); // Dark blue card container
+    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95); // Dark blue card container
     card.setStrokeStyle(3, 0x00ffcc); // Add neon cyan frame border
 
     // Title label on modal dialog card
-    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 70, title, {
+    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 75, title, {
       fontFamily: 'Arial Black, Arial, sans-serif',
       fontSize: '28px',
       color: titleColor
     }).setOrigin(0.5);
 
     // Final score summary display text
-    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 20, `FINAL SCORE: ${this.score}`, {
+    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 25, `FINAL SCORE: ${this.score}`, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Interactive CTA button rectangle
-    const ctaButton = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 50, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
-    ctaButton.setStrokeStyle(2, 0xffffff); // White outline border
+    if (!isWin) {
+      // 1. Interactive "TRY AGAIN" button (restarts game locally without redirecting)
+      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true }); // Blue Try Again button
+      retryBtn.setStrokeStyle(2, 0xffffff); // White outline border
 
-    // Interactive CTA button label text
-    const ctaText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 50, buttonText, {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '22px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+      this.add.text(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 'TRY AGAIN', {
+        fontFamily: 'Arial Black, Arial, sans-serif',
+        fontSize: '18px',
+        color: '#ffffff'
+      }).setOrigin(0.5);
 
-    // Hover effect animations on CTA button
-    ctaButton.on('pointerover', () => ctaButton.setFillStyle(0x00ff88)); // Highlight brighter green on hover
-    ctaButton.on('pointerout', () => ctaButton.setFillStyle(0x00cc66)); // Restore original button color
+      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff)); // Hover highlight
+      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc)); // Normal color
+      retryBtn.on('pointerdown', () => this.restartGame()); // Restart game locally on click!
 
-    // Execute AppLovin ad redirect on CTA click
-    ctaButton.on('pointerdown', () => {
-      if (window.mraid && typeof window.mraid.open === 'function') {
-        window.mraid.open(GAME_CONFIG.ctaUrl); // Trigger AppLovin MRAID ad click event
-      } else {
-        window.open(GAME_CONFIG.ctaUrl, '_blank'); // Open CTA landing page in browser window
-      }
-    });
+      // 2. Interactive "PLAY NOW" CTA button (ad landing page redirect)
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
+      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+
+      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+        fontFamily: 'Arial Black, Arial, sans-serif',
+        fontSize: '18px',
+        color: '#ffffff'
+      }).setOrigin(0.5);
+
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
+      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+    } else {
+      // Single centered "PLAY NOW" CTA button for Victory modal
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
+      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+
+      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+        fontFamily: 'Arial Black, Arial, sans-serif',
+        fontSize: '22px',
+        color: '#ffffff'
+      }).setOrigin(0.5);
+
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
+      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+    }
+  }
+
+  // Restart game scenes locally for Try Again replay
+  restartGame() {
+    this.scene.get('GameScene').scene.restart(); // Restart GameScene
+    this.scene.restart(); // Restart UIScene
+  }
+
+  // Execute AppLovin CTA redirect action
+  openCtaUrl() {
+    if (window.mraid && typeof window.mraid.open === 'function') {
+      window.mraid.open(GAME_CONFIG.ctaUrl); // Trigger AppLovin MRAID ad click event
+    } else {
+      window.open(GAME_CONFIG.ctaUrl, '_blank'); // Open CTA landing page in browser window
+    }
   }
 }
