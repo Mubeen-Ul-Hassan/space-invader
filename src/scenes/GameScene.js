@@ -13,12 +13,11 @@ class GameScene extends Phaser.Scene {
 
     this.audioManager = new AudioManager(); // Instantiate procedural WebAudio sound manager
 
-    // Render scrolling background image tile
+    // Render fast scrolling background image tile for forward space flight
     this.bg = this.add.tileSprite(0, 0, GAME_CONFIG.width, GAME_CONFIG.height, 'background').setOrigin(0, 0); // Render tiled space background image
 
-    // Instantiate bullet object pools for physics collisions
-    this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 10, runChildUpdate: true }); // Player bullet pool
-    this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true }); // Enemy bullet pool
+    // Instantiate bullet object pool for player laser projectiles
+    this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 12, runChildUpdate: true }); // Player bullet pool
 
     // Instantiate custom Player starship entity
     this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70); // Create player ship object
@@ -26,8 +25,8 @@ class GameScene extends Phaser.Scene {
     // Instantiate defense bunker shields
     this.createShields(); // Spawn defensive barrier bunkers
 
-    // Instantiate custom EnemyGroup swarm manager
-    this.enemyGroup = new EnemyGroup(this); // Build invader formation grid
+    // Instantiate dynamic falling MeteorGroup spawner
+    this.enemyGroup = new EnemyGroup(this); // Build falling meteorite swarm spawner
 
     // Set up Arcade Physics collision handling rules
     this.setupCollisions(); // Register physics overlap and collision listeners
@@ -39,9 +38,9 @@ class GameScene extends Phaser.Scene {
     const shieldPositions = [150, 310, 490, 650]; // X positions for 4 shield bunkers
 
     shieldPositions.forEach(x => {
-      for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 5; col++) {
-          const shieldBlock = new Shield(this, x + col * 12, GAME_CONFIG.height - 150 + row * 12); // Build individual shield tile block
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 4; col++) {
+          const shieldBlock = new Shield(this, x + col * 14, GAME_CONFIG.height - 140 + row * 14); // Build individual shield tile block
           this.shields.add(shieldBlock); // Add block to static shield group
         }
       }
@@ -50,44 +49,38 @@ class GameScene extends Phaser.Scene {
 
   // Register all collision and overlap handlers between game entities
   setupCollisions() {
-    // Player bullet hits enemy invader
-    this.physics.add.overlap(this.playerBullets, this.enemyGroup.group, (bullet, enemy) => {
-      if (bullet.active && enemy.active) {
+    // Player bullet hits falling meteorite
+    this.physics.add.overlap(this.playerBullets, this.enemyGroup.group, (bullet, meteor) => {
+      if (bullet.active && meteor.active) {
         bullet.kill(); // Recycle player bullet back to object pool
-        this.createExplosion(enemy.x, enemy.y); // Spawn particle explosion effect
-        this.score += enemy.points; // Add points awarded by enemy type
+        this.createExplosion(meteor.x, meteor.y); // Spawn particle explosion effect
+        this.score += meteor.points; // Add points awarded by meteorite
+        this.enemyGroup.destroyedCount += 1; // Increment count of destroyed meteorites
         this.events.emit('scoreChanged', this.score); // Emit score update event to UIScene
         this.audioManager.playExplosion(); // Play explosion audio effect
-        enemy.destroy(); // Destroy hit enemy sprite
+        meteor.resetMeteor(); // Respawn meteorite at top of screen
 
-        // Check if all invaders are destroyed (Win State)
-        if (this.enemyGroup.group.countActive() === 0) {
+        // Check if player reached target meteorite count (Win State)
+        if (this.enemyGroup.destroyedCount >= this.enemyGroup.targetCount) {
           this.triggerWin(); // Handle game win victory state
         }
       }
     });
 
-    // Player bullet hits defense shield block
-    this.physics.add.overlap(this.playerBullets, this.shields, (bullet, shieldBlock) => {
-      if (bullet.active && shieldBlock.active) {
-        bullet.kill(); // Recycle bullet back to pool
+    // Falling meteorite hits defense shield block
+    this.physics.add.overlap(this.enemyGroup.group, this.shields, (meteor, shieldBlock) => {
+      if (meteor.active && shieldBlock.active) {
+        this.createExplosion(meteor.x, meteor.y); // Spawn blast explosion effect
         shieldBlock.takeDamage(); // Damage shield barrier block
+        meteor.resetMeteor(); // Respawn meteorite at top of screen
       }
     });
 
-    // Enemy bullet hits defense shield block
-    this.physics.add.overlap(this.enemyBullets, this.shields, (bullet, shieldBlock) => {
-      if (bullet.active && shieldBlock.active) {
-        bullet.kill(); // Recycle enemy bullet back to pool
-        shieldBlock.takeDamage(); // Damage shield barrier block
-      }
-    });
-
-    // Enemy bullet hits player ship
-    this.physics.add.overlap(this.enemyBullets, this.player, (player, bullet) => {
-      if (bullet.active && !this.isGameOver) {
-        bullet.kill(); // Recycle enemy bullet back to pool
-        this.createExplosion(player.x, player.y); // Spawn explosion particle effect at player location
+    // Falling meteorite collides directly with player ship
+    this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
+      if (meteor.active && !this.isGameOver) {
+        this.createExplosion(meteor.x, meteor.y); // Spawn explosion particle effect at player location
+        meteor.resetMeteor(); // Respawn meteorite at top of screen
         this.lives -= 1; // Decrement player lives
         this.events.emit('livesChanged', this.lives); // Emit lives update event to UIScene
         this.audioManager.playHit(); // Play player damage audio effect
@@ -121,22 +114,13 @@ class GameScene extends Phaser.Scene {
     this.time.delayedCall(250, () => emitter.destroy()); // Clean up particle emitter instance
   }
 
-  // Main frame update loop for scrolling background and swarm updates
+  // Main frame update loop for scrolling background and meteor updates
   update(time, delta) {
     if (this.isGameOver) return; // Stop update loop logic if game is over
 
-    this.bg.tilePositionY -= 0.5; // Scroll background graphics slowly vertically for starfield effect
+    this.bg.tilePositionY -= 3.5; // Scroll background graphics rapidly for forward space flight sensation
     this.player.update(time, delta); // Call update method on player ship entity
-    this.enemyGroup.update(time, delta); // Call update method on enemy swarm manager
-
-    // Check if any invading enemy reached player bottom line (Game Over State)
-    const enemies = this.enemyGroup.group.getChildren(); // Fetch remaining active enemies
-    for (let enemy of enemies) {
-      if (enemy.active && enemy.y >= GAME_CONFIG.height - 110) {
-        this.triggerGameOver(); // Trigger game over when invaders reach player base
-        break; // Exit loop after triggering game over
-      }
-    }
+    this.enemyGroup.update(time, delta); // Call update method on meteorite spawner
   }
 
   // Trigger Victory Win State
