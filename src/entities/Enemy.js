@@ -1,106 +1,90 @@
-// Reusable single Enemy Invader sprite component
+// Reusable Falling Meteorite obstacle sprite component
 class Enemy extends Phaser.Physics.Arcade.Sprite {
-  // Construct enemy invader with row tier texture and point value
+  // Construct falling meteorite obstacle with texture key and points reward
   constructor(scene, x, y, textureKey, points) {
-    super(scene, x, y, textureKey); // Call parent Sprite constructor
+    const key = (typeof textureKey === 'string' && textureKey) ? textureKey : 'stone'; // Default to stone texture
+    super(scene, x, y, key); // Call parent Sprite constructor
     scene.add.existing(this); // Render sprite in active scene
-    scene.physics.add.existing(this); // Register static body in Arcade physics engine
+    scene.physics.add.existing(this); // Register body with Arcade physics engine
 
-    this.setScale(0.65); // Scale sprite graphic
-    this.points = points; // Assign score point reward value
+    this.points = points || 20; // Assign score point reward value
+    this.resetMeteor(); // Initialize random position, scale, and velocity parameters
+  }
+
+  // Reset meteorite parameters for spawning/recycling
+  resetMeteor() {
+    const textures = ['stone', 'stoneBig']; // Available stone meteor textures
+    const chosenTexture = Phaser.Utils.Array.GetRandom(textures); // Pick random texture
+    this.setTexture(chosenTexture); // Assign valid texture to sprite
+    if (this.body) {
+      this.body.setSize(this.width, this.height); // Refresh physics body size
+    }
+
+    const x = Phaser.Math.Between(40, GAME_CONFIG.width - 40); // Pick random horizontal position
+    const y = Phaser.Math.Between(-80, -40); // Pick random off-screen vertical spawn height
+    this.setPosition(x, y); // Set sprite coordinates
+
+    const scale = Phaser.Math.FloatBetween(0.7, 1.2); // Pick random scale factor
+    this.setScale(scale); // Set sprite graphic scale
+
+    this.speedY = Phaser.Math.Between(180, 340); // Pick random downward fall speed
+    this.speedX = Phaser.Math.Between(-40, 40); // Pick random slight horizontal drift
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05); // Pick random spin rotation rate
+
+    this.setActive(true); // Enable object in active pool
+    this.setVisible(true); // Show sprite graphics
+  }
+
+  // Frame update lifecycle to move meteorite downwards and spin
+  update(time, delta) {
+    if (!this.active) return; // Guard clause if inactive
+
+    const deltaSec = delta / 1000; // Convert time delta to seconds
+    this.y += this.speedY * deltaSec; // Fall downwards through space
+    this.x += this.speedX * deltaSec; // Apply slight horizontal drift
+    this.rotation += this.rotationSpeed; // Spin meteorite graphic
+
+    // Recycle meteorite when it passes below bottom screen boundary
+    if (this.y > GAME_CONFIG.height + 60) {
+      this.resetMeteor(); // Respawn meteorite at top of screen
+    }
   }
 }
 
-// Manager class orchestrating enemy invader swarm formation and movement
+// Manager class orchestrating continuous random meteorite spawning and wave progression
 class EnemyGroup {
-  // Construct enemy formation grid inside given scene
+  // Construct meteorite swarm manager inside given scene
   constructor(scene) {
     this.scene = scene; // Store scene reference
-    this.group = scene.physics.add.group(); // Create physics arcade group container
-    this.direction = 1; // Movement direction (1 = right, -1 = left)
-    this.moveSpeed = GAME_CONFIG.enemyBaseSpeed; // Initial horizontal movement speed
-    this.lastFired = 0; // Timestamp of previous enemy shot
+    this.group = scene.physics.add.group({ classType: Enemy, runChildUpdate: true }); // Create physics group container
+    this.nextSpawnTime = 0; // Timestamp of next meteorite spawn
+    this.spawnInterval = 800; // Spawn delay in milliseconds
+    this.destroyedCount = 0; // Track count of meteorites destroyed by player
+    this.targetCount = 25; // Target count needed to trigger victory
 
-    this.createGrid(); // Construct initial matrix grid of enemies
+    this.initialSpawn(); // Spawn initial wave of falling meteorites
   }
 
-  // Build grid layout matrix of invader enemies
-  createGrid() {
-    const startX = 120; // Starting horizontal margin offset
-    const startY = 80; // Starting vertical top offset
-    const spacingX = 65; // Horizontal gap between column centers
-    const spacingY = 50; // Vertical gap between row centers
-
-    const textures = ['enemyRed', 'enemyGreen', 'enemyGreen', 'enemyBlue']; // Texture list per row tier
-    const pointValues = [30, 20, 20, 10]; // Score values awarded per row tier
-
-    for (let row = 0; row < GAME_CONFIG.enemyRows; row++) {
-      for (let col = 0; col < GAME_CONFIG.enemyCols; col++) {
-        const x = startX + col * spacingX; // Compute enemy column x coordinate
-        const y = startY + row * spacingY; // Compute enemy row y coordinate
-        const texture = textures[row % textures.length]; // Pick row tier sprite texture
-        const points = pointValues[row % pointValues.length]; // Pick row tier point value
-
-        const enemy = new Enemy(this.scene, x, y, texture, points); // Instantiate custom Enemy object
-        this.group.add(enemy); // Add enemy to group container
+  // Spawn initial cluster of meteorites staggered vertically above the screen
+  initialSpawn() {
+    for (let i = 0; i < 6; i++) {
+      const meteor = this.group.get(); // Fetch free meteorite from group pool
+      if (meteor) {
+        meteor.resetMeteor(); // Reset meteorite to top of screen
+        meteor.y -= i * 60; // Stagger vertical spawn positions
       }
     }
   }
 
-  // Update enemy swarm movement and boundary checking
+  // Update loop for continuous random meteorite spawning
   update(time, delta) {
-    const enemies = this.group.getChildren(); // Fetch all active enemy instances
-    if (enemies.length === 0) return; // Exit early if all enemies are defeated
-
-    let shiftDown = false; // Flag indicating if swarm hit boundary
-    const deltaSeconds = delta / 1000; // Convert time delta to seconds fraction
-
-    // Check if any enemy has reached screen horizontal edges
-    for (let enemy of enemies) {
-      if (enemy.active) {
-        if ((this.direction === 1 && enemy.x >= GAME_CONFIG.width - 50) ||
-            (this.direction === -1 && enemy.x <= 50)) {
-          shiftDown = true; // Trigger row step down
-          break; // Stop scanning after finding edge collision
-        }
+    // Continuously spawn meteorites at random intervals
+    if (time > this.nextSpawnTime) {
+      const meteor = this.group.get(); // Fetch free meteorite from group pool
+      if (meteor) {
+        meteor.resetMeteor(); // Reset meteorite to random spawn location
       }
-    }
-
-    if (shiftDown) {
-      this.direction *= -1; // Reverse horizontal swarm direction
-      for (let enemy of enemies) {
-        if (enemy.active) {
-          enemy.y += GAME_CONFIG.enemyStepDown; // Shift enemy down by step offset
-        }
-      }
-      // Speed up swarm movement as fewer enemies remain
-      const totalEnemies = GAME_CONFIG.enemyRows * GAME_CONFIG.enemyCols; // Maximum initial count
-      const remainingRatio = enemies.length / totalEnemies; // Remaining percentage fraction
-      this.moveSpeed = GAME_CONFIG.enemyBaseSpeed + (1 - remainingRatio) * 120; // Accelerate movement speed
-    } else {
-      for (let enemy of enemies) {
-        if (enemy.active) {
-          enemy.x += this.direction * this.moveSpeed * deltaSeconds; // Move enemy horizontally
-        }
-      }
-    }
-
-    // Fire random alien bullet at intervals
-    if (time > this.lastFired) {
-      this.fireRandomBullet(time); // Attempt firing enemy laser
-    }
-  }
-
-  // Pick a random lowest enemy in a column to shoot a laser
-  fireRandomBullet(time) {
-    const enemies = this.group.getChildren().filter(e => e.active); // Filter active enemies
-    if (enemies.length === 0) return; // Exit if no enemies remain
-
-    const randomEnemy = Phaser.Utils.Array.GetRandom(enemies); // Select random active enemy shooter
-    const bullet = this.scene.enemyBullets.get(); // Fetch free bullet from enemy bullet pool
-    if (bullet) {
-      bullet.fire(randomEnemy.x, randomEnemy.y + 20, GAME_CONFIG.enemyBulletSpeed, false); // Launch laser downwards
-      this.lastFired = time + GAME_CONFIG.enemyFireRate; // Set next allowed enemy firing timestamp
+      this.nextSpawnTime = time + Phaser.Math.Between(500, 1100); // Schedule next random spawn timestamp
     }
   }
 }
