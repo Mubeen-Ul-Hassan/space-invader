@@ -1,0 +1,22 @@
+{
+  "name": "space-invader-playable",
+  "version": "1.0.0",
+  "description": "Space Invaders Playable Ad built with Phaser 3",
+  "main": "build.js",
+  "scripts": {
+    "convert-assets": "node scripts/convert-assets.js",
+    "build": "node scripts/convert-assets.js && node build.js",
+    "start": "npx http-server . -p 8080"
+  },
+  "keywords": [
+    "phaser3",
+    "playable-ad",
+    "applovin",
+    "space-invaders"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "phaser": "^3.70.0"
+  }
+}
