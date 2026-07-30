@@ -282,31 +282,6 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 }
 
 
-/* --- src/entities/Shield.js --- */
-// Reusable defense bunker barrier block
-class Shield extends Phaser.Physics.Arcade.Sprite {
-  // Construct shield sprite with custom durability health
-  constructor(scene, x, y) {
-    super(scene, x, y, 'stone'); // Call parent Sprite constructor with stone meteor texture
-    scene.add.existing(this); // Add graphic sprite to current scene
-    scene.physics.add.existing(this, true); // Create static physics body for collision
-
-    this.setScale(0.8); // Scale stone graphic to fit playfield barrier
-    this.health = 3; // Set initial structural durability hits
-  }
-
-  // Handle damage impact when hit by projectile
-  takeDamage() {
-    this.health -= 1; // Decrement shield durability points
-    if (this.health <= 0) {
-      this.destroy(); // Remove object from game when health depleted
-    } else {
-      this.setAlpha(this.health / 4); // Reduce visual transparency to reflect damage state
-    }
-  }
-}
-
-
 /* --- src/entities/Player.js --- */
 // Reusable Player ship game object with controls and firing logic
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -394,9 +369,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     const scale = Phaser.Math.FloatBetween(0.7, 1.2); // Pick random scale factor
     this.setScale(scale); // Set sprite graphic scale
 
-    this.speedY = Phaser.Math.Between(180, 340); // Pick random downward fall speed
-    this.speedX = Phaser.Math.Between(-40, 40); // Pick random slight horizontal drift
-    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05); // Pick random spin rotation rate
+    const destroyedCount = this.scene.enemyGroup ? this.scene.enemyGroup.destroyedCount : 0;
+    const speedMultiplier = Math.pow(1.06, destroyedCount); // Exponential speed growth of 6% per destroyed meteorite
+
+    this.speedY = Phaser.Math.Between(120, 220) * speedMultiplier; // Pick random downward speed scaled exponentially
+    this.speedX = Phaser.Math.Between(-30, 30) * speedMultiplier; // Pick random slight horizontal drift scaled exponentially
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05) * speedMultiplier; // Pick random spin rotation rate scaled exponentially
 
     this.setActive(true); // Enable object in active pool
     this.setVisible(true); // Show sprite graphics
@@ -681,9 +659,6 @@ class GameScene extends Phaser.Scene {
     // Instantiate custom Player starship entity
     this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70); // Create player ship object
 
-    // Instantiate defense bunker shields
-    this.createShields(); // Spawn defensive barrier bunkers
-
     // Instantiate dynamic falling MeteorGroup spawner
     this.enemyGroup = new EnemyGroup(this); // Build falling meteorite swarm spawner
 
@@ -691,20 +666,7 @@ class GameScene extends Phaser.Scene {
     this.setupCollisions(); // Register physics overlap and collision listeners
   }
 
-  // Construct defensive bunker shield blocks across the screen width
-  createShields() {
-    this.shields = this.physics.add.staticGroup(); // Create static group for defense bunkers
-    const shieldPositions = [150, 310, 490, 650]; // X positions for 4 shield bunkers
 
-    shieldPositions.forEach(x => {
-      for (let row = 0; row < 2; row++) {
-        for (let col = 0; col < 4; col++) {
-          const shieldBlock = new Shield(this, x + col * 14, GAME_CONFIG.height - 140 + row * 14); // Build individual shield tile block
-          this.shields.add(shieldBlock); // Add block to static shield group
-        }
-      }
-    });
-  }
 
   // Register all collision and overlap handlers between game entities
   setupCollisions() {
@@ -726,14 +688,7 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    // Falling meteorite hits defense shield block
-    this.physics.add.overlap(this.enemyGroup.group, this.shields, (meteor, shieldBlock) => {
-      if (meteor.active && shieldBlock.active) {
-        this.createExplosion(meteor.x, meteor.y); // Spawn blast explosion effect
-        shieldBlock.takeDamage(); // Damage shield barrier block
-        meteor.resetMeteor(); // Respawn meteorite at top of screen
-      }
-    });
+
 
     // Falling meteorite collides directly with player ship
     this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
