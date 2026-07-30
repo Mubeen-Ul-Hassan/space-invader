@@ -8,20 +8,28 @@ const assetsDir = path.join(__dirname, '../assets');
 // List of target image assets to embed
 const assetMapping = {
   background: 'Backgrounds/darkPurple.png',
-  player: 'PNG/playerShip1_blue.png',
+  player: 'PNG/playerShip1_red.png',
   enemyRed: 'PNG/Enemies/enemyRed1.png',
   enemyGreen: 'PNG/Enemies/enemyGreen1.png',
   enemyBlue: 'PNG/Enemies/enemyBlue1.png',
-  laserPlayer: 'PNG/Lasers/laserBlue01.png',
-  laserEnemy: 'PNG/Lasers/laserRed01.png',
-  shield: 'PNG/Effects/shield1.png',
+  laserPlayer: 'PNG/Lasers/playerLaserRed01.png',
+  laserEnemy: 'PNG/Lasers/enemyLaserBlue01.png',
+  shield: 'PNG/Power-ups/shield_gold.png',
   stone: 'PNG/Meteors/meteorGrey_small1.png',
   stoneBig: 'PNG/Meteors/meteorBrown_med1.png',
-  blast: 'PNG/Effects/fire01.png',
-  blast2: 'PNG/Effects/fire02.png',
-  blast3: 'PNG/Effects/fire03.png',
-  star: 'PNG/Effects/star1.png',
-  life: 'PNG/UI/playerLife1_blue.png'
+  blast: 'PNG/Effects/yellowFire.png',
+  blast2: 'PNG/Effects/blueFire.png',
+  blast3: 'PNG/Effects/yellowFire.png',
+  damage1: 'PNG/Damage/playerShip1_damage1.png',
+  damage2: 'PNG/Damage/playerShip1_damage2.png',
+  damage3: 'PNG/Damage/playerShip1_damage3.png',
+  damage4: 'PNG/Damage/playerShip2_damage1.png',
+  damage5: 'PNG/Damage/playerShip2_damage2.png',
+  damage6: 'PNG/Damage/playerShip2_damage3.png',
+  damage7: 'PNG/Damage/playerShip3_damage1.png',
+  damage8: 'PNG/Damage/playerShip3_damage2.png',
+  damage9: 'PNG/Damage/playerShip3_damage3.png',
+  life: 'PNG/playerLife1_red.png'
 };
 
 // Convert image file to base64 data URL
