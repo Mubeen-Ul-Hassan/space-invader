@@ -77,8 +77,8 @@ const BASE64_ASSETS = {
   "enemyBlue": "data:image/png;base64,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",
   "laserPlayer": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAA2CAYAAAAVvbNoAAACbUlEQVR42nXVQUiTcRjH8adTlyDo1KWLndohcNv7vpuIuxgIeTCQEAyEPOwg4cGDgqAgIuTBYKCQKOZB3d61yGiI4dDEykrNcJTSaMlGlqNmLDVa8vQ+0A8egveFD2Pf/8Pe9/3vHSP6d8RNszdmWYvCNs2JmGm2YI3uVlScjQUCC/FAoPw/6bJOUdPsti3ryI2skzO967w5EK/7+w/319fLz7q6fqLJOkUtax9K+fyfk3KZfxWLJ7qTM52H8vExg+4ylIXfpRKD7jK0A85pGHQnOxDYgqNCgUF3ubsNONzbY9Cd4pa1CqVcjkF3cnZ2GX5kswy6kx0MpuAgk2HQXS58Dr5vbzPoLlswC9/SaQbdZeg+FDY3GXSXoWn4urbGoLvc3T34srrKoLt80ih8Xllh0J2cx3UY8ktLDLrL0B3IpVIMupPzwN+G3fl5Bt3J+WX0w6dkkkF3+Vp64OPsLIPuZBtGF2QSCQbdKWoYHfAhFmPQXX53t2BnaopBdxkKw/vJSQbdZZ9uwrvxcQbdKWYYNyA9Osqguwxdh62REQbdZZ+uwdtIhEF3sn2+q/BmaIhBd7L9/iuwMTjIoLucLgRrAwMMutOMYVTBq74+Bt1pprLSDy97ehh0p2mv9zK86O5m0J2iXu8leN7ZyaA7RX2+i7DS0cGgu1z4BVhub2fQnSY8nvPwtK2NQXcaCwbPwWI4zKA7DXs8ZyDV2sqgO0WITsNCSwuD7vL3cgqeNDcz6E76mG9qYiC3Y66xkcF1KNnQwOA69Li+nsF16FFdHYPr0MPaWgbXoURNTfFBKMTCdSheVdWbqK5medX9Lwgkf09Sr51zAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
   "laserEnemy": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAA2CAYAAAAVvbNoAAACdklEQVR42nXVT0gUYRjH8adTlyDo1CWCOikSqDuCUUQHDxEdPBQEdSiI6OAhoiiKivBQEBiRENHBQ0SIBwPXnd0UKwsNLY0tTLYw0bA098/8352ZfXpf7EcPwbzwYeH7vuz78s4sS6RGQ7q4M5W1elLZytg/Vo/uep529Re3tmXtgpFzwv/prucpZVpXDdPykuh5as1Zi6mcVdZu5T13uhiGl2ZdB03Pk9p/FZacKArjOpeCOJad2kxnGfyoziA7qcMtgB3WGWRXBy/PQ6mqtvpLdnUmOw9rQZ1Bdn0FH2DFjxlkJyNrT8KSGzPIrrYrv4YFJ2aQXX/TKBTsmEF2as1aGZirxAyyq4PbzyFfjhhk11cwADOliEF29VjspzC1HjHIrg7u9MHE74hBdnVw+xGMr0UMsutFvTD2K2SQnTbe7Q0jP0MG2dUVOHfAXAkZZNdX0A1DP0IG2ckw7eswuBwyyK4fy2UYWKoxyE6tpnMBni3WGGTXV9AFT77XGGSn5ox1FvoWagyyU3PWOg2Pv9UYZCcj45yAh1+rDLJTi2kfgweFKoPsZAxbnXBvvsogu7qCymG4+6XKILv+tXTA7bkqg+xqO/sAdH8OGGRXb6a1F25+Chhkp+Z0OQXX8gGD7NSUKe6BKx8DBtmpZchugIuzAYPs1DRc3g3nZ3wG2ckYXN8BXe99BtmpMb26Hc5N+wyyU3t/ZRucmfIZZKfG/tUtcOqdzyA70f3CZjg56THIrv9eNsHxCY9BdpLj6FuPgZJG5xuPIXHRkXGPIXHRoVcuQ+KijpcuQ+Kig2MuQ+KifSNWaf+oy1riorYX9o32EZf1p+x/AKpjl6rTKgNOAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
-  "shield": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAACqUlEQVR42r1Xv2/TQBS+fwDxBzAwM8HEipA6IBYkxIo6MiF2QOraAWKEREuFxA81ap3iNAoKihRRQitF/UGNk7R2HCGB1KEDQ5E6ZOhy+HvJc85JbBlz4Uk32Pd837vve/feWeTM97cMs1h/tlaS0x6Gaf3MrRYNATNW13//D1B1PF02Lwt+qB34csP7PtWxvLHV33mhOCeMguXgYX3Hnjrwyw9VAoa8ApzjAdFgsttZlLJ7Xdvo+XdoXTDK7M4vLZ0XQMcDooHDrvdZK/Bx5yGtC0b7NFsOJRfQORKm5My/qQ3Y7byjNVe+NPo0c1ZTZgdpjpflr01yOvHvaQNueNu05quPtaG+Q+DiG7xEVHD60clp1Rcjoi9bbsWaxUtEBSfbq2jVF0xG9GV7ks9fxMRzq0yOm15Lq76Fre1xfUd1rthtcj7172rT93X107i+is4lTCI6OB95j6V0r2QePe9GqC+YHNM31Nm0HmAS0cHZbc9LuS8yj2PnNq0DBifqy4bCDYcXpQp90Dis/xNwt/WI1rEae/H6hnQPOlW16dJHPftCZmD7IE9rvK3V4/VVdKa+jCjxEejKCsz6gsFYfUPgoF2pDSOrziffrkYaQ6y+w0Kydk1tGFl1PmrORhpDor5soxeDLDqDKbXxJ+o7qjNfDFrtBXm2fy416C9nRm66dqTxJ+o76TzzrkE5dEsCRHB8hBLrc5whOj5WyEguodS1Wvcngp7al+TuYTn0495LNAcNSKQ1NA2+i6lllDpXcD5V3ZFITC3OP9OL4JGsIovxfYxbJlMPIJxx6M8BISe4JiNPUumarHlw4R9Qj4X5lsIDwXB1Cq+uugx1XKWeCwz0j1Cb5tj8rVHSDa5InHjDXVoO8kJM05Cl6m9Pqqqky7A7ZCz9A2W0P+is4RLXFGc5AAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
-  "stone": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACM0lEQVR42rVW2VECQRAlA0MwBEMwBEPgjx8PQCwpXK5FbsHllEMEQRHFKikjMARCMARDGPet1VuzsjszFDBVXfuzM6/79evD5xOc44i2fxpLHPIWCET3fLs4YU33R5LXTGbhuP5Fdh7PLELxdIoMb5xEEwdSMEQRTug/eDCaKbBYtmTbRSrLVByxHdL0b3l0prcEVmr32U1n4Gm5Wtu2TLXBUmXDtks9b4EiFSKwIH5CJPlGRwgms3ihQrQHPUVCVMLbTcBgiBJvhbS04RXdEj/As03BiG4S1goYVCXL2+39mPVeF6w1eWOV3lAKWGx2/wBN1hxgkK40b90HC6w//7TtbvrOasMnISip1VkCpnRlecPjPBhv3dkHq4+mrvfAmEOpSKgsb83xzBOMrP08d717lStTPfotQAoZfLtdMAYTKRis8fgiVqqpEWphQjpBlwqgF6XXRsupVKIUobtdgOcqgFCwpDSWDoXCXMvBVKcKYLU/UleqjFbUnQxQVBrUU+3JIaMVRe4GotoEMGXw/pmWPFqh1UutfB0CyFKlSfdaPZWUyvfRdKXu2dagWKuzKALxYCtjisYSOsO2Gjd1GdeJgdEko1XFoPREseqY+J4DWEarSlSkSMqZcOkiWnFpnQGMqKhnUpGvvTzRuEJTF60acIwWK9x1KFHlABQJ5oEpalBN+cWX6ot6JXSw0W6KQsWu+X/149dFOGaPnm0di2ozvyQqMjizs02cX0cgcyVRuJxfqqwPlRY+oG8AAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
+  "shield": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAACm0lEQVR42r1X7WoTURC9b9BH8BF8hD6Cj+Aj+Aj+9UfNiiBYBFtoaTd101CpBIIlNhBaIyHBEk0b89V8NUEtFo2mFLZ7JpnN3SS7rNcbB+bH7s7eM3vO3Jm7ImK+umeYsdSTnbi9aDdMqxbZjhkCZmzvXv4PUNkfb5h3BV8kT0r2wafyQn3jID368mjsoTCiVh4Xu8e5hQM/f50gYMgrwDkukA0ennb7tk4bDK9pXTDK7D5aXV0SQMcFskHA+0pDK3Dn8getC0ZHNFt5Ki6gcyZMyfXNjTbgYvuC1tx6lxnRzFVNle2UOW7ufShQ0PefA23AmXKN1nzxJjnRdwIcW8NNZIWgav+bVn3hHn3ZIlvWfdxEVgjK1Vta9QWTHn3ZVjY37+DBU2uPAg9LFa36RtNHs/pO67yf+0jBV7//aNP3ZeLtrL6SznE8RHYIrvW/2sPhUNmvfg1cfcHkjL6uzqb1AA+RHelcqdu9Xk/ZS40mrQMG5+rLhsaNgGfxfXohXfryT8CFaoPWsTJZf31duseTKlEo0kvNTlcZ+PisSmusJ1P++ko601xGlngJdKkCs75g0FdfF9gZV/LAUNW52mp7BoOvvpNGsrMsDwxVnYv1c89gCNSXbfpgoKIzmJIHf6C+0zrzwSDrNIFO9yI0aLnZslOfvYM/UN95+5m/GpRDtyBAJMdbKLA/+xmy422FiuQWCj+pnc8Frbc7dua04sbx7CWanQEkwhqGBp/F5DYKx/6UdUchMbXY/0wvkkexChXj8xiPTKYeQNjj2fEQ4Armnow6CaVrsObOgX9MPRbmUwo7kuHu5B5ddRn6uEw9Nxjo76E2zLb5W6OiGx+RuPAmX2nlURdikYYqlX97QnUlXYavQ8XSP5Ci3QIZI/MNMWXlvgAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "stone": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACQklEQVR42rVWa0pCQRh1By0h6F/0o1AreppXSyxT00R8YA972sOCCCLIoKKiqCgoWoVLaAktoSW0hOmeK99lbs6dGVEHDv5x7pnvfOd7eDySkxrv780FhwM8wr6+Hk83Tm5maKUY9jMVCiHfFyFveOsmagR8Izs5MKgkQxQFw/uLD5ajo2xzYcxGaXaY6TyEYBL/KAnxWiK7LEXY1WrUFWe5kI2TTJBVU9M2ViMjFilS4UqWD/mq+BMiOc/PSslUqMQnGlGa33Q1CUmJ17ZDBiBKK0LD/yyOzvB/4w94WbtkJDcZS0DmranydrcRYx/VZfZSSbKb9Xkl4UVxrkFoquYgg3VVebtei1pkn0cZG2/7KfawtSglJbc6SgDWVeUNH+fJeLwfptnjdlx4D4o5nIqEqvL2vJtwJSO87i0J7+7ExhuEZhOwCClk6C26cL8ZU5IBTzsJqVPhETKLVE7IpUPoJulp1nA6lSRF6KILeLkOIRwsKw2UnMOhgKgc4E4dwtvygr5TVbKi7lSEstKgnmpPDpWsKHIRiW4TwJSxCIP+RJOsbm7l6xBEyC3kbqWn2k7l++hxOuDa1uBYdBZdIp6saUzRWEJn6FTjpi4jnBgYTSpZdQCnHySnHBPfdQCrZNWJihxJOZMuXSQrLrUygBEV9Uwq8paXJxpXaOqyVQMPo8UKdx1O1DkgRYJ5YooaUlN+8Uv1Rb0SPmhrN0WhYtf8v/rx6yIeZo+eTh1rSJv5JVNxpqh3bRPn1xHYXMsUgvMHbaWtQWCw0OUAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
   "stoneBig": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAArCAYAAADhXXHAAAADZElEQVR42s2Z32oTQRTG8wY+guCdeKEkqWL9U5O0ltrY1NQSkpZardVarVEQQQQrqKgoVlQUr/oIfQQfoY+QR/ARxvxCzjLZZLNnZrOpC99N2c5+c+Y73zlzksk4PvXCxJSN6uTJ45n/8Vkp5f6sTufNMPCOoFHM7rexK6gV8hXZZO3iqdOpEa0X83uQWZ89azbnzwdYm5kwcRvQoFHMH1qbPGBDXkSJCAtC7GVjxrxZnxuI12uz5kW9FODp0pRpVi8HsDfJpuM24Cyx6dyJYyvF7F/++dlyIZJoUtib3F640I12dtdLp1vlydSIhvG8Vgz0rybKzkSnHPG4yBJd0bFOp+1sFe0M02lakG+rdNqOaouXSYxxEwWSgLEWh3XwIll7FEQB34bDUAtrlHJNsSkXnX64Wza/mjfN1+1F835jPjHZncVLwx2BkItNIXLtwu/uXOsQ/f1kOcD3R1Xz6d51b7LIrxPZdjGK0Gn+kBfYlXbRt7fnzI+dag9RGz8fL5kvW5XOhnwcYaB9STndmDvntCjHHkU0DN5FLpp1caCuDFqR5fTV6lU10c/3F9REw9H2si/qr085/bhZ9iLqQrbPvmjj+AP1WEuUbA8nlAtIPhf74uQ7ZCXU2uOPSyitdl0cIbAvcQCtBL49vJGIKMAdNN+ixeyS3e8pAtquiiNMSlbrv332RYKJFDQVK0liCbT2hTQ7ZNsGYPUCblIgm5OQdSkQffZVv3LmlktB4BiTkHUpOnDqaWgotS6ugCP4WpfWYyPty24LyUDNInsPKqnaVqR9+UgB3bkWAm1i2SCPumQPerou1wKh8VxfkrHdl6sUIDGKDmsYsNOB9zFXKYBw6YWka+86jKh1Y2j1NeCuUhAbGyVJOX57atPjBr5SkGQbFUmiKRMZmR1E3nBFCuxq3DdaJjH2oE81PpJmfFzDDSQn5i+Zrx7KSUPucnH0BXKTaBIkukCvEWeaUuDU7GiSKyS435Q7xTGnlFCJ5sBMd3lkgigRRhIuN98oO5IuSgYY3tEc5Azh3xH4GNF2GS3Z5i4G7z2Gj3vIzO6PGC35IEmBH8aNmbAj29xZZ2TR1Py0JG5hywQd2jIhmtzrVOae9kN0kIlciQRkOMQT2VGaDzIhWWyZOJv7UTzYELok6qNe+x8zpG5visyRkAAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
   "blast": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAiCAYAAABvJuicAAAB1ElEQVR42pXUT0gUYRzG8W/mnwit1kqSNCFLEAOJSCuQDKQQDx5EPBQRBHbo0MGDx/UQRARezIN5ME/KRIRZoiINuc66G3vs5sFTF8U0bXVn9l1wX0XdHWd23nnhc5vnnZdnfu+AyxJBnog+epZaKcLPSr2hV9p+TaVyaPstFaKfHsl6x13loPWextQgryQxQIdyMPmB1tQwLw8oB8UIz8QoLw7Ehyj3DK0MUizGeJ7J/EidZzAxTrX4zNNMyU80exczwR0xyeMsE3R6FzPLQzFDl936F865hmLdFIgfdDjZ+U6Va3BzjvPCoN2J9ZOb7sVEuJ6M0uYowgP3Ygxupx965GZZ55RzMWHuJxdpcROfdxiEFY1ieZxcEmGuHQtuGZSlj9OUixV2KEjuZv3inhetk5NZQTNEfXrHBi/resYgyF2sCLdUZBW0NsUZM0q9ioRB9VExM5SZBjdUHf1jQlwxF6lV9ecrp/cbjVLjh5xp9CD5OyGu+rHxjQBLUxTJo/qxqXOB1QVK4mEu+7EXlDP6X+eSH/+mKSU2RMHWPBf9OGz1b4yzGyECqg7nVb5VTo+K5RHbZZZheYRc5Bdw/AMEg+T91iiUD9hpmu06uawTNsfWLv72Oisd2A8+AAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
   "blast2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAfCAYAAADXwvzvAAACOklEQVR42pWSP2gTYRjGv0FRUMGhUtShQ0H8Aw4WhDopLi7WpKBFBBchQyA22BbSWr1am2KSUkEXqQg6KA4iDmqpg2eFlAqxitpaSIm2mDR3l0tyl1yTL7nBPMULX9PL5XzhBy/v8/zg4D5C/g3H81tckchWK9Ah7ISSyR0BSdplkCiV2jK63gmkcvkkm6G7Lnmi0W1jqtpk8DCfb06Wy2cFXXcavCkUWtgOHHI3k9k9rmn7DaYoPbii6w4W3NgOHBKQtH3BbLHV4EWeHl2guoMFN7YDh4ylK58h08MGT7OltoimO1lwYztwiP+3tDcoasdYpnO0k6U2h0NGo7k9IWGtneWtSh2TFQFgr83hEO6HuDOwWjjF8ixFHS9leh5gr83hrP8S/5/C6dFE8YzB/WSx47FILwDsbIZu9QGMrCjH78S1cwbBhOZ8INIugJ3N0K2Kw8u5IyPxXBdLILl2EdTe0a2KAzGh2b+cv2wHdDe81+GY6rIDqZ1bv1TnUCznsQKdTSL3Uz7BLSm9llQ6JqJygFtUBy2pdDaLPL/95qJy2wp0iNlwC4r3xnw2ZAYyUm+uf0tfGvyeuWcGsrpi/5zcPvA1O2EGsrqii483+b5knpiBjFiNL5J95Pucfr6Byo00mt7ZVH/fJ/kVC24NxZ4ZwdE3K02y4NZQ9ISF1p6wzLPgRuzMtbA0w0Lsjnc6NdH9MTUHsNsWuz9Ibi8vzgPstkX368Shq+9XlwB28j/jnhKveN4J4/Xyv9k6EFOe/ibOAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
@@ -92,7 +92,21 @@ const BASE64_ASSETS = {
   "damage7": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAABMCAYAAAB9NNlLAAADd0lEQVR42u3dzU4TURQH8JY+gIZH4AVMdOUKg4nSUiIsXLgwUhVbiI0x0cSFyUgIFqgiMdCKUGkJ0cT4wcZENzp8GJc8Ao/AI9T+IReHOlZRO+fcmf9NzgI2JfeXM+fcjw6xmL0j7hMcAY2ORiRaRAenqP0j8QfBIZgFzAYlWcBsaHMhPgoCC7VwFjAbFGQBs0GwILNAK8sCZoOCLGA2KMkCZoOCLGA2CLWlbFcVZgGzQbgWsDYoAyCE4GOIjyVlAIRQAkAIJQCE8I5ytv+Jc/50pxACC3XpRu+VhdH++lw2OSaIEF2I0nCyGwCIzwtj9TczTpcwRLTG06vnTpRH0rsA+DBzt/5t9XH90+J4jzBCdOrD5MVTx8ojfdsAeDs+sgegBCE6EOVc3xcAvLqfOQBQhBB+iAbAMgBqdy7Vt6pTWhHCW6jns8lbAFjMD9bXlyYOAShECB/E3GjqgrcTagZQihAeCL9OyCIE+1tXZ+jM8UYd2GnuhCxDsLtQm1a0uROyDMFeiPnR9INfdUIWIlgJES9kznYt5gd2/Tohb2ytPNrdqE6OLTnXOpUjJErZ1Kw1AOaP/jjnnAzD5B8g5NIu1jrWAJhwKw8zhye/uIPf2TT5XgQ8YrHm0YzgezizWZueNZNv28R7493ETdesd7ANbw1AmGJzeWrttTO8h4C1D9ZABAg40MHhkbp67/IBBHaFCRBwfF2ZdtFyo/Xeh+jbloaIRwnAmw1ovbEZCYhn2dR7AgSeDcVtQGAz0hRqXFiQQEhENbxtNzYlpTqmjigjINByG4i1Qv4HxHCymwAC2YAIsnUlQNO6Ad0SYr0y4T7PD7hYVbdzjynOiZc9lSOAMAQBFEBwIoXPqVmIhU/lCCAMQQBhCBZi4UJNAGEIAiiAYB0Qrg8EEIYggAKIQD9040XhNoKTf3hFHcgH4TYetnzN/jt+5uQHhICbdrj89fM1yOKOjbfwrENwK4VB7zFgcwCHAG1CwI1sc2/TG37f1LHgSrx9CHhFgvl6lF80Q/CxtI8QP+qi4m+GeY+FHwTOakN8KhbI/P4XCHxXIcznw6pGKwg8mhTUiGi88aUVBALrCaG3vkTrlTu/g9iqFasEEIbApVsCKIAggBAEvvmPC7aIl871HgIIQZho87vxCOA38DaYci7lmJjP9Q7F/P+947+GqvEdfHFgRPScVuoAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
   "damage8": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAABMCAYAAAB9NNlLAAAEb0lEQVR42u2d3U4TQRTHaXkAjS/gxwv49QASogTaEsOFF8SgIMGWJsQQNeqFqYRIgSL40RYJX23DlZFITEwwJlr5iJd9BB6BR6j9F1fa0m5nl9mZs90zyf+GCzIzP86c/545u7S1uXf46oiHouEvqd1Eft4i50e7gHhojAKOBiJRwNHgcCK2AoETteYo4GggEAUcDRoTMidoYlHA0UAgCjgaiEQBRwOBKOBo0GRL2a4SjAKOBs25gHMDMQAMQmSkH3bfT0VDrxyGwMdSo/H+QdflxdHQ4VK0t5h7dneLQSge03eunzEAbDwfKO7nZvMOQ2AQJwEECwCQfdJf3MvMFHezs28VQGAQxvgYDnwBgLXxO2UAfzbeFHcy0xOKIHCiXgz3LgDA8lhf8efSRBmABgjeBQEnBABQJQBNELz3RJ0e6blhAPg2/7QKAPR9ebJTAwTv5IdKK7o5OXoCgEYI3gBRdkKR4AEAfIqN1AWgGULrg6i1oo0gbCdj1zRCaN1EXYqAdcMJmQGANAMoa+7ezastBiAQq2dFKUNIR0L5VLjnUctZ0e13L5oCoALBMA/JaOB2yzihr7PjQgD2cokDChAwX8wb88c6XAkgOdx53gBg5oRqpah411SYC+ZdBlFydHB2ri3KoSoqCoAaBAjzP4qIYMGVRblmVtQNEDB/rONfRKy7zor+XnltCQCksIwtBAHCOrCeIxCBmGuLcqLSVLwzhQBhPcbasE6aibhk5cyKcqJH0ef52CWKECCsi6xjqrSiW/Exy5u/l5s7zK9ODVHYfDMIENZngIgNdpx1VVGuIYBsIrMSGz5HCYAZhCrrWnJMJKxrYqDrYjLcM5F93H9gxQnhoUxztdQ2BIiSY6pq1Mqvxvt212e2RJIvxb9+KxCqrGu4d4EEgEohucJq4qyvTbwEytRSIBiOybCuuhyT0GKQcBEdO2vxcTdsvhUI0I/Uy//WdWHw1hWVAPxu2lAnIdRa14VI9wUGIEm1R2kzqXRMngAAIXfZBhEJ/lKeiBmEmmKf5wAYgpXezyUKVkCgpRMgUpHuQQagCUSldf0QCXUos6IMor51lVHs8zMA+yCOrWuwYLfYxwAagBApzRhCq2c6Esy02ejskw4AdSU4DQjlC9SP8DMq9weWnyOyiYzZvQjKNqgS1BQp/doSMUoXze4T3AgGG30876khwbqYTzkAs78Y81u2RKGFjzWfEgBWz06qnXiqQUjLAzhOrLgIwt3ZSlvwpQGwU3NpJGr3zk6C8MtMwLIAUGp/UQFCyi/DhsnafGrdeAqkzwGJtMIwBMmP8Xbk1oc5JRCQgJ0GQOAlQtoQ8DqRccEtKjvtkVQahFsGgl0QVLv0ZELwWX2oOG3Hth0QOPoU5wdZr9Eq2V9lII4ah+N9LgJAc8gA4fDR5I0vvpwWhIPlDG99cuc0IBwqc/M3j6yCkJykvf31L7sgJD4/8HdSa0HgYhyvJDXT5mT0kAE4CEJUDMCBgTdA8Z6wqNrq/+tHEZEafwHuA7O0aa4nYAAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
   "damage9": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAABMCAYAAAB9NNlLAAAFK0lEQVR42u2d3U4TQRTH+/EAGl/AxBfQ6JVXGhKRthDtBRdeGFsJpRCJkmgiRrMhBAutUpQvka9CMCZGlJiYYEykKsZLHqGPwCPUPVunlKW73d0587HbmeTcdof+5sz5n/9Ml1DIvyPcJNTgNCJ6RG0ior4i9iPqINQQmAUqGyTJApUNjAuxGwiqUAvOApUNEmSBygaBBVkVaMmyQGWDBFmgskGSLFDZQDvms10pJAgqG7yMuaH4jcXB7kPt+uUzSCDUcDsWs4m9paGe6rsnqRmVDUIAxDUAsDycrO6Xpqofp7VzqjZwHAuZrjsAAOLH0lj179bL6p/NfBkJggLRary+23ke6gAA+Dr9yABAoryaS6ptiXUh7us4SwDs5IaPAYDY3yxUELNBgTCPyd5LpxYHEwcA4IPWfwIAiV+lyTEFgtF4MxD/DAA2Ht6yBFDLhheHiEVagagroYGeIgEASsgOggFio1BChKAKNVFCIEWJEnIS35bHOxQIDAD9sStEiu6+GnUMoCZZCwfIENqvo26UonaF2C7Kq8/TmBDAHoHMbDsltPX4ticApEivaH1YvlK0mO7sgIUBCyT4hfg/AKeF2D4b0Bq46Nvh5BjMC0BAzxJkU26dFOKfKxNUAJCtjOjv9akdWBg1EIkDyNjAAZgfiN03e0I0WxFyvxCFz4TMXBvpNeYIvUtgTTmzJyR6G4IAoOSzYYFAphoZoWdu4JRQM0/IbcC2gS1PQWk1PgMkM1k0vldMWurqaVopylIR1bcivQs3P+tLfqQOAk75fC9FMZQQi22IBDR/zZ4HC4coJl9KV2LKkdMx6m1oIz/DAgBklt1zoZchIHylmIgp59YTst6GChUW2xAE+FC2z9YXkO+ka6MScusJcTTs6gFnFK2eDz2NbxRTMXXtAgEAhQ0DAKtt6Kge5MtO5nFMuuqZHlhTjpNbeizczAd6HGmla02K0pty5tid0y6yBACf73ZOjdIV7HiZPKE9TCnK4Dy5eT1Yy414mZt00pWYcuC5YCghXtuQVZPmNOrSNZuoCFVMc5nYA8xegJU5Z23aFSqe52mSrmIA6K08livKUw01M+28hlCzzyjEehpiuaIszwmsTbtcEmO+3+ef1Qs13KHlySECZ7Jbo6kSJgASPCBAxmHNF9xh3tI1YpZ5ThseGTpkFhAaFRMEa8UUsfNgaAodb3na7BwBCwRL6Rp2+oeBwvFDXSC1gXa+vMw+Vz/gA8cTVjPNH8cLAtlSsbK48ZwamlghAMwy0Gu94FEXzAvH6nBHBulKfZVE5n7BDIKmi7Y6p4abJkwKsZurJJ5TW/9CWB3m8FBOGK4rNYBWp1ZOfSTWbipL5USjmKgBeHUorfwk7AvAzgs2vXJ6/zRddXvFMky7r3qtA7L0DyebUbqC7Va6hmWRelYH/rwhHCknOleg8Zza7oplWKbuU9RpG6vzB6fSNSJa1skqXc21DrLCa3yauFdeyHYbARcjqAFg7JeynrpxiggVAAyPyGvwOnnjCULq7aepStK3hABBiIZ4Fye1JVFCaHV5lms2COgZpIDg5N4mz4CmUIS3JBQCOdz3GtiXAkgDJ7J34AphNhNL0wBgC0KMt4QJIexUy2JdmWcBgkEjh/W+Cy7fr1QgQDkh1Ilgv3CEBwjKHxi2xxtfeIDw2NC11yt3WIPw0NC16TuPGINwIV3V279YgXColtR7Us0gtscHjQu2GLE9PnSoAHgEgRnQZCoALobxpvhsXMOM2Uz3zZDk/x7yHytPq6fE/NiKAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
-  "life": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAaCAYAAADWm14/AAACbklEQVR42r2WS2tTQRTH8w38CH4E1/daEBURilq6UHf1sezCLkQRKtTSRUEQEdwJZuXGRyslBmnRVkGLj1DFB4ZSo+CLgAmKGGNuMt7fNGcYb2py55pk4A/DzDn//5lzz5m5qVTC0Wg0ZkOUQb1eX6xWq1tS/Rqh4ISKDILoi3ipVNrEqRHNDg9ryKjVatv6dvpCJqOue54G82YW0n07/dLoqAlgYWTEZKFSqWzuWQBBEKwgUszltPAxf1CDOWsMbHqV+jQC3yu/VPbkKZX2BtTgwH4N5nfHT6vfQdCbTxESjkGMwPLj9dNP+rtMAMxZe/H8pd0VY91K+yEhzb37oOaOn9BiR7fuMwEwZ429/OeiCQLf/xLncpGie/Xxi1p4+kwLXfF8Iy5gTRdkaPOp/E0HgG/iC4pqFnEI77xeVZnps1pk2t/ZEgBr7GGDbenHTxOEc2fQblLxEEHIyW7sWBc5521X4/7uv8Aae9hge+/Nmi5Y6Qw4ne55qXiICCB76bLp+07AFp8HqwXTGXA6tRuOj9beayIws2dv7ACwFT84YrdntOKFxOX00SwACrhjZ4QbQ2KEgziD2QMHnQPAx+aItOfQP9tNKl5we2bOWVyAr821YXs2K75gV7yNm4ePJA4A3yiftCeaujOk6Mr5vKl4wfz9h4nFBXDYnGigZYpSUs+TGk0ZuHXhYmJxuZSin1Seb7RTUhi87ytXr6m3xa8tWD4z6SyOz0ZcaKAlw2Sg03gyNRVbHNs4Q2eAluCW4qcSNOcTFs67BGGL4xvhSts6Le0Y54Liz6cduvYUtwui0+i6uP1K8uvdDq7v/x9RtvmpXXp+5AAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg=="
+  "life": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAaCAYAAADWm14/AAACbklEQVR42r2WS2tTQRTH8w38CH4E1/daEBURilq6UHf1sezCLkQRKtTSRUEQEdwJZuXGRyslBmnRVkGLj1DFB4ZSo+CLgAmKGGNuMt7fNGcYb2py55pk4A/DzDn//5lzz5m5qVTC0Wg0ZkOUQb1eX6xWq1tS/Rqh4ISKDILoi3ipVNrEqRHNDg9ryKjVatv6dvpCJqOue54G82YW0n07/dLoqAlgYWTEZKFSqWzuWQBBEKwgUszltPAxf1CDOWsMbHqV+jQC3yu/VPbkKZX2BtTgwH4N5nfHT6vfQdCbTxESjkGMwPLj9dNP+rtMAMxZe/H8pd0VY91K+yEhzb37oOaOn9BiR7fuMwEwZ429/OeiCQLf/xLncpGie/Xxi1p4+kwLXfF8Iy5gTRdkaPOp/E0HgG/iC4pqFnEI77xeVZnps1pk2t/ZEgBr7GGDbenHTxOEc2fQblLxEEHIyW7sWBc5521X4/7uv8Aae9hge+/Nmi5Y6Qw4ne55qXiICCB76bLp+07AFp8HqwXTGXA6tRuOj9beayIws2dv7ACwFT84YrdntOKFxOX00SwACrhjZ4QbQ2KEgziD2QMHnQPAx+aItOfQP9tNKl5we2bOWVyAr821YXs2K75gV7yNm4ePJA4A3yiftCeaujOk6Mr5vKl4wfz9h4nFBXDYnGigZYpSUs+TGk0ZuHXhYmJxuZSin1Seb7RTUhi87ytXr6m3xa8tWD4z6SyOz0ZcaKAlw2Sg03gyNRVbHNs4Q2eAluCW4qcSNOcTFs67BGGL4xvhSts6Le0Y54Liz6cduvYUtwui0+i6uP1K8uvdDq7v/x9RtvmpXXp+5AAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "pillRed": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAVCAYAAABCIB6VAAABh0lEQVR42q3UsWrCUBQGYN9AfIIuooYoARXRyUfoI+QR3OxkUgShW0CwFArt0KnB1q1LBieDSQiBQOlYQQJZQsAXuM0JnhDtTcwtvfAv8ebL8eaclEoMS9f14Xa7fTYMY53KKopY+uuKblYsyyJZgYdomlZmRUW42bZtstvtiO/7STzPI47jxDj8G2YUAsjhcPiVIAjihx4rl5nQ/X5PRTHwO+wzTTP8NxSD++ElU1Gp0RDV2YwJTcObzeaKit7yPIF8jMeF0TAMEzgXfex0yHIwILokFYLxjKHtqOg0ylO3G6OYSzhUm2q5ERV96fVOUIyzWGSirutitU6CTqrV4SUU87Vc5qInkydz3Arg+3Y7Fz3Hc1FY+LJe+/1CMORTVRMUBoLaXggXRaGAu1aLvCtKjEbVCtRhYKkYUdgv83z4Np8LmaOLZ4x9WxSd1GpC7jcBW23WbGZWzYymqnaw5R7OugOGZXo8LiYU1k2lUsYjyUqErpnQk2Op16+x+gTkuO/o+ojV+gHBPElDxObshQAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "powerupRed": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAhCAYAAAC803lsAAAB3klEQVR42mNgQAN16ur+ddra/fXa2vthuEFb+z+5GNmcOg2N+lo1NX0GfACkoF5T8zwllpLiuGpFRXkMR5QLCvIDJd/DFE4wMPg/z8Tk/0JTUzBeY2lJNoaZATIPZC6SY95jhA4wJNaDJDt0df8vMzenyGJCGGQ+yB6wY4AxgBIlIMEmIF5pYUFTR8AwyJ4maMgA0008JHECEyZIYJqREV0cAcMg+6Chsh4WLeAESusowRZFsLQCdggs8dDTETAMs3vQOASUa4duiBzIyvqPD7w6e5Y+Djnd3IzXISCH0sUhV+fMoUpo0NQhpIQGxQ65v2ULVUKDYoeALKRGaNDEIT8/ffp/tKyMvg4BWYoLfHn2DJyr6OIQkGW4AMiRu+Pi6FfEg3yNLYpICQ2q1jXIhRsoNw1YpQcrU0DRtdHVdeAcAoseUtIFTRwCSpwX+vsHtj2yLTDw/9ODBwe+YQQqSclJF8gNaBSHwNqslPZfyOnvoHQp6rW05oMEJhsa0tUhIPvADgHaD+/rwvo19GrJg+yB92uA9iN6etCONqgHRutOFsh8eE8PaC9mBxza9wW5dLaxMdUdBDIPZG4Tvr4vUkd8P71GA8BdCHwAFGegbiDy6ACVLH8PSpgoaQIJAADEOPRAFNgd2gAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "shield1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIUAAABsCAYAAABEkXF2AAAFKElEQVR42u2drZPbMBDFA0pKSkoKSkpKSgJCQkxMRO5vzh9z+MjNzX2S3nqkG1uRbclfsbS/N2OWOLb0vPv2aa0cDsrw+Pj4M/U4gLxxf3//XSby5eXlz/v7+/HzOH98fNSfx90CRy3nk/PK+eV35PcY9R2SwBLgtODkTyHLSa4DktwwBcjTekMSxJDkSOrZgAhvb2//Pgfc7JQIfYeR64YgC+FyuXyTkLzjiJAcQeR+5L6Y3QlksOnBFEKGq+gh9wc5IslgU8SdlkPuF3L0kOH19fXvGoNuS8iznF+Op6enXykehXzefdeda43rlPNDDovn5+ffC6UJ4yZfJnPtAZbzy+84six1DzIeasnw8PDww3oLs6KACDc5117uyQrjauZ9nfZyT5vBDtzkActBwbvKaU66ke+rcB8nPkVNrZ+rWyjXPaOaqop1SSX/ThiUqqQcK9HDaqhU38UUZ36lpgsJuaU7gPYhqdWlE3kyEtNFJSWgJn0l95sYQatsS9dEQhgVomoAiT5NfsSQciqW/VJNYNp0BGlsmW6yKVsTCFGrq8XTDL26CGLEEkKEJNFhPP1Gehz7JUakhmj8BqY8HpELhPvTGLGEIF2sWqHshxiRhKhIF4rGOUItQ4gNiSHzcWtCHEcu8MhUKhr3MesaQtyWGJubgda3328I00OMwdS92fqRzWsGDZGFxjCbzMWIoQIhdkYMma9VL2Bk0QZC3JYY9VBT8Co/bC3s3jDFO5S3xdgSwyrG4VCIwqncB0YKgGqztKG6JX2HGLIKFksjttnW9L3dxDRkVaouk+YHTJKK4c9PeM42FQdyFMIyD+G5vKnV50mgI/JAnxac7F30RYnVzRCwSdU4KVr0RAnSRiFpJPnh7osS2tvwc0VfS19StOipOGqGN+tqxEyuRKwvccUqbW9ulYY+UytKDoRCDeKyGNFZTzIgQ19ku78yYF8ySpMFIYFJlCg/Wgw+9CGBSZQoP1oMCk5foRIlio0WfiViolMHdrYe3yKYEQIfNAxfmQjZDsEqxPfI6ZUoPoVUg60Q1vGixU4RQmZWp/HavtWMpa0IoUDQca39dXdShw74bXudHk5/mZzUoTOFdCwIr26l6lCCQK+FCeYWXg5WV4XUV2LTN61opNGtKxoTy/fC0RO6dUXjYvuVB8OkC36maCqQ9sooC2BqdUV3xbRdjuJPqCVF1QkMbVIgMhGbDSnaLKGhRic8XVkdqDyAX4EcqDyAX4FACtBPCspRylJIASAFgBQAUoClSVFDCtDpz3U2N6SAFFdrH5ACUrRJcYIUoLN07hZDIAWk+GqyaS+GMDQ60e7qbton2r43w6MTbQ407RPtN5AZHkjxtTEa/RS6EZQQriyl80ongsWG27CEHk2dcLZEp3HbvRC02h+Qgb2T4ny1FYETm3gVuj2Kq9137cIYb5wrQ6v6rEMh5Hi1xQ0oHm4Xo+CLYE5XsDG7LrgiIzjvbp8KXh3UKTLHShP+RVAJXCAY3KjGpRB0hS49MbizsmMO2y+rSR1SXJjRICAfnP2HpiAXf6KO0pB2xcyQQsqG66GIXgQVBpFCyi9FkxxsIQRbJ5afOpIffPkSf0xbdNWRvv+6LKOzalps1XGeLA8wssqDXQCb/i8NwiYEZ3kCc/ac0mNRDqw5OT/6i29BtCgDohEX68Nl5bQMLbGoUy0nJFrkryUWd6mltsX6zhNiZa/WPEW0yBOrzptEClzOvCDCcvUIL6QgjeRTgm72EBMt8qk4pnzvP5BNdvyZ+zIYAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
+  "numeral0": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAd0lEQVR42mOorKy0r6mpWV9XV/efXAzSDzKHAcg4T4lBSAaeZ4BxKAEwM4aYYcSE0cAaxoAFjBpGR8MGX9IgBZw7dw6sv7q6+j5FhsEMgpYa9WQbhmwQ0FXzwbEDch4l5RjcIBAAOi+/trb2PamGgPQADepHTjYAg1/+ARfqHjQAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
+  "numeral1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAi0lEQVR42mOorKy0r6mpWV9XV/cfGwbJVVdX+zMQA4CKz+MyCBkDDYwnaBhMMS6wbt064g0kZBgWA/0pMgzZQFCw4DQMaNN9fGGFDGBi+CIgv7a29j1VDCPF+6OG0cAwQnkTm2HY8i/IHIJ5kxjD4ImZ2ByAD8C9P3gNI5Q3icUgcwjmTWIwSD/IHADy7vYkwtGG9wAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "numeral2": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAc0lEQVR42mOorKy0r6mpWV9XV/efFAzSU11d7c+ADICC50k1CBkDDYyHGwYTJBWsW7cO00ByDcNioD9FhiEbCAouBnLDChnAxIaAYZSAIWoYueE4xAwbhrEJzO33KSnPkEqN+6DCMb+2tvY9JQaB9IPMAQDfbkeiO3DAlwAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "numeral3": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAcElEQVR42mOorKy0r6mpWV9XV/efFAzSU11d7c+ADICC50k1CBkDDYyHGwYTJBWsW7cO00ByDcNioD9FhiEbCAouBnLDChnAxIaAYZSAIWTYaGwOh9gE5vb7lJRnSKXGfVDhmF9bW/ueEoNA+kHmAABSQEei0ud8zgAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "numeral4": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAh0lEQVR42mOorKy0r6mpWV9XV/cfhkF8kDgDFoBXPZBxHlkCScF5bIbhVQ/jIAOYGDbD8KofNQwvpr1h1dXV90GMc+fO/ScXwA0Dpo96GIdcA1HCGOi6+ZQYiBFhyAaSHWbIAGhgf21t7XuqGEYMGDWMdMNgiRwdg8RJNgyYyPPRYxzEB4kDAGjf9/5qvSFMAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC",
+  "numeral5": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAcElEQVR42mNgQALV1dX+NTU16+vq6v6TgkF6Kisr7ZENiifVEDQDz2MYtG7duv+kAphesNcoMQjFMJDzKDEIxTAYA5skqXiIGUbVMBtchpGKh6hhwzw2gaXGfUrKMRgGmQMqNfJra2vfU2IQSD/IHAAj20eivbMdSAAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "numeral6": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAeklEQVR42mNgQALV1dX+NTU16+vq6v6TgkF6Kisr7ZENiifVEDQDz2MYtG7duv+kAphesNcoMQjFMJDzKDEIxTAYA5skKRjow/vUNKyfaoaBYxObYVQNs8FrGDFhNAwMG4axCcpTlJRjKHkTmA3ya2tr31NiEEg/yBwAA3JUZTRjV1UAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
+  "numeral7": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAbklEQVR42mOorKy0r6mpWV9XV/efFAzSU11d7c+ADICC50k1CBkDDYyHGwYTJBWsW7cO00ByDcNioD9FhiEbCAouBqCJ98kJK2QAEwNFQH5tbe17qhhGKhg1bNSwkW0YrrwMEifZMGx5GcQHiQMA10p1yvBr00sAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
+  "numeral8": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAcUlEQVR42mOorKy0r6mpWV9XV/efXAzSDzKHAcg4T4lBSAaeZ4BxKAEwM4aYYcSE0TAwbDQ2h2psVldX3wcxzp07R3mYAXN7PYxDroFww0AA6Lr5lBiIYhi6geRgUHAxIAOgQH9tbe17Ug0C6QEGVz4AdmlkssMiX+AAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=",
+  "numeral9": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAfElEQVR42mOorKy0r6mpWV9XV/efXAzSDzKHAcg4T4lBSAaeZ4BxKAEwM4aYYcSE0TAwbBjGZnV19X1yUjwuw/qpZhi5eZMmYXbu3DmwflBwUWQYzCBoqVFPtmHIBgFdNZ8BBMiNTQyDQADovPza2tr3pBoC0gNKCQxIAAAxs1Y/A/LKlwAAAC10RVh0U29mdHdhcmUAYnkuYmxvb2RkeS5jcnlwdG8uaW1hZ2UuUE5HMjRFbmNvZGVyqAZ/7gAAAABJRU5ErkJggg==",
+  "numeralX": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAYAAAA7bUf6AAABL0lEQVR42pWUPY6DQAyF5wY5Qo6QI+Qo6WhTUCDEz3aUpKOloyQ3gI6SvQHpaLejnfAQb2ImTJS1ZBGNxx/m2Y5Sq/m+f4zj+AcehuFZ7VgQBCfEoyi6eJ532ARxMAd/0zTV8CRJ/pAg7yCRcTjuG5AEZFmmq6oyICTaAMRxbwNCeTgoikKP46hhdV2bN86Akr9xDsM9AboqVjEMg5YmQRJAa5qGkLspFWRWYoNsQN/3stILRStdICR8AJTKUt8J+gpAm7+vJWiapg0Amon2trsA2Ub7E/bENlr8B/ARhBF3AaBNnufOrsGXFaEOewAOFJ6uOVoEZldwSDGtLjzsSnEPE77Gb8v2Yk84+l3XvbVRjj7iBCAP+WbFCXKpL0GuTed/RQt/a99rjq5rvJSAJ3mop2WojQccAAAALXRFWHRTb2Z0d2FyZQBieS5ibG9vZGR5LmNyeXB0by5pbWFnZS5QTkcyNEVuY29kZXKoBn/uAAAAAElFTkSuQmCC"
 };
 
 
@@ -275,6 +289,211 @@ class AudioManager {
 }
 
 
+/* --- src/managers/WaveManager.js --- */
+// Multi-stage Wave Manager for progressive Chicken Invaders style gameplay
+class WaveManager {
+  constructor(scene) {
+    this.scene = scene;
+    this.currentWave = 0;
+    this.currentStage = 0;
+    this.totalStagesInWave = 0;
+    this.isWaveActive = false;
+    this.stageEnemiesRemaining = 0;
+    this.maxWaves = 5;
+  }
+
+  // Start next major wave sequence
+  startNextWave() {
+    this.currentWave += 1;
+    this.currentStage = 0;
+    this.isWaveActive = true;
+
+    if (this.scene.events) {
+      this.scene.events.emit('waveStarted', this.currentWave);
+    }
+
+    this.scene.time.delayedCall(1500, () => {
+      this.startNextStage();
+    });
+  }
+
+  // Start next sub-wave formation stage within current major wave
+  startNextStage() {
+    if (!this.isWaveActive && this.currentStage > 0) return;
+    this.currentStage += 1;
+
+    let meteorCount = 0;
+    let shipCount = 0;
+
+    switch (this.currentWave) {
+      case 1:
+        this.totalStagesInWave = 2;
+        if (this.currentStage === 1) {
+          meteorCount = 4;
+          this.spawnMeteorVFormation(meteorCount);
+        } else {
+          meteorCount = 4;
+          this.spawnMeteorStaggered(meteorCount);
+        }
+        break;
+
+      case 2:
+        this.totalStagesInWave = 2;
+        if (this.currentStage === 1) {
+          shipCount = 3;
+          this.spawnShipLineFormation(shipCount);
+        } else {
+          shipCount = 4;
+          this.spawnShipWedgeFormation(shipCount);
+        }
+        break;
+
+      case 3:
+        this.totalStagesInWave = 3;
+        if (this.currentStage === 1) {
+          meteorCount = 4;
+          this.spawnMeteorVFormation(meteorCount);
+        } else if (this.currentStage === 2) {
+          meteorCount = 2;
+          shipCount = 3;
+          this.spawnMeteorVFormation(meteorCount);
+          this.spawnShipLineFormation(shipCount);
+        } else {
+          shipCount = 4;
+          this.spawnShipWedgeFormation(shipCount);
+        }
+        break;
+
+      case 4:
+        this.totalStagesInWave = 3;
+        if (this.currentStage === 1) {
+          meteorCount = 5;
+          this.spawnMeteorStaggered(meteorCount);
+        } else if (this.currentStage === 2) {
+          shipCount = 4;
+          this.spawnShipLineFormation(shipCount);
+        } else {
+          meteorCount = 3;
+          shipCount = 3;
+          this.spawnMeteorVFormation(meteorCount);
+          this.spawnShipWedgeFormation(shipCount);
+        }
+        break;
+
+      default: // Wave 5 (Final Boss Wave)
+        this.totalStagesInWave = 3;
+        if (this.currentStage === 1) {
+          meteorCount = 5;
+          this.spawnMeteorVFormation(meteorCount);
+        } else if (this.currentStage === 2) {
+          shipCount = 5;
+          this.spawnShipWedgeFormation(shipCount);
+        } else {
+          meteorCount = 4;
+          shipCount = 4;
+          this.spawnMeteorStaggered(meteorCount);
+          this.spawnShipLineFormation(shipCount);
+        }
+        break;
+    }
+
+    this.stageEnemiesRemaining = meteorCount + shipCount;
+  }
+
+  // Spawn meteorites in a V-formation
+  spawnMeteorVFormation(count) {
+    const cx = GAME_CONFIG.width / 2;
+    const spacing = 120;
+    for (let i = 0; i < count; i++) {
+      const meteor = this.scene.enemyGroup.group.get();
+      if (meteor) {
+        meteor.resetMeteor();
+        const offsetX = (i - (count - 1) / 2) * spacing;
+        const offsetY = -40 - Math.abs(i - (count - 1) / 2) * 50;
+        meteor.setPosition(cx + offsetX, offsetY);
+      }
+    }
+  }
+
+  // Spawn meteorites in staggered side-by-side rows
+  spawnMeteorStaggered(count) {
+    const spacing = GAME_CONFIG.width / (count + 1);
+    for (let i = 0; i < count; i++) {
+      const meteor = this.scene.enemyGroup.group.get();
+      if (meteor) {
+        meteor.resetMeteor();
+        const posX = spacing * (i + 1);
+        const posY = -50 - (i % 2) * 60;
+        meteor.setPosition(posX, posY);
+      }
+    }
+  }
+
+  // Spawn enemy ships in a horizontal line
+  spawnShipLineFormation(count) {
+    const spacing = GAME_CONFIG.width / (count + 1);
+    for (let i = 0; i < count; i++) {
+      const ship = this.scene.enemyShipGroup.group.get();
+      if (ship) {
+        ship.resetShip();
+        const posX = spacing * (i + 1);
+        const posY = -80 - i * 25;
+        ship.setPosition(posX, posY);
+        ship.startX = posX;
+      }
+    }
+  }
+
+  // Spawn enemy ships in a wedge formation
+  spawnShipWedgeFormation(count) {
+    const cx = GAME_CONFIG.width / 2;
+    const spacing = 110;
+    for (let i = 0; i < count; i++) {
+      const ship = this.scene.enemyShipGroup.group.get();
+      if (ship) {
+        ship.resetShip();
+        const offsetX = (i - (count - 1) / 2) * spacing;
+        const offsetY = -80 - Math.abs(i - (count - 1) / 2) * 45;
+        ship.setPosition(cx + offsetX, offsetY);
+        ship.startX = cx + offsetX;
+      }
+    }
+  }
+
+  // Called when any enemy (meteor or ship) is destroyed
+  onEnemyDestroyed() {
+    if (!this.isWaveActive) return;
+    this.stageEnemiesRemaining = Math.max(0, this.stageEnemiesRemaining - 1);
+
+    if (this.stageEnemiesRemaining <= 0) {
+      if (this.currentStage < this.totalStagesInWave) {
+        // Advance to next sub-wave formation after 1.2s delay
+        this.scene.time.delayedCall(1200, () => {
+          this.startNextStage();
+        });
+      } else {
+        // Complete current major wave
+        this.isWaveActive = false;
+        if (this.scene.events) {
+          this.scene.events.emit('waveCleared', this.currentWave);
+        }
+
+        if (this.currentWave >= this.maxWaves) {
+          this.scene.time.delayedCall(1500, () => {
+            this.scene.triggerWin();
+          });
+        } else {
+          // Pause 2.8s before launching next major wave
+          this.scene.time.delayedCall(2800, () => {
+            this.startNextWave();
+          });
+        }
+      }
+    }
+  }
+}
+
+
 /* --- src/entities/Bullet.js --- */
 // Reusable Bullet class for player and enemy projectiles
 class Bullet extends Phaser.Physics.Arcade.Sprite {
@@ -313,56 +532,85 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
 
 /* --- src/entities/Player.js --- */
-// Reusable Player ship game object with controls and firing logic
+// Reusable Player ship game object with controls, firing logic, and power-up boosts
 class Player extends Phaser.Physics.Arcade.Sprite {
-  // Construct player ship with physics body and input listeners
   constructor(scene, x, y) {
-    super(scene, x, y, 'player'); // Call parent Sprite constructor
-    scene.add.existing(this); // Add player sprite to current scene
-    scene.physics.add.existing(this); // Register body with Arcade Physics
+    super(scene, x, y, 'player');
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
 
-    this.setCollideWorldBounds(true); // Prevent player ship from moving outside screen bounds
-    this.setScale(0.7); // Adjust sprite size for ideal visual proportion
-    this.lastFired = 0; // Timestamp of previous laser shot fired
+    this.setCollideWorldBounds(true);
+    this.setScale(0.7);
+    this.lastFired = 0;
+    this.fireRateBoostUntil = 0;
+    this.shieldUntil = 0;
 
-    this.cursors = scene.input.keyboard.createCursorKeys(); // Register arrow keys input listener
-    this.wasd = scene.input.keyboard.addKeys('A,D,SPACE'); // Register WASD and Space key listeners
+    // Visual glowing shield aura sprite overlay
+    this.shieldAura = scene.add.image(x, y, 'shield1').setScale(1.2).setAlpha(0.85);
+    this.shieldAura.setVisible(false);
 
-    // Set up touch drag controls for responsive mobile gameplay
+    this.cursors = scene.input.keyboard.createCursorKeys();
+    this.wasd = scene.input.keyboard.addKeys('A,D,SPACE');
+
     scene.input.on('pointermove', (pointer) => {
       if (pointer.isDown) {
-        this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30); // Move ship directly to pointer touch x-position
+        this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30);
       }
     });
   }
 
-  // Update loop for handling keyboard inputs and automatic boundaries
-  update(time, delta) {
-    let velocityX = 0; // Default zero horizontal speed
+  // Activate 12-second rapid fire boost
+  activateRapidFire(durationMs = 12000) {
+    this.fireRateBoostUntil = this.scene.time.now + durationMs;
+  }
 
-    // Check left movement key inputs
+  // Activate 15-second shield immunity
+  activateShield(durationMs = 15000) {
+    this.shieldUntil = this.scene.time.now + durationMs;
+    this.shieldAura.setVisible(true);
+  }
+
+  // Check if shield is currently active
+  isShieldActive() {
+    return this.scene.time.now < this.shieldUntil;
+  }
+
+  update(time, delta) {
+    let velocityX = 0;
+
     if (this.cursors.left.isDown || this.wasd.A.isDown) {
-      velocityX = -GAME_CONFIG.playerSpeed; // Move ship left
+      velocityX = -GAME_CONFIG.playerSpeed;
     } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
-      velocityX = GAME_CONFIG.playerSpeed; // Move ship right
+      velocityX = GAME_CONFIG.playerSpeed;
     }
 
-    this.setVelocityX(velocityX); // Apply calculated horizontal speed to physics body
+    this.setVelocityX(velocityX);
 
-    // Check auto-shoot / space key input
+    // Update attached shield aura position and visibility
+    if (this.shieldAura) {
+      this.shieldAura.setPosition(this.x, this.y);
+      const shieldActive = time < this.shieldUntil;
+      this.shieldAura.setVisible(shieldActive);
+      if (shieldActive) {
+        this.shieldAura.rotation += 0.02; // Rotate shield visual aura
+      }
+    }
+
+    // Auto-shoot / space key input with rapid fire support
     if ((this.cursors.space.isDown || this.wasd.SPACE.isDown || this.scene.input.activePointer.isDown) && time > this.lastFired) {
-      this.shoot(time); // Attempt firing laser weapon
+      this.shoot(time);
     }
   }
 
-  // Shoot laser projectile from player ship
   shoot(time) {
-    const bullet = this.scene.playerBullets.get(); // Retrieve available bullet from object pool
+    const bullet = this.scene.playerBullets.get();
     if (bullet) {
-      bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true); // Launch laser upwards
-      this.lastFired = time + GAME_CONFIG.playerFireRate; // Set next allowed fire timestamp
+      bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
+      const isRapid = time < this.fireRateBoostUntil;
+      const delay = isRapid ? 120 : GAME_CONFIG.playerFireRate;
+      this.lastFired = time + delay;
       if (this.scene.audioManager) {
-        this.scene.audioManager.playShoot(); // Trigger laser audio effect
+        this.scene.audioManager.playShoot();
       }
     }
   }
@@ -569,6 +817,74 @@ class EnemyShipGroup {
 }
 
 
+/* --- src/entities/PowerUp.js --- */
+// PowerUp collectible entity class and manager pool
+class PowerUp extends Phaser.Physics.Arcade.Sprite {
+  constructor(scene, x, y, type) {
+    const key = type || 'pillRed';
+    super(scene, x, y, key);
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
+
+    this.powerUpType = key;
+    this.speedY = 130;
+    this.setScale(0.9);
+    this.setActive(true);
+    this.setVisible(true);
+  }
+
+  spawn(x, y, type) {
+    this.powerUpType = type;
+    this.setTexture(type);
+    this.setPosition(x, y);
+    this.setActive(true);
+    this.setVisible(true);
+    if (this.body) {
+      this.body.setSize(this.width, this.height);
+    }
+  }
+
+  update(time, delta) {
+    if (!this.active) return;
+
+    const deltaSec = delta / 1000;
+    this.y += this.speedY * deltaSec;
+
+    if (this.y > GAME_CONFIG.height + 40) {
+      this.kill();
+    }
+  }
+
+  kill() {
+    this.setActive(false);
+    this.setVisible(false);
+    if (this.body) {
+      this.body.stop();
+    }
+  }
+}
+
+// Manager class handling PowerUp drops and group pooling
+class PowerUpGroup {
+  constructor(scene) {
+    this.scene = scene;
+    this.group = scene.physics.add.group({ classType: PowerUp, runChildUpdate: true });
+  }
+
+  // Attempt to drop a power-up at (x, y) with a probability
+  dropRandomPowerUp(x, y, chance = 0.3) {
+    if (Math.random() < chance) {
+      const types = ['pillRed', 'powerupRed', 'shield'];
+      const chosenType = Phaser.Utils.Array.GetRandom(types);
+      const item = this.group.get(x, y, chosenType);
+      if (item) {
+        item.spawn(x, y, chosenType);
+      }
+    }
+  }
+}
+
+
 /* --- src/scenes/BootScene.js --- */
 // Boot scene responsible for loading base64 texture assets into Phaser memory
 class BootScene extends Phaser.Scene {
@@ -592,104 +908,9 @@ class BootScene extends Phaser.Scene {
     }
   }
 
-  // Transition to splash scene once base64 assets are registered
+  // Transition to main menu scene once base64 assets are registered
   create() {
-    this.scene.start('SplashScene'); // Launch company SplashScene
-  }
-}
-
-
-/* --- src/scenes/SplashScene.js --- */
-// Splash screen displaying company branding 'wrp' and official website URL
-class SplashScene extends Phaser.Scene {
-  constructor() {
-    super({ key: 'SplashScene' });
-  }
-
-  create() {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
-
-    // Deep space gradient background card
-    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x050515);
-
-    // Subtle background glowing particle pulse
-    const bgGlow = this.add.circle(cx, cy - 30, 160, 0x00ffcc, 0.12);
-    this.tweens.add({
-      targets: bgGlow,
-      scale: { from: 0.8, to: 1.2 },
-      alpha: { from: 0.12, to: 0.22 },
-      duration: 1500,
-      yoyo: true,
-      repeat: -1
-    });
-
-    // "wrp" Main Company Logo Text
-    const logoText = this.add.text(cx, cy - 60, 'wrp', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '84px',
-      color: '#00ffcc',
-      align: 'center'
-    }).setOrigin(0.5);
-    logoText.setStroke('#ffffff', 4);
-    logoText.setShadow(0, 0, '#00ffcc', 20, true, true);
-
-    // Subtitle "WE R PLAY"
-    const subTitle = this.add.text(cx, cy + 20, 'WE R PLAY', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '24px',
-      color: '#ffffff',
-      letterSpacing: 6
-    }).setOrigin(0.5);
-
-    // Clickable Website URL
-    const urlText = this.add.text(cx, cy + 70, 'https://www.werplay.com/', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '18px',
-      color: '#ffcc00',
-      align: 'center'
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-
-    urlText.on('pointerover', () => urlText.setStyle({ color: '#ffffff' }));
-    urlText.on('pointerout', () => urlText.setStyle({ color: '#ffcc00' }));
-    urlText.on('pointerdown', (pointer, localX, localY, event) => {
-      if (event) event.stopPropagation();
-      window.open('https://www.werplay.com/', '_blank');
-    });
-
-    // Tap to continue hint
-    const tapHint = this.add.text(cx, GAME_CONFIG.height - 40, 'Click anywhere to continue', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
-      color: '#8888aa'
-    }).setOrigin(0.5);
-
-    this.tweens.add({
-      targets: tapHint,
-      alpha: { from: 0.4, to: 1 },
-      duration: 800,
-      yoyo: true,
-      repeat: -1
-    });
-
-    // Auto transition to MainMenuScene after 2.8 seconds
-    this.hasTransitioned = false;
-    this.time.delayedCall(2800, () => this.gotoMainMenu());
-
-    // Allow user to click anywhere to skip directly to Main Menu
-    this.input.on('pointerdown', (pointer) => {
-      // Small check so clicking directly on the URL text doesn't get blocked
-      if (pointer.y > cy + 50 && pointer.y < cy + 90 && Math.abs(pointer.x - cx) < 150) {
-        return;
-      }
-      this.gotoMainMenu();
-    });
-  }
-
-  gotoMainMenu() {
-    if (this.hasTransitioned) return;
-    this.hasTransitioned = true;
-    this.scene.start('MainMenuScene');
+    this.scene.start('MainMenuScene'); // Launch MainMenuScene directly
   }
 }
 
@@ -738,27 +959,15 @@ class MainMenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Button 1: PLAY GAME
-    this.createButton(cx, cy + 25, 'PLAY GAME', 0x00cc66, 0x00ff88, () => {
+    this.createButton(cx, cy + 30, 'PLAY GAME', 0x00cc66, 0x00ff88, () => {
       this.scene.start('GameScene');
       this.scene.start('UIScene');
     });
 
     // Button 2: SETTINGS
-    this.createButton(cx, cy + 85, 'SETTINGS', 0x3344cc, 0x5566ff, () => {
+    this.createButton(cx, cy + 100, 'SETTINGS', 0x3344cc, 0x5566ff, () => {
       this.scene.start('SettingsScene');
     });
-
-    // Button 3: VISIT WRP (Website)
-    this.createButton(cx, cy + 145, 'VISIT WRP', 0xaa33cc, 0xcc55ff, () => {
-      window.open('https://www.werplay.com/', '_blank');
-    });
-
-    // Bottom Footer branding
-    this.add.text(cx, GAME_CONFIG.height - 20, 'Powered by WeRPlay • www.werplay.com', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-      color: '#8888aa'
-    }).setOrigin(0.5);
   }
 
   // Helper to construct interactive polished UI buttons
@@ -919,17 +1128,15 @@ class SettingsScene extends Phaser.Scene {
 
 
 /* --- src/scenes/UIScene.js --- */
-// UIScene managing HUD displays, instructions, and CTA popups
+// UIScene managing HUD displays, numeric lives, wave banners, and CTA popups
 class UIScene extends Phaser.Scene {
-  // Construct UIScene with scene key
   constructor() {
-    super({ key: 'UIScene' }); // Initialize scene with key identifier
+    super({ key: 'UIScene' });
   }
 
-  // Create UI text elements and HUD components
   create() {
-    this.score = 0; // Initialize local score tracker
-    this.lives = GAME_CONFIG.initialLives; // Initialize local lives tracker
+    this.score = 0;
+    this.lives = GAME_CONFIG.initialLives;
 
     // Create score display text
     this.scoreText = this.add.text(20, 15, 'SCORE: 0000', {
@@ -945,20 +1152,11 @@ class UIScene extends Phaser.Scene {
       color: '#ffcc00'
     }).setOrigin(0.5, 0);
 
-    // Render spaceship icon and multiplier text for lives HUD display
-    this.lifeShipIcon = this.add.image(GAME_CONFIG.width - 110, 25, 'life').setScale(0.8); // Render spaceship icon
-    this.livesText = this.add.text(GAME_CONFIG.width - 90, 15, `* ${GAME_CONFIG.initialLives}`, {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '18px',
-      color: '#ffffff'
-    }); // Render spaceship multiplier count text (e.g. spaceship * 3)
-
-    // Render individual graphical life icon sprites
-    this.lifeIcons = []; // Array storing life ship icons
-    for (let i = 0; i < GAME_CONFIG.initialLives; i++) {
-      const icon = this.add.image(GAME_CONFIG.width - 45 + i * 18, 25, 'life').setScale(0.6); // Render small life ship icon
-      this.lifeIcons.push(icon); // Store icon reference
-    }
+    // Render numeric HUD health display: [ShipIcon] [numeralX] [numeralCount]
+    this.lifeShipIcon = this.add.image(GAME_CONFIG.width - 90, 25, 'life').setScale(0.9);
+    this.numeralXIcon = this.add.image(GAME_CONFIG.width - 60, 25, 'numeralX').setScale(0.8);
+    const initialDigitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
+    this.numeralDigitIcon = this.add.image(GAME_CONFIG.width - 30, 25, initialDigitKey).setScale(0.8);
 
     // Interactive Settings HUD Button
     const settingsBtn = this.add.rectangle(170, 25, 32, 32, 0x334466).setInteractive({ useHandCursor: true });
@@ -971,6 +1169,14 @@ class UIScene extends Phaser.Scene {
       this.scene.start('SettingsScene');
     });
 
+    // Central Wave Banner Text
+    this.waveBannerText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 40, '', {
+      fontFamily: 'Arial Black, Arial, sans-serif',
+      fontSize: '36px',
+      color: '#00ffcc',
+      align: 'center'
+    }).setOrigin(0.5).setAlpha(0);
+
     // Create control instructions hint banner at bottom of screen
     this.controlsHint = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height - 25, 'Drag or Arrow Keys to Move • Space / Auto-Fire to Shoot', {
       fontFamily: 'Arial, sans-serif',
@@ -980,55 +1186,78 @@ class UIScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Listen for events emitted from GameScene
-    const gameScene = this.scene.get('GameScene'); // Retrieve GameScene instance reference
-    gameScene.events.on('scoreChanged', this.updateScore, this); // Update score listener
-    gameScene.events.on('livesChanged', this.updateLives, this); // Update lives listener
-    gameScene.events.on('gameOver', this.showGameOverModal, this); // Game over modal listener
-    gameScene.events.on('gameWin', this.showWinModal, this); // Game win modal listener
+    const gameScene = this.scene.get('GameScene');
+    gameScene.events.on('scoreChanged', this.updateScore, this);
+    gameScene.events.on('livesChanged', this.updateLives, this);
+    gameScene.events.on('gameOver', this.showGameOverModal, this);
+    gameScene.events.on('gameWin', this.showWinModal, this);
+    gameScene.events.on('waveStarted', this.showWaveStartedBanner, this);
+    gameScene.events.on('waveCleared', this.showWaveClearedBanner, this);
+  }
+
+  // Display wave start notification banner
+  showWaveStartedBanner(waveNum) {
+    this.waveBannerText.setText(`WAVE ${waveNum}`).setColor('#00ffcc').setAlpha(1);
+    this.tweens.add({
+      targets: this.waveBannerText,
+      alpha: { from: 1, to: 0 },
+      scale: { from: 1, to: 1.2 },
+      duration: 1600,
+      ease: 'Power2'
+    });
+  }
+
+  // Display wave cleared notification banner
+  showWaveClearedBanner(waveNum) {
+    this.waveBannerText.setText(`WAVE ${waveNum} CLEARED!`).setColor('#ffcc00').setAlpha(1);
+    this.tweens.add({
+      targets: this.waveBannerText,
+      alpha: { from: 1, to: 0 },
+      scale: { from: 1, to: 1.2 },
+      duration: 1600,
+      ease: 'Power2'
+    });
   }
 
   // Update score HUD text formatted with leading zeros
   updateScore(newScore) {
-    this.score = newScore; // Set current score value
-    const formatted = String(newScore).padStart(4, '0'); // Pad score number string
-    this.scoreText.setText(`SCORE: ${formatted}`); // Update text display
+    this.score = newScore;
+    const formatted = String(newScore).padStart(4, '0');
+    this.scoreText.setText(`SCORE: ${formatted}`);
   }
 
-  // Update lives display HUD (spaceship * count) when ship destroyed
+  // Update numeric lives display HUD (ShipIcon * count) using numeric PNG assets
   updateLives(newLives) {
-    this.lives = Math.max(0, newLives); // Set remaining lives count
-    this.livesText.setText(`* ${this.lives}`); // Update spaceship count text (spaceship * count)
-    for (let i = 0; i < this.lifeIcons.length; i++) {
-      this.lifeIcons[i].setVisible(i < this.lives); // Show or hide life ship icons based on remaining count
+    this.lives = Math.max(0, newLives);
+    const digitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
+    if (this.numeralDigitIcon) {
+      this.numeralDigitIcon.setTexture(digitKey);
     }
   }
 
-  // Show Game Over dialog modal with TRY AGAIN and PLAY NOW buttons
+  // Show Game Over dialog modal
   showGameOverModal() {
-    this.showModal('MISSION FAILED', '#ff4444', false); // Render failure modal window
+    this.showModal('MISSION FAILED', '#ff4444', false);
   }
 
-  // Show Game Win dialog modal with PLAY NOW button
+  // Show Game Win dialog modal
   showWinModal() {
-    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true); // Render victory modal window
+    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true);
   }
 
-  // Modal dialog popup container separating local TRY AGAIN from AppLovin CTA redirect
+  // Modal dialog popup container
   showModal(title, titleColor, isWin) {
-    const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75); // Dark semi-transparent overlay
+    const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75);
 
-    // Modal background card frame
-    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95); // Dark blue card container
-    card.setStrokeStyle(3, 0x00ffcc); // Add neon cyan frame border
+    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95);
+    card.setStrokeStyle(3, 0x00ffcc);
 
-    // Title label on modal dialog card
     this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 75, title, {
       fontFamily: 'Arial Black, Arial, sans-serif',
       fontSize: '28px',
       color: titleColor
     }).setOrigin(0.5);
 
-    // Final score summary display text
     this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 25, `FINAL SCORE: ${this.score}`, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
@@ -1036,9 +1265,8 @@ class UIScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     if (!isWin) {
-      // 1. Interactive "TRY AGAIN" button (restarts game locally without redirecting)
-      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true }); // Blue Try Again button
-      retryBtn.setStrokeStyle(2, 0xffffff); // White outline border
+      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true });
+      retryBtn.setStrokeStyle(2, 0xffffff);
 
       this.add.text(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 'TRY AGAIN', {
         fontFamily: 'Arial Black, Arial, sans-serif',
@@ -1046,112 +1274,93 @@ class UIScene extends Phaser.Scene {
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff)); // Hover highlight
-      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc)); // Normal color
-      retryBtn.on('pointerdown', () => this.restartGame()); // Restart game locally on click!
+      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff));
+      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc));
+      retryBtn.on('pointerdown', () => this.restartGame());
 
-      // 2. Interactive "PLAY NOW" CTA button (ad landing page redirect)
-      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
-      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true });
+      ctaBtn.setStrokeStyle(2, 0xffffff);
 
-      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY AGAIN', {
         fontFamily: 'Arial Black, Arial, sans-serif',
         fontSize: '18px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
-      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
-      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88));
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66));
+      ctaBtn.on('pointerdown', () => this.restartGame());
     } else {
-      // Single centered "PLAY NOW" CTA button for Victory modal
-      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
-      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true });
+      ctaBtn.setStrokeStyle(2, 0xffffff);
 
-      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY AGAIN', {
         fontFamily: 'Arial Black, Arial, sans-serif',
         fontSize: '22px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
-      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
-      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88));
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66));
+      ctaBtn.on('pointerdown', () => this.restartGame());
     }
   }
 
-  // Restart game scenes locally for Try Again replay
   restartGame() {
-    this.scene.get('GameScene').scene.restart(); // Restart GameScene
-    this.scene.restart(); // Restart UIScene
-  }
-
-  // Execute AppLovin CTA redirect action
-  openCtaUrl() {
-    if (window.mraid && typeof window.mraid.open === 'function') {
-      window.mraid.open(GAME_CONFIG.ctaUrl); // Trigger AppLovin MRAID ad click event
-    } else {
-      window.open(GAME_CONFIG.ctaUrl, '_blank'); // Open CTA landing page in browser window
-    }
+    this.scene.get('GameScene').scene.restart();
+    this.scene.restart();
   }
 }
 
 
 /* --- src/scenes/GameScene.js --- */
-// Main GameScene managing gameplay state, physics collisions, enemy ships, and win/loss rules
+// Main GameScene managing gameplay state, physics collisions, enemy waves, and power-up collectibles
 class GameScene extends Phaser.Scene {
-  // Construct GameScene with scene key
   constructor() {
-    super({ key: 'GameScene' }); // Register scene key identifier
+    super({ key: 'GameScene' });
   }
 
-  // Initialize game objects, background, audio, physics, and input events
   create() {
-    this.score = 0; // Initialize player score
-    this.lives = GAME_CONFIG.initialLives; // Initialize remaining lives count
-    this.isGameOver = false; // Flag checking if game session ended
+    this.score = 0;
+    this.lives = GAME_CONFIG.initialLives;
+    this.isGameOver = false;
 
-    this.audioManager = new AudioManager(); // Instantiate procedural WebAudio sound manager
+    this.audioManager = new AudioManager();
 
-    // Render fast scrolling background image tile for forward space flight
-    this.bg = this.add.tileSprite(0, 0, GAME_CONFIG.width, GAME_CONFIG.height, 'background').setOrigin(0, 0); // Render tiled space background image
+    this.bg = this.add.tileSprite(0, 0, GAME_CONFIG.width, GAME_CONFIG.height, 'background').setOrigin(0, 0);
 
-    // Instantiate bullet object pool for player laser projectiles
-    this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 12, runChildUpdate: true }); // Player bullet pool
+    this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 16, runChildUpdate: true });
+    this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true });
 
-    // Instantiate bullet object pool for enemy laser projectiles
-    this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true }); // Enemy bullet pool
+    this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70);
 
-    // Instantiate custom Player starship entity
-    this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70); // Create player ship object
+    this.enemyGroup = new EnemyGroup(this);
+    this.enemyShipGroup = new EnemyShipGroup(this);
+    this.powerUpGroup = new PowerUpGroup(this);
 
-    // Instantiate dynamic falling MeteorGroup spawner
-    this.enemyGroup = new EnemyGroup(this); // Build falling meteorite swarm spawner
+    this.waveManager = new WaveManager(this);
 
-    // Instantiate enemy ship group spawner
-    this.enemyShipGroup = new EnemyShipGroup(this); // Build enemy ship swarm spawner
+    this.setupCollisions();
 
-    // Set up Arcade Physics collision handling rules
-    this.setupCollisions(); // Register physics overlap and collision listeners
+    // Start wave progression
+    this.waveManager.startNextWave();
   }
 
-  // Register all collision and overlap handlers between game entities
   setupCollisions() {
     // Player bullet hits falling meteorite
     this.physics.add.overlap(this.playerBullets, this.enemyGroup.group, (bullet, meteor) => {
       if (bullet.active && meteor.active) {
-        bullet.kill(); // Recycle player bullet back to object pool
-        this.createExplosion(meteor.x, meteor.y); // Spawn particle explosion effect
-        this.score += meteor.points; // Add points awarded by meteorite
-        this.enemyGroup.destroyedCount += 1; // Increment count of destroyed meteorites
-        this.events.emit('scoreChanged', this.score); // Emit score update event to UIScene
-        this.audioManager.playExplosion(); // Play explosion audio effect
-        meteor.resetMeteor(); // Respawn meteorite at top of screen
+        bullet.kill();
+        this.createExplosion(meteor.x, meteor.y);
+        this.score += meteor.points;
+        this.events.emit('scoreChanged', this.score);
+        this.audioManager.playExplosion();
 
-        // Check if player reached target count (Win State)
-        if (this.enemyGroup.destroyedCount >= this.enemyGroup.targetCount) {
-          this.triggerWin(); // Handle game win victory state
-        }
+        // Drop random power-up with reduced 10% spawn frequency
+        this.powerUpGroup.dropRandomPowerUp(meteor.x, meteor.y, 0.10);
+
+        meteor.setActive(false).setVisible(false);
+        this.waveManager.onEnemyDestroyed();
       }
     });
 
@@ -1163,7 +1372,30 @@ class GameScene extends Phaser.Scene {
         this.score += ship.points;
         this.events.emit('scoreChanged', this.score);
         this.audioManager.playExplosion();
-        ship.resetShip();
+
+        // Drop random power-up with reduced 10% spawn frequency
+        this.powerUpGroup.dropRandomPowerUp(ship.x, ship.y, 0.10);
+
+        ship.setActive(false).setVisible(false);
+        this.waveManager.onEnemyDestroyed();
+      }
+    });
+
+    // Player collects power-up
+    this.physics.add.overlap(this.player, this.powerUpGroup.group, (player, powerUp) => {
+      if (powerUp.active && !this.isGameOver) {
+        const pType = powerUp.powerUpType;
+        powerUp.kill();
+        this.audioManager.playShoot();
+
+        if (pType === 'pillRed') {
+          this.lives = Math.min(5, this.lives + 1);
+          this.events.emit('livesChanged', this.lives);
+        } else if (pType === 'powerupRed') {
+          this.player.activateRapidFire(12000);
+        } else if (pType === 'shield') {
+          this.player.activateShield(15000);
+        }
       }
     });
 
@@ -1171,8 +1403,10 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.enemyBullets, this.player, (player, bullet) => {
       if (bullet.active && !this.isGameOver) {
         bullet.kill();
-        this.createExplosion(player.x, player.y);
-        this.handlePlayerDamage();
+        if (!this.player.isShieldActive()) {
+          this.createExplosion(player.x, player.y);
+          this.handlePlayerDamage();
+        }
       }
     });
 
@@ -1180,47 +1414,53 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.enemyShipGroup.group, this.player, (player, ship) => {
       if (ship.active && !this.isGameOver) {
         this.createExplosion(ship.x, ship.y);
-        ship.resetShip();
-        this.handlePlayerDamage();
+        ship.setActive(false).setVisible(false);
+        this.waveManager.onEnemyDestroyed();
+        if (!this.player.isShieldActive()) {
+          this.handlePlayerDamage();
+        }
       }
     });
 
     // Falling meteorite collides directly with player ship
     this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
       if (meteor.active && !this.isGameOver) {
-        this.createExplosion(meteor.x, meteor.y); // Spawn explosion particle effect at player location
-        meteor.resetMeteor(); // Respawn meteorite at top of screen
-        this.handlePlayerDamage();
+        this.createExplosion(meteor.x, meteor.y);
+        meteor.setActive(false).setVisible(false);
+        this.waveManager.onEnemyDestroyed();
+        if (!this.player.isShieldActive()) {
+          this.handlePlayerDamage();
+        }
       }
     });
   }
 
-  // Handle player damage when struck by hazards
   handlePlayerDamage() {
-    this.lives -= 1; // Decrement player lives
-    this.events.emit('livesChanged', this.lives); // Emit lives update event to UIScene
-    this.audioManager.playHit(); // Play player damage audio effect
+    if (this.player.isShieldActive()) return;
+
+    this.lives -= 1;
+    this.events.emit('livesChanged', this.lives);
+    this.audioManager.playHit();
 
     if (this.lives <= 0) {
-      this.triggerGameOver(); // Handle game over loss state when lives depleted
+      this.triggerGameOver();
     } else {
-      this.tweens.add({ targets: this.player, alpha: 0.2, duration: 100, yoyo: true, repeat: 3 }); // Flash player ship red invulnerability visual feedback
+      this.tweens.add({ targets: this.player, alpha: 0.2, duration: 100, yoyo: true, repeat: 3 });
     }
   }
 
-  // Create blast explosion visual effect using blast texture and particle burst
   createExplosion(x, y) {
-    const blast = this.add.image(x, y, 'blast').setScale(0.5); // Spawn fire blast sprite
+    const blast = this.add.image(x, y, 'blast').setScale(0.5);
     this.tweens.add({
       targets: blast,
       scale: { from: 0.5, to: 1.2 },
       alpha: { from: 1, to: 0 },
       duration: 250,
-      onComplete: () => blast.destroy() // Destroy blast sprite when animation finishes
-    }); // Animate blast expansion and fade out
+      onComplete: () => blast.destroy()
+    });
 
     const damageKeys = ['damage1', 'damage2', 'damage3', 'damage4', 'damage5', 'damage6', 'damage7', 'damage8', 'damage9'];
-    const chosenKeys = Phaser.Utils.Array.Shuffle(damageKeys).slice(0, 2); // Pick two random distinct damage assets
+    const chosenKeys = Phaser.Utils.Array.Shuffle(damageKeys).slice(0, 2);
 
     const emitters = chosenKeys.map(key => {
       return this.add.particles(x, y, key, {
@@ -1229,37 +1469,34 @@ class GameScene extends Phaser.Scene {
         lifespan: 250,
         quantity: 4
       });
-    }); // Create supporting damage particle bursts for realistic debris
+    });
     this.time.delayedCall(250, () => {
       emitters.forEach(emitter => emitter.destroy());
-    }); // Clean up particle emitter instances
+    });
   }
 
-  // Main frame update loop for scrolling background and entity updates
   update(time, delta) {
-    if (this.isGameOver) return; // Stop update loop logic if game is over
+    if (this.isGameOver) return;
 
-    this.bg.tilePositionY -= 3.5; // Scroll background graphics rapidly for forward space flight sensation
-    this.player.update(time, delta); // Call update method on player ship entity
-    this.enemyGroup.update(time, delta); // Call update method on meteorite spawner
-    this.enemyShipGroup.update(time, delta); // Call update method on enemy ship spawner
+    this.bg.tilePositionY -= 3.5;
+    this.player.update(time, delta);
+    this.enemyGroup.update(time, delta);
+    this.enemyShipGroup.update(time, delta);
   }
 
-  // Trigger Victory Win State
   triggerWin() {
-    if (this.isGameOver) return; // Guard clause against duplicate triggers
-    this.isGameOver = true; // Set game over status flag
-    this.audioManager.playWin(); // Play victory audio jingle
-    this.events.emit('gameWin'); // Emit game win event to UIScene
+    if (this.isGameOver) return;
+    this.isGameOver = true;
+    this.audioManager.playWin();
+    this.events.emit('gameWin');
   }
 
-  // Trigger Defeat Game Over State
   triggerGameOver() {
-    if (this.isGameOver) return; // Guard clause against duplicate triggers
-    this.isGameOver = true; // Set game over status flag
-    this.player.setTint(0xff0000); // Tint player ship sprite red
-    this.audioManager.playGameOver(); // Play game over audio jingle
-    this.events.emit('gameOver'); // Emit game over event to UIScene
+    if (this.isGameOver) return;
+    this.isGameOver = true;
+    this.player.setTint(0xff0000);
+    this.audioManager.playGameOver();
+    this.events.emit('gameOver');
   }
 }
 
@@ -1282,7 +1519,7 @@ const config = {
       debug: false // Disable physics collision wireframe bounding boxes
     }
   },
-  scene: [BootScene, SplashScene, MainMenuScene, SettingsScene, GameScene, UIScene] // Ordered list of game scenes
+  scene: [BootScene, MainMenuScene, SettingsScene, GameScene, UIScene] // Ordered list of game scenes
 };
 
 // Initialize Phaser Game instance on DOM window load event
