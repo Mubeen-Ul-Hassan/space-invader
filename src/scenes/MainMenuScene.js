@@ -1,4 +1,4 @@
-// Main Menu Scene — Clean, polished retro-space UI
+// Main Menu Scene — Clean, polished retro-space UI with silent cheat code listener
 class MainMenuScene extends Phaser.Scene {
   constructor() {
     super({ key: 'MainMenuScene' });
@@ -9,6 +9,8 @@ class MainMenuScene extends Phaser.Scene {
     const cy = GAME_CONFIG.height / 2;
     const W = GAME_CONFIG.width;
     const H = GAME_CONFIG.height;
+
+    this._audioManager = new AudioManager();
 
     // Scrolling background
     this.bg = this.add.tileSprite(0, 0, W, H, 'background').setOrigin(0, 0);
@@ -75,7 +77,66 @@ class MainMenuScene extends Phaser.Scene {
       color: '#556677'
     }).setOrigin(0.5);
 
+    // Cheat status indicator (hidden by default, shows when a cheat is active)
+    this._cheatIndicator = this.add.text(cx, H - 38, '', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '11px',
+      color: '#00ffcc',
+      align: 'center'
+    }).setOrigin(0.5).setAlpha(0);
+
+    // Silent cheat code keyboard buffer listener
+    this._cheatBuffer = '';
+    this._cheatCodes = {
+      'freeze':     () => this._activateCheat('freeze',    'FREEZE MODE: Enemies slowed!'),
+      'enderlein':  () => this._activateCheat('enderlein', 'ENDERLEIN: Max firepower!'),
+      'motherlode': () => this._activateCheat('motherlode','MOTHERLODE: Full power!')
+    };
+
+    // Listen for any keyboard key down silently
+    this.input.keyboard.on('keydown', (event) => {
+      const char = event.key.toLowerCase();
+      if (char.length === 1 && /[a-z]/.test(char)) {
+        this._cheatBuffer += char;
+        // Keep buffer to max length of longest cheat code to avoid memory growth
+        if (this._cheatBuffer.length > 12) {
+          this._cheatBuffer = this._cheatBuffer.slice(-12);
+        }
+        // Check if buffer ends with any known cheat code
+        for (const code in this._cheatCodes) {
+          if (this._cheatBuffer.endsWith(code)) {
+            this._cheatCodes[code]();
+            this._cheatBuffer = '';
+            break;
+          }
+        }
+      }
+    });
+
     this.cameras.main.fadeIn(300, 0, 0, 0);
+  }
+
+  // Activate a cheat, play confirmation beep, show brief indicator
+  _activateCheat(cheatKey, message) {
+    // Toggle cheat on/off each time the code is entered
+    ACTIVE_CHEATS[cheatKey] = !ACTIVE_CHEATS[cheatKey];
+    const isOn = ACTIVE_CHEATS[cheatKey];
+
+    // Play triple ascending beep confirmation
+    this._audioManager.playCheatBeep();
+
+    // Show brief status flash
+    const statusMsg = isOn ? `✓ ${message}` : `✗ ${message.split(':')[0]}: OFF`;
+    this._cheatIndicator.setText(statusMsg).setAlpha(1);
+
+    this.tweens.killTweensOf(this._cheatIndicator);
+    this.tweens.add({
+      targets: this._cheatIndicator,
+      alpha: 0,
+      delay: 2500,
+      duration: 600,
+      ease: 'Power2'
+    });
   }
 
   makeButton(x, y, label, colorNormal, colorHover, onClick) {

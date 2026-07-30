@@ -29,6 +29,14 @@ class GameScene extends Phaser.Scene {
 
     // Start wave progression
     this.waveManager.startNextWave();
+
+    // CHEAT: motherlode — grants max 5 lives + all power-up effects on game start
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.motherlode) {
+      this.lives = 5;
+      this.events.emit('livesChanged', this.lives);
+      this.player.activateRapidFire(9999999);
+      this.player.activateShield(9999999);
+    }
   }
 
   setupCollisions() {
