@@ -20,7 +20,11 @@ const sourceFiles = [
   'src/entities/Bullet.js',
   'src/entities/Player.js',
   'src/entities/Enemy.js',
+  'src/entities/EnemyShip.js',
   'src/scenes/BootScene.js',
+  'src/scenes/SplashScene.js',
+  'src/scenes/MainMenuScene.js',
+  'src/scenes/SettingsScene.js',
   'src/scenes/UIScene.js',
   'src/scenes/GameScene.js',
   'src/config.js'
@@ -42,7 +46,7 @@ const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Space Invaders - Playable Ad</title>
   <style>
     /* Reset body and full viewport canvas centering CSS */
@@ -57,23 +61,22 @@ const htmlContent = `<!DOCTYPE html>
     html, body {
       width: 100%;
       height: 100%;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
       background-color: #050510;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
     #game-container {
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
     canvas {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      display: block;
+      touch-action: none;
     }
   </style>
 </head>
