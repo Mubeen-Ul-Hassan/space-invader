@@ -15,7 +15,7 @@ const assetMapping = {
   laserPlayer: 'PNG/Lasers/playerLaserRed01.png',
   laserEnemy: 'PNG/Lasers/enemyLaserBlue01.png',
   shield: 'PNG/Power-ups/shield_gold.png',
-  stone: 'PNG/Meteors/meteorGrey_small1.png',
+  stone: 'PNG/Meteors/meteorBrown_small1.png',
   stoneBig: 'PNG/Meteors/meteorBrown_med1.png',
   blast: 'PNG/Effects/yellowFire.png',
   blast2: 'PNG/Effects/blueFire.png',
@@ -29,7 +29,22 @@ const assetMapping = {
   damage7: 'PNG/Damage/playerShip3_damage1.png',
   damage8: 'PNG/Damage/playerShip3_damage2.png',
   damage9: 'PNG/Damage/playerShip3_damage3.png',
-  life: 'PNG/playerLife1_red.png'
+  life: 'PNG/playerLife1_red.png',
+  pillRed: 'PNG/Power-ups/pill_red.png',
+  powerupRed: 'PNG/Power-ups/powerupRed_bolt.png',
+  shield: 'PNG/Power-ups/shield_silver.png',
+  shield1: 'PNG/Power-ups/shield1.png',
+  numeral0: 'PNG/Power-ups/numeral0.png',
+  numeral1: 'PNG/Power-ups/numeral1.png',
+  numeral2: 'PNG/Power-ups/numeral2.png',
+  numeral3: 'PNG/Power-ups/numeral3.png',
+  numeral4: 'PNG/Power-ups/numeral4.png',
+  numeral5: 'PNG/Power-ups/numeral5.png',
+  numeral6: 'PNG/Power-ups/numeral6.png',
+  numeral7: 'PNG/Power-ups/numeral7.png',
+  numeral8: 'PNG/Power-ups/numeral8.png',
+  numeral9: 'PNG/Power-ups/numeral9.png',
+  numeralX: 'PNG/Power-ups/numeralX.png'
 };
 
 // Convert image file to base64 data URL
