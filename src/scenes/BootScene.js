@@ -20,8 +20,8 @@ class BootScene extends Phaser.Scene {
     }
   }
 
-  // Transition to splash scene once base64 assets are registered
+  // Transition to main menu scene once base64 assets are registered
   create() {
-    this.scene.start('SplashScene'); // Launch company SplashScene
+    this.scene.start('MainMenuScene'); // Launch MainMenuScene directly
   }
 }

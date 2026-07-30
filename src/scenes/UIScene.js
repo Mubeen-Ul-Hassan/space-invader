@@ -1,14 +1,12 @@
-// UIScene managing HUD displays, instructions, and CTA popups
+// UIScene managing HUD displays, numeric lives, wave banners, and CTA popups
 class UIScene extends Phaser.Scene {
-  // Construct UIScene with scene key
   constructor() {
-    super({ key: 'UIScene' }); // Initialize scene with key identifier
+    super({ key: 'UIScene' });
   }
 
-  // Create UI text elements and HUD components
   create() {
-    this.score = 0; // Initialize local score tracker
-    this.lives = GAME_CONFIG.initialLives; // Initialize local lives tracker
+    this.score = 0;
+    this.lives = GAME_CONFIG.initialLives;
 
     // Create score display text
     this.scoreText = this.add.text(20, 15, 'SCORE: 0000', {
@@ -24,20 +22,11 @@ class UIScene extends Phaser.Scene {
       color: '#ffcc00'
     }).setOrigin(0.5, 0);
 
-    // Render spaceship icon and multiplier text for lives HUD display
-    this.lifeShipIcon = this.add.image(GAME_CONFIG.width - 110, 25, 'life').setScale(0.8); // Render spaceship icon
-    this.livesText = this.add.text(GAME_CONFIG.width - 90, 15, `* ${GAME_CONFIG.initialLives}`, {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '18px',
-      color: '#ffffff'
-    }); // Render spaceship multiplier count text (e.g. spaceship * 3)
-
-    // Render individual graphical life icon sprites
-    this.lifeIcons = []; // Array storing life ship icons
-    for (let i = 0; i < GAME_CONFIG.initialLives; i++) {
-      const icon = this.add.image(GAME_CONFIG.width - 45 + i * 18, 25, 'life').setScale(0.6); // Render small life ship icon
-      this.lifeIcons.push(icon); // Store icon reference
-    }
+    // Render numeric HUD health display: [ShipIcon] [numeralX] [numeralCount]
+    this.lifeShipIcon = this.add.image(GAME_CONFIG.width - 90, 25, 'life').setScale(0.9);
+    this.numeralXIcon = this.add.image(GAME_CONFIG.width - 60, 25, 'numeralX').setScale(0.8);
+    const initialDigitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
+    this.numeralDigitIcon = this.add.image(GAME_CONFIG.width - 30, 25, initialDigitKey).setScale(0.8);
 
     // Interactive Settings HUD Button
     const settingsBtn = this.add.rectangle(170, 25, 32, 32, 0x334466).setInteractive({ useHandCursor: true });
@@ -50,6 +39,14 @@ class UIScene extends Phaser.Scene {
       this.scene.start('SettingsScene');
     });
 
+    // Central Wave Banner Text
+    this.waveBannerText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 40, '', {
+      fontFamily: 'Arial Black, Arial, sans-serif',
+      fontSize: '36px',
+      color: '#00ffcc',
+      align: 'center'
+    }).setOrigin(0.5).setAlpha(0);
+
     // Create control instructions hint banner at bottom of screen
     this.controlsHint = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height - 25, 'Drag or Arrow Keys to Move • Space / Auto-Fire to Shoot', {
       fontFamily: 'Arial, sans-serif',
@@ -59,55 +56,78 @@ class UIScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Listen for events emitted from GameScene
-    const gameScene = this.scene.get('GameScene'); // Retrieve GameScene instance reference
-    gameScene.events.on('scoreChanged', this.updateScore, this); // Update score listener
-    gameScene.events.on('livesChanged', this.updateLives, this); // Update lives listener
-    gameScene.events.on('gameOver', this.showGameOverModal, this); // Game over modal listener
-    gameScene.events.on('gameWin', this.showWinModal, this); // Game win modal listener
+    const gameScene = this.scene.get('GameScene');
+    gameScene.events.on('scoreChanged', this.updateScore, this);
+    gameScene.events.on('livesChanged', this.updateLives, this);
+    gameScene.events.on('gameOver', this.showGameOverModal, this);
+    gameScene.events.on('gameWin', this.showWinModal, this);
+    gameScene.events.on('waveStarted', this.showWaveStartedBanner, this);
+    gameScene.events.on('waveCleared', this.showWaveClearedBanner, this);
+  }
+
+  // Display wave start notification banner
+  showWaveStartedBanner(waveNum) {
+    this.waveBannerText.setText(`WAVE ${waveNum}`).setColor('#00ffcc').setAlpha(1);
+    this.tweens.add({
+      targets: this.waveBannerText,
+      alpha: { from: 1, to: 0 },
+      scale: { from: 1, to: 1.2 },
+      duration: 1600,
+      ease: 'Power2'
+    });
+  }
+
+  // Display wave cleared notification banner
+  showWaveClearedBanner(waveNum) {
+    this.waveBannerText.setText(`WAVE ${waveNum} CLEARED!`).setColor('#ffcc00').setAlpha(1);
+    this.tweens.add({
+      targets: this.waveBannerText,
+      alpha: { from: 1, to: 0 },
+      scale: { from: 1, to: 1.2 },
+      duration: 1600,
+      ease: 'Power2'
+    });
   }
 
   // Update score HUD text formatted with leading zeros
   updateScore(newScore) {
-    this.score = newScore; // Set current score value
-    const formatted = String(newScore).padStart(4, '0'); // Pad score number string
-    this.scoreText.setText(`SCORE: ${formatted}`); // Update text display
+    this.score = newScore;
+    const formatted = String(newScore).padStart(4, '0');
+    this.scoreText.setText(`SCORE: ${formatted}`);
   }
 
-  // Update lives display HUD (spaceship * count) when ship destroyed
+  // Update numeric lives display HUD (ShipIcon * count) using numeric PNG assets
   updateLives(newLives) {
-    this.lives = Math.max(0, newLives); // Set remaining lives count
-    this.livesText.setText(`* ${this.lives}`); // Update spaceship count text (spaceship * count)
-    for (let i = 0; i < this.lifeIcons.length; i++) {
-      this.lifeIcons[i].setVisible(i < this.lives); // Show or hide life ship icons based on remaining count
+    this.lives = Math.max(0, newLives);
+    const digitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
+    if (this.numeralDigitIcon) {
+      this.numeralDigitIcon.setTexture(digitKey);
     }
   }
 
-  // Show Game Over dialog modal with TRY AGAIN and PLAY NOW buttons
+  // Show Game Over dialog modal
   showGameOverModal() {
-    this.showModal('MISSION FAILED', '#ff4444', false); // Render failure modal window
+    this.showModal('MISSION FAILED', '#ff4444', false);
   }
 
-  // Show Game Win dialog modal with PLAY NOW button
+  // Show Game Win dialog modal
   showWinModal() {
-    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true); // Render victory modal window
+    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true);
   }
 
-  // Modal dialog popup container separating local TRY AGAIN from AppLovin CTA redirect
+  // Modal dialog popup container
   showModal(title, titleColor, isWin) {
-    const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75); // Dark semi-transparent overlay
+    const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75);
 
-    // Modal background card frame
-    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95); // Dark blue card container
-    card.setStrokeStyle(3, 0x00ffcc); // Add neon cyan frame border
+    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95);
+    card.setStrokeStyle(3, 0x00ffcc);
 
-    // Title label on modal dialog card
     this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 75, title, {
       fontFamily: 'Arial Black, Arial, sans-serif',
       fontSize: '28px',
       color: titleColor
     }).setOrigin(0.5);
 
-    // Final score summary display text
     this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 25, `FINAL SCORE: ${this.score}`, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
@@ -115,9 +135,8 @@ class UIScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     if (!isWin) {
-      // 1. Interactive "TRY AGAIN" button (restarts game locally without redirecting)
-      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true }); // Blue Try Again button
-      retryBtn.setStrokeStyle(2, 0xffffff); // White outline border
+      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true });
+      retryBtn.setStrokeStyle(2, 0xffffff);
 
       this.add.text(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 'TRY AGAIN', {
         fontFamily: 'Arial Black, Arial, sans-serif',
@@ -125,52 +144,40 @@ class UIScene extends Phaser.Scene {
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff)); // Hover highlight
-      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc)); // Normal color
-      retryBtn.on('pointerdown', () => this.restartGame()); // Restart game locally on click!
+      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff));
+      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc));
+      retryBtn.on('pointerdown', () => this.restartGame());
 
-      // 2. Interactive "PLAY NOW" CTA button (ad landing page redirect)
-      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
-      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true });
+      ctaBtn.setStrokeStyle(2, 0xffffff);
 
-      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY AGAIN', {
         fontFamily: 'Arial Black, Arial, sans-serif',
         fontSize: '18px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
-      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
-      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88));
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66));
+      ctaBtn.on('pointerdown', () => this.restartGame());
     } else {
-      // Single centered "PLAY NOW" CTA button for Victory modal
-      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true }); // Green CTA button
-      ctaBtn.setStrokeStyle(2, 0xffffff); // White outline border
+      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true });
+      ctaBtn.setStrokeStyle(2, 0xffffff);
 
-      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY NOW', {
+      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY AGAIN', {
         fontFamily: 'Arial Black, Arial, sans-serif',
         fontSize: '22px',
         color: '#ffffff'
       }).setOrigin(0.5);
 
-      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88)); // Hover highlight
-      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66)); // Normal color
-      ctaBtn.on('pointerdown', () => this.openCtaUrl()); // Open AppLovin CTA redirect
+      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88));
+      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66));
+      ctaBtn.on('pointerdown', () => this.restartGame());
     }
   }
 
-  // Restart game scenes locally for Try Again replay
   restartGame() {
-    this.scene.get('GameScene').scene.restart(); // Restart GameScene
-    this.scene.restart(); // Restart UIScene
-  }
-
-  // Execute AppLovin CTA redirect action
-  openCtaUrl() {
-    if (window.mraid && typeof window.mraid.open === 'function') {
-      window.mraid.open(GAME_CONFIG.ctaUrl); // Trigger AppLovin MRAID ad click event
-    } else {
-      window.open(GAME_CONFIG.ctaUrl, '_blank'); // Open CTA landing page in browser window
-    }
+    this.scene.get('GameScene').scene.restart();
+    this.scene.restart();
   }
 }

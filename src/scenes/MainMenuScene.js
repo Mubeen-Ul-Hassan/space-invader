@@ -41,27 +41,15 @@ class MainMenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Button 1: PLAY GAME
-    this.createButton(cx, cy + 25, 'PLAY GAME', 0x00cc66, 0x00ff88, () => {
+    this.createButton(cx, cy + 30, 'PLAY GAME', 0x00cc66, 0x00ff88, () => {
       this.scene.start('GameScene');
       this.scene.start('UIScene');
     });
 
     // Button 2: SETTINGS
-    this.createButton(cx, cy + 85, 'SETTINGS', 0x3344cc, 0x5566ff, () => {
+    this.createButton(cx, cy + 100, 'SETTINGS', 0x3344cc, 0x5566ff, () => {
       this.scene.start('SettingsScene');
     });
-
-    // Button 3: VISIT WRP (Website)
-    this.createButton(cx, cy + 145, 'VISIT WRP', 0xaa33cc, 0xcc55ff, () => {
-      window.open('https://www.werplay.com/', '_blank');
-    });
-
-    // Bottom Footer branding
-    this.add.text(cx, GAME_CONFIG.height - 20, 'Powered by WeRPlay • www.werplay.com', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-      color: '#8888aa'
-    }).setOrigin(0.5);
   }
 
   // Helper to construct interactive polished UI buttons
