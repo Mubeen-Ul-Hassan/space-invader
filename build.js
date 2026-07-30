@@ -18,7 +18,6 @@ const sourceFiles = [
   'src/assets/base64Assets.js',
   'src/managers/AudioManager.js',
   'src/entities/Bullet.js',
-  'src/entities/Shield.js',
   'src/entities/Player.js',
   'src/entities/Enemy.js',
   'src/scenes/BootScene.js',
