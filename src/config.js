@@ -15,7 +15,7 @@ const config = {
       debug: false // Disable physics collision wireframe bounding boxes
     }
   },
-  scene: [BootScene, SplashScene, MainMenuScene, SettingsScene, GameScene, UIScene] // Ordered list of game scenes
+  scene: [BootScene, MainMenuScene, SettingsScene, GameScene, UIScene] // Ordered list of game scenes
 };
 
 // Initialize Phaser Game instance on DOM window load event
