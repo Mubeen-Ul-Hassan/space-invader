@@ -9,9 +9,9 @@ const assetsDir = path.join(__dirname, '../assets');
 const assetMapping = {
   background: 'Backgrounds/darkPurple.png',
   player: 'PNG/playerShip1_red.png',
-  enemyRed: 'PNG/Enemies/enemyRed1.png',
-  enemyGreen: 'PNG/Enemies/enemyGreen1.png',
-  enemyBlue: 'PNG/Enemies/enemyBlue1.png',
+  enemyRed: 'PNG/Enemies/enemyBlue.png',
+  enemyGreen: 'PNG/Enemies/enemyBlue.png',
+  enemyBlue: 'PNG/Enemies/enemyBlue.png',
   laserPlayer: 'PNG/Lasers/playerLaserRed01.png',
   laserEnemy: 'PNG/Lasers/enemyLaserBlue01.png',
   shield: 'PNG/Power-ups/shield_gold.png',
