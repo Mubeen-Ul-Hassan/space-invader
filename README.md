@@ -1,78 +1,130 @@
-# Space Invaders - Playable Ad 🚀
+# Space Invaders — Phaser 3 Playable
 
-A responsive, high-performance **Space Invaders** playable ad built with **Phaser 3**. Designed specifically as a single-file executable deliverable for mobile ad networks like **AppLovin**.
+A responsive, wave-based **Space Invaders** game built with **Phaser 3** as a single-file HTML deliverable.
 
 ---
 
 ## 🎮 Game Overview
 
-Players pilot a starship at the bottom of the screen to defend against waves of invading alien anomalies.
-- **Controls:** Intuitive touch drag (mobile) or Arrow Keys / WASD + Spacebar (desktop).
-- **Destructible Defense Bunkers:** Protective shields block incoming alien fire and degrade upon impact.
-- **Win State:** Defeat all 32 alien invaders to trigger victory screen and AppLovin CTA redirect.
-- **Game Over State:** Triggered when all 3 ship lives are lost or when alien invaders descend to the bottom line.
-- **Audio:** Web Audio API sound generator for retro laser pew, explosion rumble, player hit, victory, and game over sounds.
+Pilot a starship to defend the galaxy against waves of incoming meteorites and enemy ships. Collect power-ups, survive all 5 waves, and achieve victory.
+
+### Objective
+- Survive all 5 enemy waves to win.
+- Lose all lives and it's game over.
+
+### Controls
+| Input | Action |
+|-------|--------|
+| `Arrow Keys` / `WASD` | Move ship (Left, Right, Up, Down) |
+| `Space` | Fire laser |
+| `Click / Touch Drag` | Move ship (mobile & mouse) |
+
+### Features
+- **5-Wave Progression** — structured wave system with meteorite formations and enemy ships
+- **Enemy Ships** — appear after a 40-second grace period; shoot lasers at the player
+- **Power-Ups** (drop randomly with 10% chance):
+  - 💊 `pill_red` — +1 extra life (max 5)
+  - ⚡ `powerupRed` — 12-second rapid-fire boost
+  - 🛡 `shield` — 15-second invincibility shield with visual aura
+- **Lives System** — 3 starting lives displayed via ship icon HUD
+- **Score Tracking** — high score persisted via `localStorage`
+- **Settings** — in-game master volume control with mute toggle
+- **Respawn Invincibility** — 2-second flash immunity after taking damage
 
 ---
 
-## 🛠️ Technical Specifications & Architecture
+## 🛠 Technical Specifications
 
 - **Engine:** Phaser 3 (`v3.70.0`)
-- **Deliverable Target:** Single HTML file (`index.html`) under 5 MB (Actual build size: **1.20 MB**).
-- **Asset Encoding:** Base64 data URLs embedded directly to prevent cross-origin or external network requests.
-- **Modular Component Design:**
-  - `Player.js`: Custom Sprite object managing ship movement bounds, touch input, and weapon firing.
-  - `Enemy.js` & `EnemyGroup`: Invader formation grid, edge bounce step-down logic, speed scaling, and random alien firing.
-  - `Bullet.js`: Physics object pool for player and enemy projectiles with auto-recycling.
-  - `Shield.js`: Destructible static barrier blocks with opacity state degradation.
-  - `AudioManager.js`: Synthesized Web Audio API sound effects generator.
-  - `BootScene`, `GameScene`, `UIScene`: Separated scene lifecycle logic for preloading, gameplay physics, and HUD/modal overlays.
+- **Deliverable:** Single HTML file (`index.html`) — **1.24 MB** (well under 5 MB limit)
+- **Asset Encoding:** All sprites and backgrounds embedded as base64 data URLs — no external network requests
+- **Audio:** Web Audio API procedural sound effects (no audio file dependencies)
+- **Responsive Scaling:** `Phaser.Scale.FIT` + `CENTER_BOTH` — scales and centers correctly on all screen sizes
+
+### Architecture
+```
+src/
+├── assets/          # Auto-generated base64 asset strings
+├── entities/
+│   ├── Player.js    # 4-directional ship movement, shield/rapid-fire boosts
+│   ├── Enemy.js     # Meteorite objects with exponential speed scaling
+│   ├── EnemyShip.js # Enemy ships with sine-wave movement and laser firing
+│   ├── Bullet.js    # Pooled physics projectiles (player & enemy)
+│   └── PowerUp.js   # Collectible drop items (pill, powerup, shield)
+├── managers/
+│   ├── AudioManager.js  # Web Audio API synthesized sound effects
+│   └── WaveManager.js   # 5-wave progression with formation spawning
+├── scenes/
+│   ├── BootScene.js     # Asset preloading
+│   ├── MainMenuScene.js # Main menu with title, buttons, high score
+│   ├── SettingsScene.js # Volume control settings screen
+│   ├── GameScene.js     # Core game physics, collisions, and state
+│   └── UIScene.js       # HUD, wave banners, game-over/win modals
+└── utils/
+    └── constants.js     # Shared game configuration constants
+```
 
 ---
 
-## 🚀 Getting Started & Local Development
+## 🚀 Getting Started
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v16 or higher)
-- npm or yarn
+- npm
 
-### Installation & Running Locally
+### Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd space-invader
-   ```
+```bash
+git clone <repository-url>
+cd space-invader
+npm install
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### Build
 
-3. **Build single-file deliverable (`index.html`):**
-   ```bash
-   npm run build
-   ```
+Generates the single-file `index.html` deliverable:
 
-4. **Start local development server:**
-   ```bash
-   npm start
-   ```
-   Open `http://localhost:8080` in your web browser to play the game.
+```bash
+npm run build
+```
+
+### Run Locally
+
+```bash
+npm start
+```
+
+Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ---
 
 ## ⚖️ Trade-offs & Assumptions
 
-1. **Base64 Asset Bundling:**
-   - *Trade-off:* Base64 encoding increases asset payload size by ~33% compared to binary files.
-   - *Rationale:* Eliminates external network dependencies and ensures instant loading on ad networks.
-2. **Procedural Web Audio API vs Audio Files:**
-   - *Trade-off:* Synthesized audio tones sound retro compared to real MP3/WAV recordings.
-   - *Rationale:* Saves 1-2 MB of payload size and avoids browser audio decoding CORS/missing asset warnings.
+1. **Single-file bundle over modular server deployment**
+   - All assets, Phaser, and game code are inlined into one HTML file for maximum portability and ad-network compatibility.
+   - Trade-off: Base64 encoding increases asset size ~33% vs binary — still well within the 5 MB limit at 1.24 MB.
+
+2. **Procedural audio via Web Audio API**
+   - Eliminates audio file dependencies and saves 1–2 MB of payload.
+   - Trade-off: Synthesized tones have a retro character rather than realistic sound design.
+
+3. **Wave-based enemy system over classic grid formation**
+   - Progressive waves with meteorite formations and individually spawned enemy ships feel more dynamic and game-like.
+   - Trade-off: Less visually iconic than the classic Space Invaders grid, but more engaging over longer sessions.
+
+4. **40-second grace period before enemy ships appear**
+   - Gives new players time to learn controls and game mechanics before enemy ships introduce additional threat.
+
+### Potential Improvements
+- Add more power-up types (spread shot, bomb, magnet)
+- Leaderboard with multiple named high-score entries
+- Animated background parallax layers
+- Boss enemy wave at Wave 5
+- Sound effects library with recorded audio assets
 
 ---
 
 ## 🎨 Asset Credits
 
-- Sprite assets sourced from [Kenney.nl Space Shooter Redux](https://kenney.nl/assets/space-shooter-redux) (CC0 1.0 Universal / Public Domain).
+- Sprite assets from [Kenney.nl — Space Shooter Redux](https://kenney.nl/assets/space-shooter-redux) (CC0 1.0 Universal — Public Domain)
+- Background tile from the same Kenney.nl pack
