@@ -27,9 +27,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     const scale = Phaser.Math.FloatBetween(0.7, 1.2); // Pick random scale factor
     this.setScale(scale); // Set sprite graphic scale
 
-    this.speedY = Phaser.Math.Between(180, 340); // Pick random downward fall speed
-    this.speedX = Phaser.Math.Between(-40, 40); // Pick random slight horizontal drift
-    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05); // Pick random spin rotation rate
+    const destroyedCount = this.scene.enemyGroup ? this.scene.enemyGroup.destroyedCount : 0;
+    const speedMultiplier = Math.pow(1.06, destroyedCount); // Exponential speed growth of 6% per destroyed meteorite
+
+    this.speedY = Phaser.Math.Between(120, 220) * speedMultiplier; // Pick random downward speed scaled exponentially
+    this.speedX = Phaser.Math.Between(-30, 30) * speedMultiplier; // Pick random slight horizontal drift scaled exponentially
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05) * speedMultiplier; // Pick random spin rotation rate scaled exponentially
 
     this.setActive(true); // Enable object in active pool
     this.setVisible(true); // Show sprite graphics
