@@ -80,18 +80,45 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if ((this.cursors.space.isDown || this.wasd.SPACE.isDown || this.scene.input.activePointer.isDown) && time > this.lastFired) {
       this.shoot(time);
     }
+
+    // Visual indicator: golden tint when enderlein cheat is active
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.enderlein) {
+      this.setTint(0xffcc00);
+    } else if (!this.isShieldActive()) {
+      this.clearTint();
+    }
   }
 
   shoot(time) {
-    const bullet = this.scene.playerBullets.get();
-    if (bullet) {
-      bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
-      const isRapid = time < this.fireRateBoostUntil;
-      const delay = isRapid ? 120 : GAME_CONFIG.playerFireRate;
-      this.lastFired = time + delay;
-      if (this.scene.audioManager) {
-        this.scene.audioManager.playShoot();
+    // CHEAT: enderlein grants ultra-rapid triple spread fire
+    const isEnderlein = ACTIVE_CHEATS && ACTIVE_CHEATS.enderlein;
+    const isRapid = time < this.fireRateBoostUntil;
+
+    if (isEnderlein) {
+      // Triple spread: center + angled left/right bullets
+      const offsets = [{ x: 0, vx: 0 }, { x: -12, vx: -80 }, { x: 12, vx: 80 }];
+      offsets.forEach(off => {
+        const bullet = this.scene.playerBullets.get();
+        if (bullet) {
+          bullet.fire(this.x + off.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
+          // Apply slight horizontal spread to angled bullets via body velocity
+          if (off.vx !== 0 && bullet.body) {
+            bullet.body.velocity.x = off.vx;
+          }
+        }
+      });
+      this.lastFired = time + 40; // Ultra-fast 40ms fire rate
+    } else {
+      const bullet = this.scene.playerBullets.get();
+      if (bullet) {
+        bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
+        const delay = isRapid ? 120 : GAME_CONFIG.playerFireRate;
+        this.lastFired = time + delay;
       }
+    }
+
+    if (this.scene.audioManager) {
+      this.scene.audioManager.playShoot();
     }
   }
 }

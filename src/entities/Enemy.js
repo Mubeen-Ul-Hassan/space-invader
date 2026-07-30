@@ -43,10 +43,20 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   update(time, delta) {
     if (!this.active) return; // Guard clause if inactive
 
+    // CHEAT: freeze slows all enemies to 20% speed
+    const freezeMult = (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) ? 0.20 : 1.0;
+
     const deltaSec = delta / 1000; // Convert time delta to seconds
-    this.y += this.speedY * deltaSec; // Fall downwards through space
-    this.x += this.speedX * deltaSec; // Apply slight horizontal drift
-    this.rotation += this.rotationSpeed; // Spin meteorite graphic
+    this.y += this.speedY * deltaSec * freezeMult; // Fall downwards (slowed if freeze cheat active)
+    this.x += this.speedX * deltaSec * freezeMult; // Apply slight horizontal drift
+    this.rotation += this.rotationSpeed * freezeMult; // Spin meteorite graphic
+
+    // Visual tint: blue tint when frozen
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) {
+      this.setTint(0x88ccff);
+    } else {
+      this.clearTint();
+    }
 
     // Recycle meteorite when it passes below bottom screen boundary
     if (this.y > GAME_CONFIG.height + 60) {

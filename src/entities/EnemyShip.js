@@ -38,16 +38,26 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
   update(time, delta) {
     if (!this.active) return;
 
+    // CHEAT: freeze slows all enemies to 20% speed
+    const freezeMult = (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) ? 0.20 : 1.0;
+
     const deltaSec = delta / 1000;
-    this.y += this.speedY * deltaSec;
+    this.y += this.speedY * deltaSec * freezeMult;
     this.x = Phaser.Math.Clamp(
-      this.startX + Math.sin(time * this.waveFrequency) * this.waveAmplitude,
+      this.startX + Math.sin(time * this.waveFrequency * freezeMult) * this.waveAmplitude,
       40,
       GAME_CONFIG.width - 40
     );
 
-    // Periodically shoot laser at player
-    if (time > this.lastFired && this.y > 20 && this.y < GAME_CONFIG.height - 100) {
+    // Visual tint: blue tint when frozen
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) {
+      this.setTint(0x88ccff);
+    } else {
+      this.clearTint();
+    }
+
+    // Periodically shoot laser at player (disabled during freeze cheat)
+    if (!ACTIVE_CHEATS.freeze && time > this.lastFired && this.y > 20 && this.y < GAME_CONFIG.height - 100) {
       this.shootLaser(time);
     }
 
