@@ -40,7 +40,7 @@ class WaveManager {
           meteorCount = 4;
           this.spawnMeteorVFormation(meteorCount);
         } else {
-          meteorCount = 4;
+          meteorCount = 3;
           this.spawnMeteorStaggered(meteorCount);
         }
         break;
@@ -48,10 +48,10 @@ class WaveManager {
       case 2:
         this.totalStagesInWave = 2;
         if (this.currentStage === 1) {
-          shipCount = 3;
+          shipCount = 2;
           this.spawnShipLineFormation(shipCount);
         } else {
-          shipCount = 4;
+          shipCount = 3;
           this.spawnShipWedgeFormation(shipCount);
         }
         break;
@@ -59,15 +59,15 @@ class WaveManager {
       case 3:
         this.totalStagesInWave = 3;
         if (this.currentStage === 1) {
-          meteorCount = 4;
+          meteorCount = 3;
           this.spawnMeteorVFormation(meteorCount);
         } else if (this.currentStage === 2) {
           meteorCount = 2;
-          shipCount = 3;
+          shipCount = 2;
           this.spawnMeteorVFormation(meteorCount);
           this.spawnShipLineFormation(shipCount);
         } else {
-          shipCount = 4;
+          shipCount = 3;
           this.spawnShipWedgeFormation(shipCount);
         }
         break;
@@ -75,14 +75,14 @@ class WaveManager {
       case 4:
         this.totalStagesInWave = 3;
         if (this.currentStage === 1) {
-          meteorCount = 5;
+          meteorCount = 4;
           this.spawnMeteorStaggered(meteorCount);
         } else if (this.currentStage === 2) {
-          shipCount = 4;
+          shipCount = 3;
           this.spawnShipLineFormation(shipCount);
         } else {
-          meteorCount = 3;
-          shipCount = 3;
+          meteorCount = 2;
+          shipCount = 2;
           this.spawnMeteorVFormation(meteorCount);
           this.spawnShipWedgeFormation(shipCount);
         }
@@ -91,14 +91,14 @@ class WaveManager {
       default: // Wave 5 (Final Boss Wave)
         this.totalStagesInWave = 3;
         if (this.currentStage === 1) {
-          meteorCount = 5;
+          meteorCount = 4;
           this.spawnMeteorVFormation(meteorCount);
         } else if (this.currentStage === 2) {
-          shipCount = 5;
+          shipCount = 3;
           this.spawnShipWedgeFormation(shipCount);
         } else {
-          meteorCount = 4;
-          shipCount = 4;
+          meteorCount = 2;
+          shipCount = 3;
           this.spawnMeteorStaggered(meteorCount);
           this.spawnShipLineFormation(shipCount);
         }
