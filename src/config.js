@@ -1,13 +1,12 @@
 // Main Phaser 3 Game configuration file
 const config = {
   type: Phaser.AUTO, // Auto-select WebGL or Canvas renderer
-  width: GAME_CONFIG.width, // Virtual design canvas width (800px)
-  height: GAME_CONFIG.height, // Virtual design canvas height (600px)
-  parent: 'game-container', // HTML parent DOM element ID
-  backgroundColor: '#050510', // Deep space dark canvas background color
   scale: {
     mode: Phaser.Scale.FIT, // Scale game canvas to fit screen container while preserving aspect ratio
-    autoCenter: Phaser.Scale.CENTER_BOTH // Automatically center game canvas horizontally and vertically
+    parent: 'game-container', // HTML parent DOM element ID
+    autoCenter: Phaser.Scale.CENTER_BOTH, // Automatically center game canvas horizontally and vertically
+    width: GAME_CONFIG.width, // Virtual design width (800px)
+    height: GAME_CONFIG.height // Virtual design height (600px)
   },
   physics: {
     default: 'arcade', // Enable Phaser Arcade Physics engine
@@ -16,7 +15,7 @@ const config = {
       debug: false // Disable physics collision wireframe bounding boxes
     }
   },
-  scene: [BootScene, GameScene, UIScene] // Ordered list of game scenes
+  scene: [BootScene, SplashScene, MainMenuScene, SettingsScene, GameScene, UIScene] // Ordered list of game scenes
 };
 
 // Initialize Phaser Game instance on DOM window load event
