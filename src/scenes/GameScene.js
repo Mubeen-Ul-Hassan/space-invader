@@ -105,13 +105,20 @@ class GameScene extends Phaser.Scene {
       onComplete: () => blast.destroy() // Destroy blast sprite when animation finishes
     }); // Animate blast expansion and fade out
 
-    const emitter = this.add.particles(x, y, 'star', {
-      speed: { min: 60, max: 180 },
-      scale: { start: 0.5, end: 0 },
-      lifespan: 250,
-      quantity: 8
-    }); // Create supporting star particle burst
-    this.time.delayedCall(250, () => emitter.destroy()); // Clean up particle emitter instance
+    const damageKeys = ['damage1', 'damage2', 'damage3', 'damage4', 'damage5', 'damage6', 'damage7', 'damage8', 'damage9'];
+    const chosenKeys = Phaser.Utils.Array.Shuffle(damageKeys).slice(0, 2); // Pick two random distinct damage assets
+
+    const emitters = chosenKeys.map(key => {
+      return this.add.particles(x, y, key, {
+        speed: { min: 60, max: 180 },
+        scale: { start: 0.4, end: 0 },
+        lifespan: 250,
+        quantity: 4
+      });
+    }); // Create supporting damage particle bursts for realistic debris
+    this.time.delayedCall(250, () => {
+      emitters.forEach(emitter => emitter.destroy());
+    }); // Clean up particle emitter instances
   }
 
   // Main frame update loop for scrolling background and meteor updates
