@@ -1,4 +1,4 @@
-// Multi-stage Wave Manager for progressive Chicken Invaders style gameplay
+// Multi-stage Wave Manager with 40-second initial grace period (no enemy ships) and spaced 3-ship wave limits
 class WaveManager {
   constructor(scene) {
     this.scene = scene;
@@ -8,10 +8,15 @@ class WaveManager {
     this.isWaveActive = false;
     this.stageEnemiesRemaining = 0;
     this.maxWaves = 5;
+    this.gameStartTime = 0;
   }
 
   // Start next major wave sequence
   startNextWave() {
+    if (this.currentWave === 0) {
+      this.gameStartTime = this.scene.time.now;
+    }
+
     this.currentWave += 1;
     this.currentStage = 0;
     this.isWaveActive = true;
@@ -33,74 +38,61 @@ class WaveManager {
     let meteorCount = 0;
     let shipCount = 0;
 
+    // Check if 40-second grace period has passed
+    const elapsedMs = this.scene.time.now - this.gameStartTime;
+    const shipsAllowed = (elapsedMs >= 40000);
+
+    // Each wave has 3 sub-wave stages. If ships are allowed, spawn 1 ship per stage (3 total per wave)
+    const shouldSpawnShipInThisStage = shipsAllowed;
+
     switch (this.currentWave) {
       case 1:
-        this.totalStagesInWave = 2;
-        if (this.currentStage === 1) {
-          meteorCount = 4;
-          this.spawnMeteorVFormation(meteorCount);
-        } else {
-          meteorCount = 3;
-          this.spawnMeteorStaggered(meteorCount);
+        this.totalStagesInWave = 3;
+        meteorCount = 3;
+        this.spawnMeteorVFormation(meteorCount);
+        if (shouldSpawnShipInThisStage) {
+          shipCount = 1;
+          this.spawnSingleEnemyShip();
         }
         break;
 
       case 2:
-        this.totalStagesInWave = 2;
-        if (this.currentStage === 1) {
-          shipCount = 2;
-          this.spawnShipLineFormation(shipCount);
-        } else {
-          shipCount = 3;
-          this.spawnShipWedgeFormation(shipCount);
+        this.totalStagesInWave = 3;
+        meteorCount = 3;
+        this.spawnMeteorStaggered(meteorCount);
+        if (shouldSpawnShipInThisStage) {
+          shipCount = 1;
+          this.spawnSingleEnemyShip();
         }
         break;
 
       case 3:
         this.totalStagesInWave = 3;
-        if (this.currentStage === 1) {
-          meteorCount = 3;
-          this.spawnMeteorVFormation(meteorCount);
-        } else if (this.currentStage === 2) {
-          meteorCount = 2;
-          shipCount = 2;
-          this.spawnMeteorVFormation(meteorCount);
-          this.spawnShipLineFormation(shipCount);
-        } else {
-          shipCount = 3;
-          this.spawnShipWedgeFormation(shipCount);
+        meteorCount = 3;
+        this.spawnMeteorVFormation(meteorCount);
+        if (shouldSpawnShipInThisStage) {
+          shipCount = 1;
+          this.spawnSingleEnemyShip();
         }
         break;
 
       case 4:
         this.totalStagesInWave = 3;
-        if (this.currentStage === 1) {
-          meteorCount = 4;
-          this.spawnMeteorStaggered(meteorCount);
-        } else if (this.currentStage === 2) {
-          shipCount = 3;
-          this.spawnShipLineFormation(shipCount);
-        } else {
-          meteorCount = 2;
-          shipCount = 2;
-          this.spawnMeteorVFormation(meteorCount);
-          this.spawnShipWedgeFormation(shipCount);
+        meteorCount = 4;
+        this.spawnMeteorStaggered(meteorCount);
+        if (shouldSpawnShipInThisStage) {
+          shipCount = 1;
+          this.spawnSingleEnemyShip();
         }
         break;
 
-      default: // Wave 5 (Final Boss Wave)
+      default: // Wave 5 (Final Wave)
         this.totalStagesInWave = 3;
-        if (this.currentStage === 1) {
-          meteorCount = 4;
-          this.spawnMeteorVFormation(meteorCount);
-        } else if (this.currentStage === 2) {
-          shipCount = 3;
-          this.spawnShipWedgeFormation(shipCount);
-        } else {
-          meteorCount = 2;
-          shipCount = 3;
-          this.spawnMeteorStaggered(meteorCount);
-          this.spawnShipLineFormation(shipCount);
+        meteorCount = 4;
+        this.spawnMeteorVFormation(meteorCount);
+        if (shouldSpawnShipInThisStage) {
+          shipCount = 1;
+          this.spawnSingleEnemyShip();
         }
         break;
     }
@@ -137,34 +129,15 @@ class WaveManager {
     }
   }
 
-  // Spawn enemy ships in a horizontal line
-  spawnShipLineFormation(count) {
-    const spacing = GAME_CONFIG.width / (count + 1);
-    for (let i = 0; i < count; i++) {
-      const ship = this.scene.enemyShipGroup.group.get();
-      if (ship) {
-        ship.resetShip();
-        const posX = spacing * (i + 1);
-        const posY = -80 - i * 25;
-        ship.setPosition(posX, posY);
-        ship.startX = posX;
-      }
-    }
-  }
-
-  // Spawn enemy ships in a wedge formation
-  spawnShipWedgeFormation(count) {
-    const cx = GAME_CONFIG.width / 2;
-    const spacing = 110;
-    for (let i = 0; i < count; i++) {
-      const ship = this.scene.enemyShipGroup.group.get();
-      if (ship) {
-        ship.resetShip();
-        const offsetX = (i - (count - 1) / 2) * spacing;
-        const offsetY = -80 - Math.abs(i - (count - 1) / 2) * 45;
-        ship.setPosition(cx + offsetX, offsetY);
-        ship.startX = cx + offsetX;
-      }
+  // Spawn exactly 1 enemy ship at a spaced interval
+  spawnSingleEnemyShip() {
+    const ship = this.scene.enemyShipGroup.group.get();
+    if (ship) {
+      ship.resetShip();
+      const posX = Phaser.Math.Between(150, GAME_CONFIG.width - 150);
+      const posY = -80;
+      ship.setPosition(posX, posY);
+      ship.startX = posX;
     }
   }
 
@@ -175,7 +148,7 @@ class WaveManager {
 
     if (this.stageEnemiesRemaining <= 0) {
       if (this.currentStage < this.totalStagesInWave) {
-        // Advance to next sub-wave formation after 1.2s delay
+        // Advance to next sub-wave formation stage after 1.2s delay
         this.scene.time.delayedCall(1200, () => {
           this.startNextStage();
         });
