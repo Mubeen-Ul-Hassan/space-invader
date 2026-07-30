@@ -72,6 +72,17 @@ const GAME_CONFIG = {
   ctaUrl: 'https://playables42.com/creative-closet' // AppLovin CTA destination link
 };
 
+// Active cheat code flags — toggled by typing cheat codes on main menu screen
+// freeze: slows all enemies/bullets to 25% speed (player unaffected)
+// enderlein: grants extreme rapid-fire with triple bullet spread
+// motherlode: restores full lives (5) and activates all three power-ups
+const ACTIVE_CHEATS = {
+  freeze: false,     // TRUE = enemy time-slow is active
+  enderlein: false,  // TRUE = max firepower mode is active
+  motherlode: false  // TRUE = full lives + all power-ups activated
+};
+
+
 
 /* --- src/assets/base64Assets.js --- */
 // Base64 encoded assets for single-file executable build
@@ -292,7 +303,33 @@ class AudioManager {
       osc.stop(this.ctx.currentTime + idx * 0.12 + 0.2); // Stop note sound after 200ms
     });
   }
+
+  // Play cheat code confirmation triple ascending beep
+  playCheatBeep() {
+    this.init();
+    if (!this.ctx) return;
+
+    const beepFreqs = [440, 660, 880]; // Ascending three-tone confirmation beep sequence
+    beepFreqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine'; // Clean sine beep tone
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
+
+      gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.12);
+      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.12 + 0.1);
+
+      osc.connect(gain);
+      const dest = this.getDestination();
+      if (dest) gain.connect(dest);
+
+      osc.start(this.ctx.currentTime + idx * 0.12);
+      osc.stop(this.ctx.currentTime + idx * 0.12 + 0.1);
+    });
+  }
 }
+
 
 
 /* --- src/managers/WaveManager.js --- */
@@ -593,18 +630,45 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if ((this.cursors.space.isDown || this.wasd.SPACE.isDown || this.scene.input.activePointer.isDown) && time > this.lastFired) {
       this.shoot(time);
     }
+
+    // Visual indicator: golden tint when enderlein cheat is active
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.enderlein) {
+      this.setTint(0xffcc00);
+    } else if (!this.isShieldActive()) {
+      this.clearTint();
+    }
   }
 
   shoot(time) {
-    const bullet = this.scene.playerBullets.get();
-    if (bullet) {
-      bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
-      const isRapid = time < this.fireRateBoostUntil;
-      const delay = isRapid ? 120 : GAME_CONFIG.playerFireRate;
-      this.lastFired = time + delay;
-      if (this.scene.audioManager) {
-        this.scene.audioManager.playShoot();
+    // CHEAT: enderlein grants ultra-rapid triple spread fire
+    const isEnderlein = ACTIVE_CHEATS && ACTIVE_CHEATS.enderlein;
+    const isRapid = time < this.fireRateBoostUntil;
+
+    if (isEnderlein) {
+      // Triple spread: center + angled left/right bullets
+      const offsets = [{ x: 0, vx: 0 }, { x: -12, vx: -80 }, { x: 12, vx: 80 }];
+      offsets.forEach(off => {
+        const bullet = this.scene.playerBullets.get();
+        if (bullet) {
+          bullet.fire(this.x + off.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
+          // Apply slight horizontal spread to angled bullets via body velocity
+          if (off.vx !== 0 && bullet.body) {
+            bullet.body.velocity.x = off.vx;
+          }
+        }
+      });
+      this.lastFired = time + 40; // Ultra-fast 40ms fire rate
+    } else {
+      const bullet = this.scene.playerBullets.get();
+      if (bullet) {
+        bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
+        const delay = isRapid ? 120 : GAME_CONFIG.playerFireRate;
+        this.lastFired = time + delay;
       }
+    }
+
+    if (this.scene.audioManager) {
+      this.scene.audioManager.playShoot();
     }
   }
 }
@@ -656,10 +720,20 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   update(time, delta) {
     if (!this.active) return; // Guard clause if inactive
 
+    // CHEAT: freeze slows all enemies to 20% speed
+    const freezeMult = (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) ? 0.20 : 1.0;
+
     const deltaSec = delta / 1000; // Convert time delta to seconds
-    this.y += this.speedY * deltaSec; // Fall downwards through space
-    this.x += this.speedX * deltaSec; // Apply slight horizontal drift
-    this.rotation += this.rotationSpeed; // Spin meteorite graphic
+    this.y += this.speedY * deltaSec * freezeMult; // Fall downwards (slowed if freeze cheat active)
+    this.x += this.speedX * deltaSec * freezeMult; // Apply slight horizontal drift
+    this.rotation += this.rotationSpeed * freezeMult; // Spin meteorite graphic
+
+    // Visual tint: blue tint when frozen
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) {
+      this.setTint(0x88ccff);
+    } else {
+      this.clearTint();
+    }
 
     // Recycle meteorite when it passes below bottom screen boundary
     if (this.y > GAME_CONFIG.height + 60) {
@@ -748,16 +822,26 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
   update(time, delta) {
     if (!this.active) return;
 
+    // CHEAT: freeze slows all enemies to 20% speed
+    const freezeMult = (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) ? 0.20 : 1.0;
+
     const deltaSec = delta / 1000;
-    this.y += this.speedY * deltaSec;
+    this.y += this.speedY * deltaSec * freezeMult;
     this.x = Phaser.Math.Clamp(
-      this.startX + Math.sin(time * this.waveFrequency) * this.waveAmplitude,
+      this.startX + Math.sin(time * this.waveFrequency * freezeMult) * this.waveAmplitude,
       40,
       GAME_CONFIG.width - 40
     );
 
-    // Periodically shoot laser at player
-    if (time > this.lastFired && this.y > 20 && this.y < GAME_CONFIG.height - 100) {
+    // Visual tint: blue tint when frozen
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) {
+      this.setTint(0x88ccff);
+    } else {
+      this.clearTint();
+    }
+
+    // Periodically shoot laser at player (disabled during freeze cheat)
+    if (!ACTIVE_CHEATS.freeze && time > this.lastFired && this.y > 20 && this.y < GAME_CONFIG.height - 100) {
       this.shootLaser(time);
     }
 
@@ -909,7 +993,7 @@ class BootScene extends Phaser.Scene {
 
 
 /* --- src/scenes/MainMenuScene.js --- */
-// Main Menu Scene — Clean, polished retro-space UI
+// Main Menu Scene — Clean, polished retro-space UI with silent cheat code listener
 class MainMenuScene extends Phaser.Scene {
   constructor() {
     super({ key: 'MainMenuScene' });
@@ -920,6 +1004,8 @@ class MainMenuScene extends Phaser.Scene {
     const cy = GAME_CONFIG.height / 2;
     const W = GAME_CONFIG.width;
     const H = GAME_CONFIG.height;
+
+    this._audioManager = new AudioManager();
 
     // Scrolling background
     this.bg = this.add.tileSprite(0, 0, W, H, 'background').setOrigin(0, 0);
@@ -986,7 +1072,66 @@ class MainMenuScene extends Phaser.Scene {
       color: '#556677'
     }).setOrigin(0.5);
 
+    // Cheat status indicator (hidden by default, shows when a cheat is active)
+    this._cheatIndicator = this.add.text(cx, H - 38, '', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '11px',
+      color: '#00ffcc',
+      align: 'center'
+    }).setOrigin(0.5).setAlpha(0);
+
+    // Silent cheat code keyboard buffer listener
+    this._cheatBuffer = '';
+    this._cheatCodes = {
+      'freeze':     () => this._activateCheat('freeze',    'FREEZE MODE: Enemies slowed!'),
+      'enderlein':  () => this._activateCheat('enderlein', 'ENDERLEIN: Max firepower!'),
+      'motherlode': () => this._activateCheat('motherlode','MOTHERLODE: Full power!')
+    };
+
+    // Listen for any keyboard key down silently
+    this.input.keyboard.on('keydown', (event) => {
+      const char = event.key.toLowerCase();
+      if (char.length === 1 && /[a-z]/.test(char)) {
+        this._cheatBuffer += char;
+        // Keep buffer to max length of longest cheat code to avoid memory growth
+        if (this._cheatBuffer.length > 12) {
+          this._cheatBuffer = this._cheatBuffer.slice(-12);
+        }
+        // Check if buffer ends with any known cheat code
+        for (const code in this._cheatCodes) {
+          if (this._cheatBuffer.endsWith(code)) {
+            this._cheatCodes[code]();
+            this._cheatBuffer = '';
+            break;
+          }
+        }
+      }
+    });
+
     this.cameras.main.fadeIn(300, 0, 0, 0);
+  }
+
+  // Activate a cheat, play confirmation beep, show brief indicator
+  _activateCheat(cheatKey, message) {
+    // Toggle cheat on/off each time the code is entered
+    ACTIVE_CHEATS[cheatKey] = !ACTIVE_CHEATS[cheatKey];
+    const isOn = ACTIVE_CHEATS[cheatKey];
+
+    // Play triple ascending beep confirmation
+    this._audioManager.playCheatBeep();
+
+    // Show brief status flash
+    const statusMsg = isOn ? `✓ ${message}` : `✗ ${message.split(':')[0]}: OFF`;
+    this._cheatIndicator.setText(statusMsg).setAlpha(1);
+
+    this.tweens.killTweensOf(this._cheatIndicator);
+    this.tweens.add({
+      targets: this._cheatIndicator,
+      alpha: 0,
+      delay: 2500,
+      duration: 600,
+      ease: 'Power2'
+    });
   }
 
   makeButton(x, y, label, colorNormal, colorHover, onClick) {
@@ -1398,6 +1543,14 @@ class GameScene extends Phaser.Scene {
 
     // Start wave progression
     this.waveManager.startNextWave();
+
+    // CHEAT: motherlode — grants max 5 lives + all power-up effects on game start
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.motherlode) {
+      this.lives = 5;
+      this.events.emit('livesChanged', this.lives);
+      this.player.activateRapidFire(9999999);
+      this.player.activateShield(9999999);
+    }
   }
 
   setupCollisions() {
