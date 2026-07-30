@@ -28,11 +28,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setScale(scale); // Set sprite graphic scale
 
     const destroyedCount = this.scene.enemyGroup ? this.scene.enemyGroup.destroyedCount : 0;
-    const speedMultiplier = Math.pow(1.06, destroyedCount); // Exponential speed growth of 6% per destroyed meteorite
+    // Gentle 1.5% compounding speed increase per destroyed meteorite, capped at 1.5x maximum
+    const speedMultiplier = Math.min(1.5, Math.pow(1.015, destroyedCount));
 
-    this.speedY = Phaser.Math.Between(120, 220) * speedMultiplier; // Pick random downward speed scaled exponentially
-    this.speedX = Phaser.Math.Between(-30, 30) * speedMultiplier; // Pick random slight horizontal drift scaled exponentially
-    this.rotationSpeed = Phaser.Math.FloatBetween(-0.05, 0.05) * speedMultiplier; // Pick random spin rotation rate scaled exponentially
+    this.speedY = Phaser.Math.Between(150, 250) * speedMultiplier; // Pick baseline downward speed with gentle growth
+    this.speedX = Phaser.Math.Between(-30, 30) * speedMultiplier; // Pick random slight horizontal drift
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.04, 0.04) * speedMultiplier; // Pick random spin rotation rate
 
     this.setActive(true); // Enable object in active pool
     this.setVisible(true); // Show sprite graphics
@@ -54,14 +55,14 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 }
 
-// Manager class orchestrating continuous random meteorite spawning and wave progression
+// Manager class orchestrating balanced meteorite spawning and wave progression
 class EnemyGroup {
   // Construct meteorite swarm manager inside given scene
   constructor(scene) {
     this.scene = scene; // Store scene reference
     this.group = scene.physics.add.group({ classType: Enemy, runChildUpdate: true }); // Create physics group container
     this.nextSpawnTime = 0; // Timestamp of next meteorite spawn
-    this.spawnInterval = 800; // Spawn delay in milliseconds
+    this.spawnInterval = 1800; // Spawn delay in milliseconds
     this.destroyedCount = 0; // Track count of meteorites destroyed by player
     this.targetCount = 25; // Target count needed to trigger victory
 
@@ -70,24 +71,24 @@ class EnemyGroup {
 
   // Spawn initial cluster of meteorites staggered vertically above the screen
   initialSpawn() {
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 3; i++) {
       const meteor = this.group.get(); // Fetch free meteorite from group pool
       if (meteor) {
         meteor.resetMeteor(); // Reset meteorite to top of screen
-        meteor.y -= i * 60; // Stagger vertical spawn positions
+        meteor.y -= i * 100; // Stagger vertical spawn positions
       }
     }
   }
 
   // Update loop for continuous random meteorite spawning
   update(time, delta) {
-    // Continuously spawn meteorites at random intervals
+    // Continuously spawn meteorites at reduced frequency intervals
     if (time > this.nextSpawnTime) {
       const meteor = this.group.get(); // Fetch free meteorite from group pool
       if (meteor) {
         meteor.resetMeteor(); // Reset meteorite to random spawn location
       }
-      this.nextSpawnTime = time + Phaser.Math.Between(500, 1100); // Schedule next random spawn timestamp
+      this.nextSpawnTime = time + Phaser.Math.Between(1400, 2400); // Reduced spawn frequency
     }
   }
 }
