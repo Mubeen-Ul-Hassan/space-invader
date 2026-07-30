@@ -20,9 +20,8 @@ class BootScene extends Phaser.Scene {
     }
   }
 
-  // Transition to main gameplay scene once base64 assets are registered
+  // Transition to splash scene once base64 assets are registered
   create() {
-    this.scene.start('GameScene'); // Launch main GameScene
-    this.scene.start('UIScene'); // Launch parallel overlay UIScene
+    this.scene.start('SplashScene'); // Launch company SplashScene
   }
 }

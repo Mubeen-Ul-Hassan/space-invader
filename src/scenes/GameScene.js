@@ -1,4 +1,4 @@
-// Main GameScene managing gameplay state, physics collisions, and win/loss rules
+// Main GameScene managing gameplay state, physics collisions, enemy ships, and win/loss rules
 class GameScene extends Phaser.Scene {
   // Construct GameScene with scene key
   constructor() {
@@ -19,17 +19,21 @@ class GameScene extends Phaser.Scene {
     // Instantiate bullet object pool for player laser projectiles
     this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 12, runChildUpdate: true }); // Player bullet pool
 
+    // Instantiate bullet object pool for enemy laser projectiles
+    this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true }); // Enemy bullet pool
+
     // Instantiate custom Player starship entity
     this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70); // Create player ship object
 
     // Instantiate dynamic falling MeteorGroup spawner
     this.enemyGroup = new EnemyGroup(this); // Build falling meteorite swarm spawner
 
+    // Instantiate enemy ship group spawner
+    this.enemyShipGroup = new EnemyShipGroup(this); // Build enemy ship swarm spawner
+
     // Set up Arcade Physics collision handling rules
     this.setupCollisions(); // Register physics overlap and collision listeners
   }
-
-
 
   // Register all collision and overlap handlers between game entities
   setupCollisions() {
@@ -44,31 +48,64 @@ class GameScene extends Phaser.Scene {
         this.audioManager.playExplosion(); // Play explosion audio effect
         meteor.resetMeteor(); // Respawn meteorite at top of screen
 
-        // Check if player reached target meteorite count (Win State)
+        // Check if player reached target count (Win State)
         if (this.enemyGroup.destroyedCount >= this.enemyGroup.targetCount) {
           this.triggerWin(); // Handle game win victory state
         }
       }
     });
 
+    // Player bullet hits enemy ship
+    this.physics.add.overlap(this.playerBullets, this.enemyShipGroup.group, (bullet, ship) => {
+      if (bullet.active && ship.active) {
+        bullet.kill();
+        this.createExplosion(ship.x, ship.y);
+        this.score += ship.points;
+        this.events.emit('scoreChanged', this.score);
+        this.audioManager.playExplosion();
+        ship.resetShip();
+      }
+    });
 
+    // Enemy laser bullet hits player ship
+    this.physics.add.overlap(this.enemyBullets, this.player, (player, bullet) => {
+      if (bullet.active && !this.isGameOver) {
+        bullet.kill();
+        this.createExplosion(player.x, player.y);
+        this.handlePlayerDamage();
+      }
+    });
+
+    // Enemy ship collides directly with player ship
+    this.physics.add.overlap(this.enemyShipGroup.group, this.player, (player, ship) => {
+      if (ship.active && !this.isGameOver) {
+        this.createExplosion(ship.x, ship.y);
+        ship.resetShip();
+        this.handlePlayerDamage();
+      }
+    });
 
     // Falling meteorite collides directly with player ship
     this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
       if (meteor.active && !this.isGameOver) {
         this.createExplosion(meteor.x, meteor.y); // Spawn explosion particle effect at player location
         meteor.resetMeteor(); // Respawn meteorite at top of screen
-        this.lives -= 1; // Decrement player lives
-        this.events.emit('livesChanged', this.lives); // Emit lives update event to UIScene
-        this.audioManager.playHit(); // Play player damage audio effect
-
-        if (this.lives <= 0) {
-          this.triggerGameOver(); // Handle game over loss state when lives depleted
-        } else {
-          this.tweens.add({ targets: player, alpha: 0.2, duration: 100, yoyo: true, repeat: 3 }); // Flash player ship red invulnerability visual feedback
-        }
+        this.handlePlayerDamage();
       }
     });
+  }
+
+  // Handle player damage when struck by hazards
+  handlePlayerDamage() {
+    this.lives -= 1; // Decrement player lives
+    this.events.emit('livesChanged', this.lives); // Emit lives update event to UIScene
+    this.audioManager.playHit(); // Play player damage audio effect
+
+    if (this.lives <= 0) {
+      this.triggerGameOver(); // Handle game over loss state when lives depleted
+    } else {
+      this.tweens.add({ targets: this.player, alpha: 0.2, duration: 100, yoyo: true, repeat: 3 }); // Flash player ship red invulnerability visual feedback
+    }
   }
 
   // Create blast explosion visual effect using blast texture and particle burst
@@ -98,13 +135,14 @@ class GameScene extends Phaser.Scene {
     }); // Clean up particle emitter instances
   }
 
-  // Main frame update loop for scrolling background and meteor updates
+  // Main frame update loop for scrolling background and entity updates
   update(time, delta) {
     if (this.isGameOver) return; // Stop update loop logic if game is over
 
     this.bg.tilePositionY -= 3.5; // Scroll background graphics rapidly for forward space flight sensation
     this.player.update(time, delta); // Call update method on player ship entity
     this.enemyGroup.update(time, delta); // Call update method on meteorite spawner
+    this.enemyShipGroup.update(time, delta); // Call update method on enemy ship spawner
   }
 
   // Trigger Victory Win State

@@ -39,6 +39,17 @@ class UIScene extends Phaser.Scene {
       this.lifeIcons.push(icon); // Store icon reference
     }
 
+    // Interactive Settings HUD Button
+    const settingsBtn = this.add.rectangle(170, 25, 32, 32, 0x334466).setInteractive({ useHandCursor: true });
+    settingsBtn.setStrokeStyle(1, 0x00ffcc);
+    this.add.text(170, 25, '⚙', { fontSize: '18px', color: '#00ffcc' }).setOrigin(0.5);
+
+    settingsBtn.on('pointerdown', (pointer, localX, localY, event) => {
+      if (event) event.stopPropagation();
+      this.scene.pause('GameScene');
+      this.scene.start('SettingsScene');
+    });
+
     // Create control instructions hint banner at bottom of screen
     this.controlsHint = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height - 25, 'Drag or Arrow Keys to Move • Space / Auto-Fire to Shoot', {
       fontFamily: 'Arial, sans-serif',
