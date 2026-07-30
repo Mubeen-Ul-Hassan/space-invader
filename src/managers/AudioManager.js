@@ -1,21 +1,46 @@
-// Procedural Web Audio API sound effect manager for browser playback
+// Procedural Web Audio API sound effect manager for browser playback with Master Volume control
 class AudioManager {
-  // Initialize web audio context on first user interaction
+  // Initialize web audio context lazy instantiation and volume tracking
   constructor() {
     this.ctx = null; // Lazy instantiation of AudioContext
+    this.masterGain = null; // Global master gain node
+    this.volume = 0.8; // Default volume level (80%)
   }
 
-  // Ensure AudioContext is instantiated and resumed on gesture
+  // Ensure AudioContext and masterGain are instantiated and resumed on gesture
   init() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext; // Fallback support for WebKit browsers
       if (AudioCtx) {
         this.ctx = new AudioCtx(); // Create native AudioContext instance
+        this.masterGain = this.ctx.createGain(); // Create master volume gain node
+        this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+        this.masterGain.connect(this.ctx.destination);
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume(); // Resume audio context if browser suspended auto-play
     }
+  }
+
+  // Set global audio master volume (0.0 to 1.0)
+  setVolume(volume) {
+    this.volume = Phaser.Math.Clamp(volume, 0, 1);
+    this.init();
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+    }
+  }
+
+  // Get current global audio master volume
+  getVolume() {
+    return this.volume;
+  }
+
+  // Helper destination routing to master gain node
+  getDestination() {
+    this.init();
+    return this.masterGain || (this.ctx ? this.ctx.destination : null);
   }
 
   // Play laser shoot synth sound effect
@@ -34,7 +59,8 @@ class AudioManager {
     gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1); // Rapid fade out sound
 
     osc.connect(gain); // Connect oscillator to gain node
-    gain.connect(this.ctx.destination); // Connect gain node to speaker output
+    const dest = this.getDestination();
+    if (dest) gain.connect(dest); // Connect gain node to master volume output
 
     osc.start(); // Start sound generation
     osc.stop(this.ctx.currentTime + 0.1); // Stop playback after 100 milliseconds
@@ -67,7 +93,8 @@ class AudioManager {
 
     whiteNoise.connect(filter); // Connect noise source to filter
     filter.connect(gain); // Connect filter output to volume gain node
-    gain.connect(this.ctx.destination); // Connect gain node to speaker output
+    const dest = this.getDestination();
+    if (dest) gain.connect(dest); // Connect gain node to master volume output
 
     whiteNoise.start(); // Play noise blast
     whiteNoise.stop(this.ctx.currentTime + 0.25); // Stop noise blast after duration
@@ -89,7 +116,8 @@ class AudioManager {
     gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15); // Fade volume out
 
     osc.connect(gain); // Connect oscillator to gain node
-    gain.connect(this.ctx.destination); // Connect gain node to speakers
+    const dest = this.getDestination();
+    if (dest) gain.connect(dest); // Connect gain node to master volume output
 
     osc.start(); // Start sound playback
     osc.stop(this.ctx.currentTime + 0.15); // Stop playback after 150ms
@@ -112,7 +140,8 @@ class AudioManager {
       gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.1 + 0.2); // Fade note sound out
 
       osc.connect(gain); // Connect note oscillator to gain node
-      gain.connect(this.ctx.destination); // Connect gain node to speakers
+      const dest = this.getDestination();
+      if (dest) gain.connect(dest); // Connect gain node to master volume output
 
       osc.start(this.ctx.currentTime + idx * 0.1); // Start note playing at scheduled offset
       osc.stop(this.ctx.currentTime + idx * 0.1 + 0.2); // Stop note playing after 200ms
@@ -133,10 +162,12 @@ class AudioManager {
       osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12); // Schedule descending pitch sequence
 
       gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.12); // Set note initial volume
+
       gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.12 + 0.2); // Fade volume out
 
       osc.connect(gain); // Connect oscillator to gain node
-      gain.connect(this.ctx.destination); // Connect gain to audio destination
+      const dest = this.getDestination();
+      if (dest) gain.connect(dest); // Connect gain node to master volume output
 
       osc.start(this.ctx.currentTime + idx * 0.12); // Start note at scheduled offset
       osc.stop(this.ctx.currentTime + idx * 0.12 + 0.2); // Stop note sound after 200ms
