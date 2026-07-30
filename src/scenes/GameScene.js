@@ -22,9 +22,6 @@ class GameScene extends Phaser.Scene {
     // Instantiate custom Player starship entity
     this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70); // Create player ship object
 
-    // Instantiate defense bunker shields
-    this.createShields(); // Spawn defensive barrier bunkers
-
     // Instantiate dynamic falling MeteorGroup spawner
     this.enemyGroup = new EnemyGroup(this); // Build falling meteorite swarm spawner
 
@@ -32,20 +29,7 @@ class GameScene extends Phaser.Scene {
     this.setupCollisions(); // Register physics overlap and collision listeners
   }
 
-  // Construct defensive bunker shield blocks across the screen width
-  createShields() {
-    this.shields = this.physics.add.staticGroup(); // Create static group for defense bunkers
-    const shieldPositions = [150, 310, 490, 650]; // X positions for 4 shield bunkers
 
-    shieldPositions.forEach(x => {
-      for (let row = 0; row < 2; row++) {
-        for (let col = 0; col < 4; col++) {
-          const shieldBlock = new Shield(this, x + col * 14, GAME_CONFIG.height - 140 + row * 14); // Build individual shield tile block
-          this.shields.add(shieldBlock); // Add block to static shield group
-        }
-      }
-    });
-  }
 
   // Register all collision and overlap handlers between game entities
   setupCollisions() {
@@ -67,14 +51,7 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    // Falling meteorite hits defense shield block
-    this.physics.add.overlap(this.enemyGroup.group, this.shields, (meteor, shieldBlock) => {
-      if (meteor.active && shieldBlock.active) {
-        this.createExplosion(meteor.x, meteor.y); // Spawn blast explosion effect
-        shieldBlock.takeDamage(); // Damage shield barrier block
-        meteor.resetMeteor(); // Respawn meteorite at top of screen
-      }
-    });
+
 
     // Falling meteorite collides directly with player ship
     this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
