@@ -1,4 +1,4 @@
-// UIScene managing HUD displays, numeric lives, wave banners, and CTA popups
+// UIScene managing HUD displays, wave banners, and simple game-over / win dialogs
 class UIScene extends Phaser.Scene {
   constructor() {
     super({ key: 'UIScene' });
@@ -7,31 +7,39 @@ class UIScene extends Phaser.Scene {
   create() {
     this.score = 0;
     this.lives = GAME_CONFIG.initialLives;
+    const W = GAME_CONFIG.width;
+    const H = GAME_CONFIG.height;
+    const cx = W / 2;
 
-    // Create score display text
-    this.scoreText = this.add.text(20, 15, 'SCORE: 0000', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '20px',
+    // HUD top bar strip
+    const hudBar = this.add.graphics();
+    hudBar.fillStyle(0x000011, 0.7);
+    hudBar.fillRect(0, 0, W, 45);
+
+    // Score display
+    this.scoreText = this.add.text(20, 12, 'SCORE: 0000', {
+      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontSize: '18px',
       color: '#00ffcc'
     });
 
-    // Create title banner text
-    this.titleText = this.add.text(GAME_CONFIG.width / 2, 20, 'SPACE INVADERS', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '20px',
+    // Center Title
+    this.add.text(cx, 14, 'SPACE INVADERS', {
+      fontFamily: '"Arial Black", sans-serif',
+      fontSize: '16px',
       color: '#ffcc00'
     }).setOrigin(0.5, 0);
 
-    // Render numeric HUD health display: [ShipIcon] [numeralX] [numeralCount]
-    this.lifeShipIcon = this.add.image(GAME_CONFIG.width - 90, 25, 'life').setScale(0.9);
-    this.numeralXIcon = this.add.image(GAME_CONFIG.width - 60, 25, 'numeralX').setScale(0.8);
+    // Numeric HUD Lives display: [ShipIcon] x [Count]
+    this.lifeShipIcon = this.add.image(W - 90, 22, 'life').setScale(0.85);
+    this.numeralXIcon = this.add.image(W - 65, 22, 'numeralX').setScale(0.75);
     const initialDigitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
-    this.numeralDigitIcon = this.add.image(GAME_CONFIG.width - 30, 25, initialDigitKey).setScale(0.8);
+    this.numeralDigitIcon = this.add.image(W - 40, 22, initialDigitKey).setScale(0.75);
 
-    // Interactive Settings HUD Button
-    const settingsBtn = this.add.rectangle(170, 25, 32, 32, 0x334466).setInteractive({ useHandCursor: true });
+    // Settings HUD Button
+    const settingsBtn = this.add.rectangle(175, 22, 28, 28, 0x334466).setInteractive({ useHandCursor: true });
     settingsBtn.setStrokeStyle(1, 0x00ffcc);
-    this.add.text(170, 25, '⚙', { fontSize: '18px', color: '#00ffcc' }).setOrigin(0.5);
+    this.add.text(175, 22, 'S', { fontFamily: '"Arial Black"', fontSize: '14px', color: '#00ffcc' }).setOrigin(0.5);
 
     settingsBtn.on('pointerdown', (pointer, localX, localY, event) => {
       if (event) event.stopPropagation();
@@ -39,23 +47,23 @@ class UIScene extends Phaser.Scene {
       this.scene.start('SettingsScene');
     });
 
-    // Central Wave Banner Text
-    this.waveBannerText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 40, '', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
+    // Wave Notification Banner
+    this.waveBannerText = this.add.text(cx, H / 2 - 40, '', {
+      fontFamily: '"Arial Black", sans-serif',
       fontSize: '36px',
       color: '#00ffcc',
       align: 'center'
     }).setOrigin(0.5).setAlpha(0);
 
-    // Create control instructions hint banner at bottom of screen
-    this.controlsHint = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height - 25, 'Drag or Arrow Keys to Move • Space / Auto-Fire to Shoot', {
+    // Controls hint footer
+    this.controlsHint = this.add.text(cx, H - 20, 'WASD / Arrow Keys to Move  •  Space to Shoot', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '13px',
       color: '#8888aa',
       align: 'center'
     }).setOrigin(0.5);
 
-    // Listen for events emitted from GameScene
+    // Listen for events from GameScene
     const gameScene = this.scene.get('GameScene');
     gameScene.events.on('scoreChanged', this.updateScore, this);
     gameScene.events.on('livesChanged', this.updateLives, this);
@@ -65,38 +73,32 @@ class UIScene extends Phaser.Scene {
     gameScene.events.on('waveCleared', this.showWaveClearedBanner, this);
   }
 
-  // Display wave start notification banner
   showWaveStartedBanner(waveNum) {
     this.waveBannerText.setText(`WAVE ${waveNum}`).setColor('#00ffcc').setAlpha(1);
     this.tweens.add({
       targets: this.waveBannerText,
       alpha: { from: 1, to: 0 },
-      scale: { from: 1, to: 1.2 },
-      duration: 1600,
+      duration: 1500,
       ease: 'Power2'
     });
   }
 
-  // Display wave cleared notification banner
   showWaveClearedBanner(waveNum) {
     this.waveBannerText.setText(`WAVE ${waveNum} CLEARED!`).setColor('#ffcc00').setAlpha(1);
     this.tweens.add({
       targets: this.waveBannerText,
       alpha: { from: 1, to: 0 },
-      scale: { from: 1, to: 1.2 },
-      duration: 1600,
+      duration: 1500,
       ease: 'Power2'
     });
   }
 
-  // Update score HUD text formatted with leading zeros
   updateScore(newScore) {
     this.score = newScore;
     const formatted = String(newScore).padStart(4, '0');
     this.scoreText.setText(`SCORE: ${formatted}`);
   }
 
-  // Update numeric lives display HUD (ShipIcon * count) using numeric PNG assets
   updateLives(newLives) {
     this.lives = Math.max(0, newLives);
     const digitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
@@ -105,75 +107,80 @@ class UIScene extends Phaser.Scene {
     }
   }
 
-  // Show Game Over dialog modal
   showGameOverModal() {
-    this.showModal('MISSION FAILED', '#ff4444', false);
+    this.showModal('GAME OVER', '#ff4444', false);
   }
 
-  // Show Game Win dialog modal
   showWinModal() {
-    this.showModal('VICTORY ACHIEVED!', '#00ffcc', true);
+    this.showModal('VICTORY!', '#00ffcc', true);
   }
 
-  // Modal dialog popup container
+  // Simple, clean game-over and victory dialog modal
   showModal(title, titleColor, isWin) {
-    const modalBg = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75);
+    const cx = GAME_CONFIG.width / 2;
+    const cy = GAME_CONFIG.height / 2;
 
-    const card = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 440, 270, 0x111122, 0.95);
-    card.setStrokeStyle(3, 0x00ffcc);
+    // Dark semi-transparent background overlay
+    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75);
 
-    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 75, title, {
-      fontFamily: 'Arial Black, Arial, sans-serif',
-      fontSize: '28px',
+    // Simple Dialog Card
+    const card = this.add.rectangle(cx, cy, 400, 240, 0x11162b, 0.95);
+    card.setStrokeStyle(2, titleColor === '#ff4444' ? 0xff4444 : 0x00ffcc);
+
+    // Modal Title
+    this.add.text(cx, cy - 70, title, {
+      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontSize: '32px',
       color: titleColor
     }).setOrigin(0.5);
 
-    this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 - 25, `FINAL SCORE: ${this.score}`, {
+    // Final Score
+    this.add.text(cx, cy - 15, `FINAL SCORE: ${this.score}`, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    if (!isWin) {
-      const retryBtn = this.add.rectangle(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x3344cc).setInteractive({ useHandCursor: true });
-      retryBtn.setStrokeStyle(2, 0xffffff);
-
-      this.add.text(GAME_CONFIG.width / 2 - 105, GAME_CONFIG.height / 2 + 45, 'TRY AGAIN', {
-        fontFamily: 'Arial Black, Arial, sans-serif',
-        fontSize: '18px',
-        color: '#ffffff'
+    // Save High Score
+    const hiScore = parseInt(localStorage.getItem('spaceInvadersHighScore') || '0');
+    if (this.score > hiScore) {
+      localStorage.setItem('spaceInvadersHighScore', this.score);
+      this.add.text(cx, cy + 18, 'NEW HIGH SCORE!', {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '14px',
+        color: '#ffcc00'
       }).setOrigin(0.5);
-
-      retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x5566ff));
-      retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x3344cc));
-      retryBtn.on('pointerdown', () => this.restartGame());
-
-      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 180, 48, 0x00cc66).setInteractive({ useHandCursor: true });
-      ctaBtn.setStrokeStyle(2, 0xffffff);
-
-      this.add.text(GAME_CONFIG.width / 2 + 105, GAME_CONFIG.height / 2 + 45, 'PLAY AGAIN', {
-        fontFamily: 'Arial Black, Arial, sans-serif',
-        fontSize: '18px',
-        color: '#ffffff'
-      }).setOrigin(0.5);
-
-      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88));
-      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66));
-      ctaBtn.on('pointerdown', () => this.restartGame());
-    } else {
-      const ctaBtn = this.add.rectangle(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 220, 50, 0x00cc66).setInteractive({ useHandCursor: true });
-      ctaBtn.setStrokeStyle(2, 0xffffff);
-
-      this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2 + 45, 'PLAY AGAIN', {
-        fontFamily: 'Arial Black, Arial, sans-serif',
-        fontSize: '22px',
-        color: '#ffffff'
-      }).setOrigin(0.5);
-
-      ctaBtn.on('pointerover', () => ctaBtn.setFillStyle(0x00ff88));
-      ctaBtn.on('pointerout', () => ctaBtn.setFillStyle(0x00cc66));
-      ctaBtn.on('pointerdown', () => this.restartGame());
     }
+
+    // Button 1: PLAY AGAIN
+    const retryBtn = this.add.rectangle(cx - 95, cy + 65, 160, 44, 0x00cc66).setInteractive({ useHandCursor: true });
+    retryBtn.setStrokeStyle(2, 0xffffff);
+    this.add.text(cx - 95, cy + 65, 'PLAY AGAIN', {
+      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontSize: '16px',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x00ee77));
+    retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x00cc66));
+    retryBtn.on('pointerdown', () => this.restartGame());
+
+    // Button 2: MAIN MENU
+    const menuBtn = this.add.rectangle(cx + 95, cy + 65, 160, 44, 0x334466).setInteractive({ useHandCursor: true });
+    menuBtn.setStrokeStyle(2, 0xffffff);
+    this.add.text(cx + 95, cy + 65, 'MAIN MENU', {
+      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontSize: '16px',
+      color: '#ffffff'
+    }).setOrigin(0.5);
+
+    menuBtn.on('pointerover', () => menuBtn.setFillStyle(0x556688));
+    menuBtn.on('pointerout', () => menuBtn.setFillStyle(0x334466));
+    menuBtn.on('pointerdown', () => {
+      this.scene.stop('GameScene');
+      this.scene.stop('UIScene');
+      this.scene.start('MainMenuScene');
+    });
   }
 
   restartGame() {

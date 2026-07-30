@@ -8,6 +8,7 @@ class GameScene extends Phaser.Scene {
     this.score = 0;
     this.lives = GAME_CONFIG.initialLives;
     this.isGameOver = false;
+    this._invincible = false;
 
     this.audioManager = new AudioManager();
 
@@ -85,7 +86,7 @@ class GameScene extends Phaser.Scene {
 
     // Enemy laser bullet hits player ship
     this.physics.add.overlap(this.enemyBullets, this.player, (player, bullet) => {
-      if (bullet.active && !this.isGameOver) {
+      if (bullet.active && !this.isGameOver && !this._invincible) {
         bullet.kill();
         if (!this.player.isShieldActive()) {
           this.createExplosion(player.x, player.y);
@@ -96,7 +97,7 @@ class GameScene extends Phaser.Scene {
 
     // Enemy ship collides directly with player ship
     this.physics.add.overlap(this.enemyShipGroup.group, this.player, (player, ship) => {
-      if (ship.active && !this.isGameOver) {
+      if (ship.active && !this.isGameOver && !this._invincible) {
         this.createExplosion(ship.x, ship.y);
         ship.setActive(false).setVisible(false);
         this.waveManager.onEnemyDestroyed();
@@ -108,7 +109,7 @@ class GameScene extends Phaser.Scene {
 
     // Falling meteorite collides directly with player ship
     this.physics.add.overlap(this.enemyGroup.group, this.player, (player, meteor) => {
-      if (meteor.active && !this.isGameOver) {
+      if (meteor.active && !this.isGameOver && !this._invincible) {
         this.createExplosion(meteor.x, meteor.y);
         meteor.setActive(false).setVisible(false);
         this.waveManager.onEnemyDestroyed();
@@ -129,7 +130,22 @@ class GameScene extends Phaser.Scene {
     if (this.lives <= 0) {
       this.triggerGameOver();
     } else {
-      this.tweens.add({ targets: this.player, alpha: 0.2, duration: 100, yoyo: true, repeat: 3 });
+      // 2-second rapid invincibility flash on respawn
+      this._invincible = true;
+      this.tweens.add({
+        targets: this.player,
+        alpha: 0.15,
+        duration: 80,
+        yoyo: true,
+        repeat: 12,
+        ease: 'Linear',
+        onComplete: () => {
+          if (this.player && this.player.active) {
+            this.player.setAlpha(1);
+            this._invincible = false;
+          }
+        }
+      });
     }
   }
 
