@@ -66,17 +66,22 @@ const htmlContent = `<!DOCTYPE html>
       padding: 0;
       overflow: hidden;
       background-color: #050510;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     #game-container {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      position: relative;
     }
-    canvas {
-      display: block;
+    #game-container canvas {
+      display: block !important;
+      margin: auto !important;
       touch-action: none;
     }
   </style>
