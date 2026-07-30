@@ -1,4 +1,4 @@
-// Reusable Player ship game object with controls, firing logic, and power-up boosts
+// Reusable Player ship game object with 4-directional movement (Left, Right, Up, Down), firing logic, and power-up boosts
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'player');
@@ -16,11 +16,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.shieldAura.setVisible(false);
 
     this.cursors = scene.input.keyboard.createCursorKeys();
-    this.wasd = scene.input.keyboard.addKeys('A,D,SPACE');
+    this.wasd = scene.input.keyboard.addKeys('W,A,S,D,SPACE');
 
+    // Touch & Mouse Drag controls supporting 2D screen movement (x, y)
     scene.input.on('pointermove', (pointer) => {
       if (pointer.isDown) {
         this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30);
+        this.y = Phaser.Math.Clamp(pointer.y, 100, GAME_CONFIG.height - 40);
       }
     });
   }
@@ -43,14 +45,26 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   update(time, delta) {
     let velocityX = 0;
+    let velocityY = 0;
 
+    // Horizontal controls (Left / Right)
     if (this.cursors.left.isDown || this.wasd.A.isDown) {
       velocityX = -GAME_CONFIG.playerSpeed;
     } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
       velocityX = GAME_CONFIG.playerSpeed;
     }
 
-    this.setVelocityX(velocityX);
+    // Vertical controls (Up / Down)
+    if (this.cursors.up.isDown || this.wasd.W.isDown) {
+      velocityY = -GAME_CONFIG.playerSpeed;
+    } else if (this.cursors.down.isDown || this.wasd.S.isDown) {
+      velocityY = GAME_CONFIG.playerSpeed;
+    }
+
+    this.setVelocity(velocityX, velocityY);
+
+    // Keep ship within playable screen boundaries
+    this.y = Phaser.Math.Clamp(this.y, 100, GAME_CONFIG.height - 40);
 
     // Update attached shield aura position and visibility
     if (this.shieldAura) {
