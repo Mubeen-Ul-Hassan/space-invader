@@ -1,53 +1,82 @@
-// Reusable Player ship game object with controls and firing logic
+// Reusable Player ship game object with controls, firing logic, and power-up boosts
 class Player extends Phaser.Physics.Arcade.Sprite {
-  // Construct player ship with physics body and input listeners
   constructor(scene, x, y) {
-    super(scene, x, y, 'player'); // Call parent Sprite constructor
-    scene.add.existing(this); // Add player sprite to current scene
-    scene.physics.add.existing(this); // Register body with Arcade Physics
+    super(scene, x, y, 'player');
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
 
-    this.setCollideWorldBounds(true); // Prevent player ship from moving outside screen bounds
-    this.setScale(0.7); // Adjust sprite size for ideal visual proportion
-    this.lastFired = 0; // Timestamp of previous laser shot fired
+    this.setCollideWorldBounds(true);
+    this.setScale(0.7);
+    this.lastFired = 0;
+    this.fireRateBoostUntil = 0;
+    this.shieldUntil = 0;
 
-    this.cursors = scene.input.keyboard.createCursorKeys(); // Register arrow keys input listener
-    this.wasd = scene.input.keyboard.addKeys('A,D,SPACE'); // Register WASD and Space key listeners
+    // Visual glowing shield aura sprite overlay
+    this.shieldAura = scene.add.image(x, y, 'shield1').setScale(1.2).setAlpha(0.85);
+    this.shieldAura.setVisible(false);
 
-    // Set up touch drag controls for responsive mobile gameplay
+    this.cursors = scene.input.keyboard.createCursorKeys();
+    this.wasd = scene.input.keyboard.addKeys('A,D,SPACE');
+
     scene.input.on('pointermove', (pointer) => {
       if (pointer.isDown) {
-        this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30); // Move ship directly to pointer touch x-position
+        this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30);
       }
     });
   }
 
-  // Update loop for handling keyboard inputs and automatic boundaries
-  update(time, delta) {
-    let velocityX = 0; // Default zero horizontal speed
+  // Activate 12-second rapid fire boost
+  activateRapidFire(durationMs = 12000) {
+    this.fireRateBoostUntil = this.scene.time.now + durationMs;
+  }
 
-    // Check left movement key inputs
+  // Activate 15-second shield immunity
+  activateShield(durationMs = 15000) {
+    this.shieldUntil = this.scene.time.now + durationMs;
+    this.shieldAura.setVisible(true);
+  }
+
+  // Check if shield is currently active
+  isShieldActive() {
+    return this.scene.time.now < this.shieldUntil;
+  }
+
+  update(time, delta) {
+    let velocityX = 0;
+
     if (this.cursors.left.isDown || this.wasd.A.isDown) {
-      velocityX = -GAME_CONFIG.playerSpeed; // Move ship left
+      velocityX = -GAME_CONFIG.playerSpeed;
     } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
-      velocityX = GAME_CONFIG.playerSpeed; // Move ship right
+      velocityX = GAME_CONFIG.playerSpeed;
     }
 
-    this.setVelocityX(velocityX); // Apply calculated horizontal speed to physics body
+    this.setVelocityX(velocityX);
 
-    // Check auto-shoot / space key input
+    // Update attached shield aura position and visibility
+    if (this.shieldAura) {
+      this.shieldAura.setPosition(this.x, this.y);
+      const shieldActive = time < this.shieldUntil;
+      this.shieldAura.setVisible(shieldActive);
+      if (shieldActive) {
+        this.shieldAura.rotation += 0.02; // Rotate shield visual aura
+      }
+    }
+
+    // Auto-shoot / space key input with rapid fire support
     if ((this.cursors.space.isDown || this.wasd.SPACE.isDown || this.scene.input.activePointer.isDown) && time > this.lastFired) {
-      this.shoot(time); // Attempt firing laser weapon
+      this.shoot(time);
     }
   }
 
-  // Shoot laser projectile from player ship
   shoot(time) {
-    const bullet = this.scene.playerBullets.get(); // Retrieve available bullet from object pool
+    const bullet = this.scene.playerBullets.get();
     if (bullet) {
-      bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true); // Launch laser upwards
-      this.lastFired = time + GAME_CONFIG.playerFireRate; // Set next allowed fire timestamp
+      bullet.fire(this.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
+      const isRapid = time < this.fireRateBoostUntil;
+      const delay = isRapid ? 120 : GAME_CONFIG.playerFireRate;
+      this.lastFired = time + delay;
       if (this.scene.audioManager) {
-        this.scene.audioManager.playShoot(); // Trigger laser audio effect
+        this.scene.audioManager.playShoot();
       }
     }
   }
