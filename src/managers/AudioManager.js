@@ -173,4 +173,30 @@ class AudioManager {
       osc.stop(this.ctx.currentTime + idx * 0.12 + 0.2); // Stop note sound after 200ms
     });
   }
+
+  // Play cheat code confirmation triple ascending beep
+  playCheatBeep() {
+    this.init();
+    if (!this.ctx) return;
+
+    const beepFreqs = [440, 660, 880]; // Ascending three-tone confirmation beep sequence
+    beepFreqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine'; // Clean sine beep tone
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
+
+      gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.12);
+      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.12 + 0.1);
+
+      osc.connect(gain);
+      const dest = this.getDestination();
+      if (dest) gain.connect(dest);
+
+      osc.start(this.ctx.currentTime + idx * 0.12);
+      osc.stop(this.ctx.currentTime + idx * 0.12 + 0.1);
+    });
+  }
 }
+
