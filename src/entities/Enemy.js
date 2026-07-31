@@ -20,7 +20,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.body.setSize(this.width, this.height); // Refresh physics body size
     }
 
-    const x = Phaser.Math.Between(40, GAME_CONFIG.width - 40); // Pick random horizontal position
+    const x = Phaser.Math.Between(40, this.scene.scale.width - 40); // Pick random horizontal position
     const y = Phaser.Math.Between(-80, -40); // Pick random off-screen vertical spawn height
     this.setPosition(x, y); // Set sprite coordinates
 
@@ -59,7 +59,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     // Recycle meteorite when it passes below bottom screen boundary
-    if (this.y > GAME_CONFIG.height + 60) {
+    if (this.y > this.scene.scale.height + 60) {
       this.resetMeteor(); // Respawn meteorite at top of screen
     }
   }

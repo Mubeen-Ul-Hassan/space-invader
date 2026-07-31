@@ -20,7 +20,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
   // Pre-update loop to recycle off-screen projectiles automatically
   preUpdate(time, delta) {
     super.preUpdate(time, delta); // Call parent sprite pre-update lifecycle
-    if (this.y <= -50 || this.y >= GAME_CONFIG.height + 50) {
+    if (this.y <= -50 || this.y >= this.scene.scale.height + 50) {
       this.kill(); // Deactivate bullet when off-screen bounds
     }
   }
