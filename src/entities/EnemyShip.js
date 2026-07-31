@@ -98,11 +98,15 @@ class EnemyShipGroup {
   }
 
   update(time, delta) {
-    // Ambient ship spawn is very rare — wave formations supply the main ships
+    // Ambient ship spawn is very rare — respect hard cap so ships don't overcrowd
     if (time > this.nextSpawnTime) {
-      const ship = this.group.get();
-      if (ship) {
-        ship.resetShip();
+      const cap = this.scene.waveManager ? this.scene.waveManager.MAX_SHIPS : 5;
+      const activeCount = this.group.getChildren().filter(s => s.active).length;
+      if (activeCount < cap) {
+        const ship = this.group.get();
+        if (ship) {
+          ship.resetShip();
+        }
       }
       this.nextSpawnTime = time + Phaser.Math.Between(8000, 14000); // Very slow ambient spawning
     }
