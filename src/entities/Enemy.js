@@ -28,12 +28,13 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setScale(scale); // Set sprite graphic scale
 
     const destroyedCount = this.scene.enemyGroup ? this.scene.enemyGroup.destroyedCount : 0;
-    // Gentle 1.5% compounding speed increase per destroyed meteorite, capped at 1.5x maximum
-    const speedMultiplier = Math.min(1.5, Math.pow(1.015, destroyedCount));
+    // Very gentle 0.8% compounding speed increase per destroyed meteorite, capped at 1.35x maximum
+    // This keeps early waves manageable and extends overall gameplay duration
+    const speedMultiplier = Math.min(1.35, Math.pow(1.008, destroyedCount));
 
-    this.speedY = Phaser.Math.Between(150, 250) * speedMultiplier; // Pick baseline downward speed with gentle growth
-    this.speedX = Phaser.Math.Between(-30, 30) * speedMultiplier; // Pick random slight horizontal drift
-    this.rotationSpeed = Phaser.Math.FloatBetween(-0.04, 0.04) * speedMultiplier; // Pick random spin rotation rate
+    this.speedY = Phaser.Math.Between(120, 200) * speedMultiplier; // Slower baseline speed for longer engagement
+    this.speedX = Phaser.Math.Between(-25, 25) * speedMultiplier; // Slight horizontal drift
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.04, 0.04) * speedMultiplier; // Spin rotation rate
 
     this.setActive(true); // Enable object in active pool
     this.setVisible(true); // Show sprite graphics
@@ -81,24 +82,24 @@ class EnemyGroup {
 
   // Spawn initial cluster of meteorites staggered vertically above the screen
   initialSpawn() {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       const meteor = this.group.get(); // Fetch free meteorite from group pool
       if (meteor) {
         meteor.resetMeteor(); // Reset meteorite to top of screen
-        meteor.y -= i * 100; // Stagger vertical spawn positions
+        meteor.y -= i * 120; // Stagger vertical spawn positions
       }
     }
   }
 
-  // Update loop for continuous random meteorite spawning
+  // Update loop for continuous random meteorite spawning (background filler between wave formations)
   update(time, delta) {
-    // Continuously spawn meteorites at reduced frequency intervals
+    // Spawn ambient meteors at a slow rate — wave formations are the primary source
     if (time > this.nextSpawnTime) {
       const meteor = this.group.get(); // Fetch free meteorite from group pool
       if (meteor) {
         meteor.resetMeteor(); // Reset meteorite to random spawn location
       }
-      this.nextSpawnTime = time + Phaser.Math.Between(1400, 2400); // Reduced spawn frequency
+      this.nextSpawnTime = time + Phaser.Math.Between(2800, 4500); // Very slow ambient spawning
     }
   }
 }
