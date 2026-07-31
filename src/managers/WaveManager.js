@@ -1,4 +1,5 @@
-// Multi-stage Wave Manager with 40-second initial grace period (no enemy ships) and spaced 3-ship wave limits
+// Multi-stage Wave Manager — score-gated waves for extended gameplay
+// Wave clear thresholds: W1≈500  W2≈1500  W3≈3000  W4≈5000  W5≈7500+
 class WaveManager {
   constructor(scene) {
     this.scene = scene;
@@ -38,61 +39,102 @@ class WaveManager {
     let meteorCount = 0;
     let shipCount = 0;
 
-    // Check if 40-second grace period has passed
+    // Ships are allowed after a 30-second grace period at game start
     const elapsedMs = this.scene.time.now - this.gameStartTime;
-    const shipsAllowed = (elapsedMs >= 40000);
+    const shipsAllowed = (elapsedMs >= 30000);
 
-    // Each wave has 3 sub-wave stages. If ships are allowed, spawn 1 ship per stage (3 total per wave)
-    const shouldSpawnShipInThisStage = shipsAllowed;
-
+    /*
+     * Wave design — each wave has more stages and denser enemy formations
+     * so the score accumulates more slowly and gameplay lasts longer.
+     *
+     * Meteor  = 20 pts each
+     * Ship    = 50 pts each
+     *
+     * Wave 1 (6 stages): 4 meteors + 0-1 ship per stage  ≈ 500 pts to clear
+     * Wave 2 (7 stages): 5 meteors + 1-2 ships per stage ≈ 1500 pts cumulative
+     * Wave 3 (8 stages): 6 meteors + 2 ships per stage   ≈ 3000 pts cumulative
+     * Wave 4 (9 stages): 7 meteors + 2-3 ships per stage ≈ 5000 pts cumulative
+     * Wave 5 (10 stages): 8 meteors + 3 ships per stage  ≈ 7500+ pts cumulative
+     */
     switch (this.currentWave) {
+      // ── Wave 1 ── 6 stages, 4 meteors each, 1 ship when unlocked
       case 1:
-        this.totalStagesInWave = 3;
-        meteorCount = 3;
-        this.spawnMeteorVFormation(meteorCount);
-        if (shouldSpawnShipInThisStage) {
+        this.totalStagesInWave = 6;
+        meteorCount = 4;
+        if (this.currentStage % 2 === 0) {
+          this.spawnMeteorStaggered(meteorCount);
+        } else {
+          this.spawnMeteorVFormation(meteorCount);
+        }
+        if (shipsAllowed && this.currentStage >= 3) {
           shipCount = 1;
-          this.spawnSingleEnemyShip();
+          this.spawnEnemyShips(1);
         }
         break;
 
+      // ── Wave 2 ── 7 stages, 5 meteors each, 1-2 ships
       case 2:
-        this.totalStagesInWave = 3;
-        meteorCount = 3;
-        this.spawnMeteorStaggered(meteorCount);
-        if (shouldSpawnShipInThisStage) {
-          shipCount = 1;
-          this.spawnSingleEnemyShip();
+        this.totalStagesInWave = 7;
+        meteorCount = 5;
+        if (this.currentStage % 2 === 0) {
+          this.spawnMeteorVFormation(meteorCount);
+        } else {
+          this.spawnMeteorStaggered(meteorCount);
+        }
+        if (shipsAllowed) {
+          shipCount = (this.currentStage >= 4) ? 2 : 1;
+          this.spawnEnemyShips(shipCount);
         }
         break;
 
+      // ── Wave 3 ── 8 stages, 6 meteors each, 2 ships
       case 3:
-        this.totalStagesInWave = 3;
-        meteorCount = 3;
-        this.spawnMeteorVFormation(meteorCount);
-        if (shouldSpawnShipInThisStage) {
-          shipCount = 1;
-          this.spawnSingleEnemyShip();
+        this.totalStagesInWave = 8;
+        meteorCount = 6;
+        if (this.currentStage % 3 === 0) {
+          this.spawnMeteorSpread(meteorCount);
+        } else if (this.currentStage % 2 === 0) {
+          this.spawnMeteorVFormation(meteorCount);
+        } else {
+          this.spawnMeteorStaggered(meteorCount);
+        }
+        if (shipsAllowed) {
+          shipCount = (this.currentStage >= 5) ? 3 : 2;
+          this.spawnEnemyShips(shipCount);
         }
         break;
 
+      // ── Wave 4 ── 9 stages, 7 meteors each, 2-3 ships
       case 4:
-        this.totalStagesInWave = 3;
-        meteorCount = 4;
-        this.spawnMeteorStaggered(meteorCount);
-        if (shouldSpawnShipInThisStage) {
-          shipCount = 1;
-          this.spawnSingleEnemyShip();
+        this.totalStagesInWave = 9;
+        meteorCount = 7;
+        if (this.currentStage % 3 === 0) {
+          this.spawnMeteorVFormation(meteorCount);
+        } else if (this.currentStage % 2 === 0) {
+          this.spawnMeteorSpread(meteorCount);
+        } else {
+          this.spawnMeteorStaggered(meteorCount);
+        }
+        if (shipsAllowed) {
+          shipCount = (this.currentStage >= 6) ? 3 : 2;
+          this.spawnEnemyShips(shipCount);
         }
         break;
 
-      default: // Wave 5 (Final Wave)
-        this.totalStagesInWave = 3;
-        meteorCount = 4;
-        this.spawnMeteorVFormation(meteorCount);
-        if (shouldSpawnShipInThisStage) {
-          shipCount = 1;
-          this.spawnSingleEnemyShip();
+      // ── Wave 5 (Final) ── 10 stages, 8 meteors each, 3 ships
+      default:
+        this.totalStagesInWave = 10;
+        meteorCount = 8;
+        if (this.currentStage % 3 === 0) {
+          this.spawnMeteorStaggered(meteorCount);
+        } else if (this.currentStage % 2 === 0) {
+          this.spawnMeteorSpread(meteorCount);
+        } else {
+          this.spawnMeteorVFormation(meteorCount);
+        }
+        if (shipsAllowed) {
+          shipCount = (this.currentStage >= 7) ? 4 : 3;
+          this.spawnEnemyShips(shipCount);
         }
         break;
     }
@@ -100,16 +142,18 @@ class WaveManager {
     this.stageEnemiesRemaining = meteorCount + shipCount;
   }
 
+  // ── Formation helpers ──────────────────────────────────────────────
+
   // Spawn meteorites in a V-formation
   spawnMeteorVFormation(count) {
     const cx = this.scene.scale.width / 2;
-    const spacing = 120;
+    const spacing = 110;
     for (let i = 0; i < count; i++) {
       const meteor = this.scene.enemyGroup.group.get();
       if (meteor) {
         meteor.resetMeteor();
         const offsetX = (i - (count - 1) / 2) * spacing;
-        const offsetY = -40 - Math.abs(i - (count - 1) / 2) * 50;
+        const offsetY = -40 - Math.abs(i - (count - 1) / 2) * 45;
         meteor.setPosition(cx + offsetX, offsetY);
       }
     }
@@ -123,21 +167,42 @@ class WaveManager {
       if (meteor) {
         meteor.resetMeteor();
         const posX = spacing * (i + 1);
-        const posY = -50 - (i % 2) * 60;
+        const posY = -50 - (i % 2) * 55;
         meteor.setPosition(posX, posY);
       }
     }
   }
 
-  // Spawn exactly 1 enemy ship at a spaced interval
-  spawnSingleEnemyShip() {
-    const ship = this.scene.enemyShipGroup.group.get();
-    if (ship) {
-      ship.resetShip();
-      const posX = Phaser.Math.Between(150, this.scene.scale.width - 150);
-      const posY = -80;
-      ship.setPosition(posX, posY);
-      ship.startX = posX;
+  // Spawn meteorites spread wide across screen (new formation for later waves)
+  spawnMeteorSpread(count) {
+    const margin = 50;
+    const usableWidth = this.scene.scale.width - margin * 2;
+    for (let i = 0; i < count; i++) {
+      const meteor = this.scene.enemyGroup.group.get();
+      if (meteor) {
+        meteor.resetMeteor();
+        const posX = margin + (usableWidth / (count - 1 || 1)) * i;
+        const posY = -60 - (i % 3) * 40;
+        meteor.setPosition(posX, posY);
+      }
+    }
+  }
+
+  // Spawn N enemy ships spaced horizontally
+  spawnEnemyShips(count) {
+    const margin = 100;
+    const usableWidth = this.scene.scale.width - margin * 2;
+    for (let i = 0; i < count; i++) {
+      const ship = this.scene.enemyShipGroup.group.get();
+      if (ship) {
+        ship.resetShip();
+        const posX = (count === 1)
+          ? Phaser.Math.Between(margin, this.scene.scale.width - margin)
+          : margin + (usableWidth / (count - 1)) * i;
+        const posY = -80 - i * 60;
+        ship.setPosition(posX, posY);
+        ship.startX = posX;
+      }
     }
   }
 
@@ -148,8 +213,8 @@ class WaveManager {
 
     if (this.stageEnemiesRemaining <= 0) {
       if (this.currentStage < this.totalStagesInWave) {
-        // Advance to next sub-wave formation stage after 1.2s delay
-        this.scene.time.delayedCall(1200, () => {
+        // Advance to next sub-wave formation stage after a 1.5s breather
+        this.scene.time.delayedCall(1500, () => {
           this.startNextStage();
         });
       } else {
@@ -164,8 +229,8 @@ class WaveManager {
             this.scene.triggerWin();
           });
         } else {
-          // Pause 2.8s before launching next major wave
-          this.scene.time.delayedCall(2800, () => {
+          // 3-second pause before launching next major wave
+          this.scene.time.delayedCall(3000, () => {
             this.startNextWave();
           });
         }
