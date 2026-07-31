@@ -124,6 +124,20 @@ Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ---
 
+## 🕹 Fun Facts & Easter Eggs
+
+This game includes **3 hidden cheat codes** that can be entered silently from the **Main Menu** screen. Just type the code on your keyboard — no prompt, no button. If the code is accepted, you'll hear a triple ascending beep to confirm it's active. Type the same code again to toggle it off.
+
+| Cheat Code | Effect |
+|---|---|
+| `freeze` | Slows all enemies and meteorites to **20% speed** (your ship is completely unaffected). Frozen enemies glow **blue**. Enemy ships also stop firing lasers. |
+| `enderlein` | Unleashes **maximum firepower** — ultra-fast 40ms fire rate with a **triple spread shot** (center + left + right). Your ship glows **gold** when active. |
+| `motherlode` | The ultimate cheat — grants **5 lives**, **infinite rapid fire**, and an **infinite shield** from the moment the game starts. |
+
+> The cheat system is implemented entirely client-side via a rolling keyboard buffer that silently checks typed characters against known codes — no UI required.
+
+---
+
 ## 🎨 Asset Credits
 
 - Sprite assets from [Kenney.nl — Space Shooter Redux](https://kenney.nl/assets/space-shooter-redux) (CC0 1.0 Universal — Public Domain)
