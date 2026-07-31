@@ -14,8 +14,8 @@ class UIScene extends Phaser.Scene {
     // ── Score display: 6 numeral image sprites (e.g. "000100") ──────
     // Each digit is a numeral0–numeral9 asset image, spaced side by side
     const DIGIT_COUNT = 6;
-    const DIGIT_SCALE = 0.55;   // scale each numeral sprite
-    const DIGIT_GAP   = 14;     // horizontal gap between digit centres
+    const DIGIT_SCALE = 0.75;   // scale each numeral sprite
+    const DIGIT_GAP   = 19;     // horizontal gap between digit centres
     const DIGIT_X_START = 18;   // left edge X for the first digit
     const DIGIT_Y     = 20;     // Y centre for all digits
 
