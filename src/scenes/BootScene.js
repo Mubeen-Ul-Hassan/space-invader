@@ -8,7 +8,7 @@ class BootScene extends Phaser.Scene {
   // Preload base64 image data into Phaser texture cache
   preload() {
     // Show simple loading text while assets populate memory
-    const loadingText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 'Loading Game Assets...', {
+    const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Loading Game Assets...', {
       fontFamily: 'Arial',
       fontSize: '24px',
       color: '#ffffff'

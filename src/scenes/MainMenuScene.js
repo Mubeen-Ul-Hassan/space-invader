@@ -5,10 +5,10 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
-    const W = GAME_CONFIG.width;
-    const H = GAME_CONFIG.height;
+    const W = this.scale.width;
+    const H = this.scale.height;
+    const cx = W / 2;
+    const cy = H / 2;
 
     this._audioManager = new AudioManager();
 
@@ -71,7 +71,11 @@ class MainMenuScene extends Phaser.Scene {
     }
 
     // Controls footer
-    this.add.text(cx, H - 20, 'WASD / Arrow Keys to Move  •  Space to Shoot', {
+    const isMobile = this.sys.game.device.input.touch;
+    const controlsLabel = isMobile
+      ? 'Touch & Drag to Move  •  Tap to Shoot'
+      : 'WASD / Arrow Keys to Move  •  Space to Shoot';
+    this.add.text(cx, H - 20, controlsLabel, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '12px',
       color: '#556677'

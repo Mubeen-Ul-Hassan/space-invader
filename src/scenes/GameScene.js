@@ -12,12 +12,12 @@ class GameScene extends Phaser.Scene {
 
     this.audioManager = new AudioManager();
 
-    this.bg = this.add.tileSprite(0, 0, GAME_CONFIG.width, GAME_CONFIG.height, 'background').setOrigin(0, 0);
+    this.bg = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'background').setOrigin(0, 0);
 
     this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 16, runChildUpdate: true });
     this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true });
 
-    this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70);
+    this.player = new Player(this, this.scale.width / 2, this.scale.height - 70);
 
     this.enemyGroup = new EnemyGroup(this);
     this.enemyShipGroup = new EnemyShipGroup(this);
@@ -186,6 +186,7 @@ class GameScene extends Phaser.Scene {
   update(time, delta) {
     if (this.isGameOver) return;
 
+    this.bg.setSize(this.scale.width, this.scale.height);
     this.bg.tilePositionY -= 3.5;
     this.player.update(time, delta);
     this.enemyGroup.update(time, delta);

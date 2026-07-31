@@ -7,8 +7,8 @@ class UIScene extends Phaser.Scene {
   create() {
     this.score = 0;
     this.lives = GAME_CONFIG.initialLives;
-    const W = GAME_CONFIG.width;
-    const H = GAME_CONFIG.height;
+    const W = this.scale.width;
+    const H = this.scale.height;
     const cx = W / 2;
 
     // HUD top bar strip
@@ -56,7 +56,11 @@ class UIScene extends Phaser.Scene {
     }).setOrigin(0.5).setAlpha(0);
 
     // Controls hint footer
-    this.controlsHint = this.add.text(cx, H - 20, 'WASD / Arrow Keys to Move  •  Space to Shoot', {
+    const isMobile = this.sys.game.device.input.touch;
+    const controlsLabel = isMobile
+      ? 'Touch & Drag to Move  •  Tap to Shoot'
+      : 'WASD / Arrow Keys to Move  •  Space to Shoot';
+    this.controlsHint = this.add.text(cx, H - 20, controlsLabel, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
       color: '#8888aa',
@@ -117,11 +121,11 @@ class UIScene extends Phaser.Scene {
 
   // Simple, clean game-over and victory dialog modal
   showModal(title, titleColor, isWin) {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
+    const cx = this.scale.width / 2;
+    const cy = this.scale.height / 2;
 
     // Dark semi-transparent background overlay
-    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75);
+    this.add.rectangle(cx, cy, this.scale.width, this.scale.height, 0x000000, 0.75);
 
     // Simple Dialog Card
     const card = this.add.rectangle(cx, cy, 400, 240, 0x11162b, 0.95);

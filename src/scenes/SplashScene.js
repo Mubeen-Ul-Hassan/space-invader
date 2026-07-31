@@ -5,11 +5,13 @@ class SplashScene extends Phaser.Scene {
   }
 
   create() {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
+    const W = this.scale.width;
+    const H = this.scale.height;
+    const cx = W / 2;
+    const cy = H / 2;
 
     // Deep space gradient background card
-    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x050515);
+    this.add.rectangle(cx, cy, W, H, 0x050515);
 
     // Subtle background glowing particle pulse
     const bgGlow = this.add.circle(cx, cy - 30, 160, 0x00ffcc, 0.12);
@@ -56,7 +58,7 @@ class SplashScene extends Phaser.Scene {
     });
 
     // Tap to continue hint
-    const tapHint = this.add.text(cx, GAME_CONFIG.height - 40, 'Click anywhere to continue', {
+    const tapHint = this.add.text(cx, H - 40, 'Tap anywhere to continue', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
       color: '#8888aa'

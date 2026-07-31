@@ -5,10 +5,10 @@ class SettingsScene extends Phaser.Scene {
   }
 
   create() {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
-    const W = GAME_CONFIG.width;
-    const H = GAME_CONFIG.height;
+    const W = this.scale.width;
+    const H = this.scale.height;
+    const cx = W / 2;
+    const cy = H / 2;
 
     this.audioManager = new AudioManager();
     this.previousVolume = this.audioManager.getVolume();
