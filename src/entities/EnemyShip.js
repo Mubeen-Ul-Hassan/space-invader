@@ -89,22 +89,22 @@ class EnemyShipGroup {
   }
 
   initialSpawn() {
-    for (let i = 0; i < 2; i++) {
-      const ship = this.group.get();
-      if (ship) {
-        ship.resetShip();
-        ship.y -= i * 150;
-      }
+    // Only 1 ship at game start — early game should feel manageable
+    const ship = this.group.get();
+    if (ship) {
+      ship.resetShip();
+      ship.y -= 200; // Start well off-screen
     }
   }
 
   update(time, delta) {
+    // Ambient ship spawn is very rare — wave formations supply the main ships
     if (time > this.nextSpawnTime) {
       const ship = this.group.get();
       if (ship) {
         ship.resetShip();
       }
-      this.nextSpawnTime = time + Phaser.Math.Between(2500, 4500); // Spawning interval for enemy ships
+      this.nextSpawnTime = time + Phaser.Math.Between(8000, 14000); // Very slow ambient spawning
     }
   }
 }
