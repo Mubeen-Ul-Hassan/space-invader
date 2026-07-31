@@ -102,7 +102,7 @@ class WaveManager {
 
   // Spawn meteorites in a V-formation
   spawnMeteorVFormation(count) {
-    const cx = GAME_CONFIG.width / 2;
+    const cx = this.scene.scale.width / 2;
     const spacing = 120;
     for (let i = 0; i < count; i++) {
       const meteor = this.scene.enemyGroup.group.get();
@@ -117,7 +117,7 @@ class WaveManager {
 
   // Spawn meteorites in staggered side-by-side rows
   spawnMeteorStaggered(count) {
-    const spacing = GAME_CONFIG.width / (count + 1);
+    const spacing = this.scene.scale.width / (count + 1);
     for (let i = 0; i < count; i++) {
       const meteor = this.scene.enemyGroup.group.get();
       if (meteor) {
@@ -134,7 +134,7 @@ class WaveManager {
     const ship = this.scene.enemyShipGroup.group.get();
     if (ship) {
       ship.resetShip();
-      const posX = Phaser.Math.Between(150, GAME_CONFIG.width - 150);
+      const posX = Phaser.Math.Between(150, this.scene.scale.width - 150);
       const posY = -80;
       ship.setPosition(posX, posY);
       ship.startX = posX;
