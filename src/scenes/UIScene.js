@@ -11,43 +11,34 @@ class UIScene extends Phaser.Scene {
     const H = this.scale.height;
     const cx = W / 2;
 
-    // HUD top bar strip
-    const hudBar = this.add.graphics();
-    hudBar.fillStyle(0x000011, 0.7);
-    hudBar.fillRect(0, 0, W, 45);
+    // ── Score display: 6 numeral image sprites (e.g. "000100") ──────
+    // Each digit is a numeral0–numeral9 asset image, spaced side by side
+    const DIGIT_COUNT = 6;
+    const DIGIT_SCALE = 0.55;   // scale each numeral sprite
+    const DIGIT_GAP   = 14;     // horizontal gap between digit centres
+    const DIGIT_X_START = 18;   // left edge X for the first digit
+    const DIGIT_Y     = 20;     // Y centre for all digits
 
-    // Score display
-    this.scoreText = this.add.text(20, 12, 'SCORE: 0000', {
-      fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '18px',
-      color: '#00ffcc'
-    });
+    this.scoreDigits = [];
+    for (let i = 0; i < DIGIT_COUNT; i++) {
+      const img = this.add.image(
+        DIGIT_X_START + i * DIGIT_GAP,
+        DIGIT_Y,
+        'numeral0'
+      ).setScale(DIGIT_SCALE).setOrigin(0, 0.5);
+      this.scoreDigits.push(img);
+    }
 
-    // Center Title
-    this.add.text(cx, 14, 'SPACE INVADERS', {
-      fontFamily: '"Arial Black", sans-serif',
-      fontSize: '16px',
-      color: '#ffcc00'
-    }).setOrigin(0.5, 0);
+    // Render initial score 000000
+    this._renderScoreDigits(0);
 
-    // Numeric HUD Lives display: [ShipIcon] x [Count]
-    this.lifeShipIcon = this.add.image(W - 90, 22, 'life').setScale(0.85);
-    this.numeralXIcon = this.add.image(W - 65, 22, 'numeralX').setScale(0.75);
+    // ── Lives display (top-right): ship icon × count digit ──────────
+    this.lifeShipIcon    = this.add.image(W - 90, 22, 'life').setScale(0.85);
+    this.numeralXIcon    = this.add.image(W - 65, 22, 'numeralX').setScale(DIGIT_SCALE);
     const initialDigitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
-    this.numeralDigitIcon = this.add.image(W - 40, 22, initialDigitKey).setScale(0.75);
+    this.numeralDigitIcon = this.add.image(W - 40, 22, initialDigitKey).setScale(DIGIT_SCALE);
 
-    // Settings HUD Button
-    const settingsBtn = this.add.rectangle(175, 22, 28, 28, 0x334466).setInteractive({ useHandCursor: true });
-    settingsBtn.setStrokeStyle(1, 0x00ffcc);
-    this.add.text(175, 22, 'S', { fontFamily: '"Arial Black"', fontSize: '14px', color: '#00ffcc' }).setOrigin(0.5);
-
-    settingsBtn.on('pointerdown', (pointer, localX, localY, event) => {
-      if (event) event.stopPropagation();
-      this.scene.pause('GameScene');
-      this.scene.start('SettingsScene');
-    });
-
-    // Wave Notification Banner
+    // ── Wave Notification Banner (screen centre) ─────────────────────
     this.waveBannerText = this.add.text(cx, H / 2 - 40, '', {
       fontFamily: '"Arial Black", sans-serif',
       fontSize: '36px',
@@ -55,26 +46,34 @@ class UIScene extends Phaser.Scene {
       align: 'center'
     }).setOrigin(0.5).setAlpha(0);
 
-    // Controls hint footer
+    // ── Controls hint footer ─────────────────────────────────────────
     const isMobile = this.sys.game.device.input.touch;
     const controlsLabel = isMobile
       ? 'Touch & Drag to Move  •  Tap to Shoot'
       : 'WASD / Arrow Keys to Move  •  Space to Shoot';
-    this.controlsHint = this.add.text(cx, H - 20, controlsLabel, {
+    this.add.text(cx, H - 20, controlsLabel, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
       color: '#8888aa',
       align: 'center'
     }).setOrigin(0.5);
 
-    // Listen for events from GameScene
+    // ── Listen for events from GameScene ─────────────────────────────
     const gameScene = this.scene.get('GameScene');
     gameScene.events.on('scoreChanged', this.updateScore, this);
     gameScene.events.on('livesChanged', this.updateLives, this);
-    gameScene.events.on('gameOver', this.showGameOverModal, this);
-    gameScene.events.on('gameWin', this.showWinModal, this);
-    gameScene.events.on('waveStarted', this.showWaveStartedBanner, this);
-    gameScene.events.on('waveCleared', this.showWaveClearedBanner, this);
+    gameScene.events.on('gameOver',     this.showGameOverModal, this);
+    gameScene.events.on('gameWin',      this.showWinModal, this);
+    gameScene.events.on('waveStarted',  this.showWaveStartedBanner, this);
+    gameScene.events.on('waveCleared',  this.showWaveClearedBanner, this);
+  }
+
+  // Render current score as 6 individual numeral image sprites
+  _renderScoreDigits(score) {
+    const str = String(score).padStart(6, '0').slice(-6); // always 6 chars
+    for (let i = 0; i < this.scoreDigits.length; i++) {
+      this.scoreDigits[i].setTexture('numeral' + str[i]);
+    }
   }
 
   showWaveStartedBanner(waveNum) {
@@ -99,8 +98,7 @@ class UIScene extends Phaser.Scene {
 
   updateScore(newScore) {
     this.score = newScore;
-    const formatted = String(newScore).padStart(4, '0');
-    this.scoreText.setText(`SCORE: ${formatted}`);
+    this._renderScoreDigits(newScore);
   }
 
   updateLives(newLives) {
