@@ -21,8 +21,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     // Touch & Mouse Drag controls supporting 2D screen movement (x, y)
     scene.input.on('pointermove', (pointer) => {
       if (pointer.isDown) {
-        this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30);
-        this.y = Phaser.Math.Clamp(pointer.y, 100, GAME_CONFIG.height - 40);
+        this.x = Phaser.Math.Clamp(pointer.x, 30, scene.scale.width - 30);
+        this.y = Phaser.Math.Clamp(pointer.y, 100, scene.scale.height - 40);
       }
     });
   }
@@ -64,7 +64,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setVelocity(velocityX, velocityY);
 
     // Keep ship within playable screen boundaries
-    this.y = Phaser.Math.Clamp(this.y, 100, GAME_CONFIG.height - 40);
+    this.y = Phaser.Math.Clamp(this.y, 100, this.scene.scale.height - 40);
 
     // Update attached shield aura position and visibility
     if (this.shieldAura) {

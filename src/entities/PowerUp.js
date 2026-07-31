@@ -30,7 +30,7 @@ class PowerUp extends Phaser.Physics.Arcade.Sprite {
     const deltaSec = delta / 1000;
     this.y += this.speedY * deltaSec;
 
-    if (this.y > GAME_CONFIG.height + 40) {
+    if (this.y > this.scene.scale.height + 40) {
       this.kill();
     }
   }

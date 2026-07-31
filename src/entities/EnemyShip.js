@@ -20,7 +20,7 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
       this.body.setSize(this.width, this.height);
     }
 
-    const x = Phaser.Math.Between(60, GAME_CONFIG.width - 60);
+    const x = Phaser.Math.Between(60, this.scene.scale.width - 60);
     const y = Phaser.Math.Between(-100, -50);
     this.setPosition(x, y);
 
@@ -46,7 +46,7 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
     this.x = Phaser.Math.Clamp(
       this.startX + Math.sin(time * this.waveFrequency * freezeMult) * this.waveAmplitude,
       40,
-      GAME_CONFIG.width - 40
+      this.scene.scale.width - 40
     );
 
     // Visual tint: blue tint when frozen
@@ -57,12 +57,12 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
     }
 
     // Periodically shoot laser at player (disabled during freeze cheat)
-    if (!ACTIVE_CHEATS.freeze && time > this.lastFired && this.y > 20 && this.y < GAME_CONFIG.height - 100) {
+    if (!ACTIVE_CHEATS.freeze && time > this.lastFired && this.y > 20 && this.y < this.scene.scale.height - 100) {
       this.shootLaser(time);
     }
 
     // Recycle ship when off-screen
-    if (this.y > GAME_CONFIG.height + 60) {
+    if (this.y > this.scene.scale.height + 60) {
       this.resetShip();
     }
   }
