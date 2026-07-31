@@ -93,11 +93,15 @@ class EnemyGroup {
 
   // Update loop for continuous random meteorite spawning (background filler between wave formations)
   update(time, delta) {
-    // Spawn ambient meteors at a slow rate — wave formations are the primary source
+    // Spawn ambient meteors at a slow rate — respect the hard cap so screen never overcrowds
     if (time > this.nextSpawnTime) {
-      const meteor = this.group.get(); // Fetch free meteorite from group pool
-      if (meteor) {
-        meteor.resetMeteor(); // Reset meteorite to random spawn location
+      const cap = this.scene.waveManager ? this.scene.waveManager.MAX_METEORS : 10;
+      const activeCount = this.group.getChildren().filter(m => m.active).length;
+      if (activeCount < cap) {
+        const meteor = this.group.get(); // Fetch free meteorite from group pool
+        if (meteor) {
+          meteor.resetMeteor(); // Reset meteorite to random spawn location
+        }
       }
       this.nextSpawnTime = time + Phaser.Math.Between(2800, 4500); // Very slow ambient spawning
     }
