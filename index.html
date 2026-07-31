@@ -57,18 +57,19 @@
 /* --- src/utils/constants.js --- */
 // Global game constants and configuration options
 const GAME_CONFIG = {
-  width: 800, // Virtual game design width
-  height: 600, // Virtual game design height
-  playerSpeed: 350, // Movement speed of player ship in pixels per second
+  width: 480,  // Virtual game design width (portrait mobile)
+  height: 800, // Virtual game design height (portrait mobile)
+  playerSpeed: 320, // Movement speed of player ship in pixels per second
   playerFireRate: 250, // Minimum delay between player shots in milliseconds
-  bulletSpeed: 500, // Speed of bullets in pixels per second
-  enemyBulletSpeed: 220, // Speed of enemy bullets in pixels per second
+  bulletSpeed: 600, // Speed of bullets in pixels per second
+  enemyBulletSpeed: 200, // Speed of enemy bullets in pixels per second
   enemyRows: 4, // Number of enemy rows in the grid
   enemyCols: 8, // Number of enemy columns in the grid
   enemyStepDown: 20, // Downward displacement per row step
   enemyBaseSpeed: 40, // Base horizontal movement speed of enemies
   enemyFireRate: 1500, // Interval between random enemy shots in milliseconds
   initialLives: 3, // Initial player lives
+  mobileControlsHeight: 145, // Height reserved for virtual on-screen controls
   ctaUrl: 'https://playables42.com/creative-closet' // AppLovin CTA destination link
 };
 
@@ -548,7 +549,7 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
 
 
 /* --- src/entities/Player.js --- */
-// Reusable Player ship game object with 4-directional movement (Left, Right, Up, Down), firing logic, and power-up boosts
+// Reusable Player ship game object with movement, firing logic, power-up boosts, and mobile touch controls
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'player');
@@ -556,33 +557,40 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     this.setCollideWorldBounds(true);
-    this.setScale(0.7);
+    this.setScale(0.65);
     this.lastFired = 0;
     this.fireRateBoostUntil = 0;
     this.shieldUntil = 0;
 
     // Visual glowing shield aura sprite overlay
-    this.shieldAura = scene.add.image(x, y, 'shield1').setScale(1.2).setAlpha(0.85);
+    this.shieldAura = scene.add.image(x, y, 'shield1').setScale(1.1).setAlpha(0.85);
     this.shieldAura.setVisible(false);
 
     this.cursors = scene.input.keyboard.createCursorKeys();
     this.wasd = scene.input.keyboard.addKeys('W,A,S,D,SPACE');
 
-    // Touch & Mouse Drag controls supporting 2D screen movement (x, y)
+    // Maximum playable Y boundary (leaves room for virtual controls strip)
+    this._maxY = GAME_CONFIG.height - GAME_CONFIG.mobileControlsHeight - 20;
+
+    // Touch drag: move player to pointer position when not pressing a virtual button
     scene.input.on('pointermove', (pointer) => {
       if (pointer.isDown) {
-        this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30);
-        this.y = Phaser.Math.Clamp(pointer.y, 100, GAME_CONFIG.height - 40);
+        const uiScene = scene.scene.get('UIScene');
+        const mc = (uiScene && uiScene.mobileControls) || {};
+        if (!mc.left && !mc.right && !mc.up && !mc.down) {
+          this.x = Phaser.Math.Clamp(pointer.x, 30, GAME_CONFIG.width - 30);
+          this.y = Phaser.Math.Clamp(pointer.y, 50, this._maxY);
+        }
       }
     });
   }
 
-  // Activate 12-second rapid fire boost
+  // Activate rapid fire boost
   activateRapidFire(durationMs = 12000) {
     this.fireRateBoostUntil = this.scene.time.now + durationMs;
   }
 
-  // Activate 15-second shield immunity
+  // Activate shield immunity
   activateShield(durationMs = 15000) {
     this.shieldUntil = this.scene.time.now + durationMs;
     this.shieldAura.setVisible(true);
@@ -597,24 +605,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     let velocityX = 0;
     let velocityY = 0;
 
-    // Horizontal controls (Left / Right)
-    if (this.cursors.left.isDown || this.wasd.A.isDown) {
+    // Read virtual mobile control state from UIScene
+    const uiScene = this.scene.scene.get('UIScene');
+    const mc = (uiScene && uiScene.mobileControls) || {};
+
+    // Horizontal controls: virtual buttons take priority, then keyboard
+    if (mc.left || this.cursors.left.isDown || this.wasd.A.isDown) {
       velocityX = -GAME_CONFIG.playerSpeed;
-    } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
+    } else if (mc.right || this.cursors.right.isDown || this.wasd.D.isDown) {
       velocityX = GAME_CONFIG.playerSpeed;
     }
 
-    // Vertical controls (Up / Down)
-    if (this.cursors.up.isDown || this.wasd.W.isDown) {
+    // Vertical controls: virtual buttons take priority, then keyboard
+    if (mc.up || this.cursors.up.isDown || this.wasd.W.isDown) {
       velocityY = -GAME_CONFIG.playerSpeed;
-    } else if (this.cursors.down.isDown || this.wasd.S.isDown) {
+    } else if (mc.down || this.cursors.down.isDown || this.wasd.S.isDown) {
       velocityY = GAME_CONFIG.playerSpeed;
     }
 
     this.setVelocity(velocityX, velocityY);
 
-    // Keep ship within playable screen boundaries
-    this.y = Phaser.Math.Clamp(this.y, 100, GAME_CONFIG.height - 40);
+    // Keep ship within playable boundaries (above virtual controls strip)
+    this.y = Phaser.Math.Clamp(this.y, 55, this._maxY);
 
     // Update attached shield aura position and visibility
     if (this.shieldAura) {
@@ -622,12 +634,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       const shieldActive = time < this.shieldUntil;
       this.shieldAura.setVisible(shieldActive);
       if (shieldActive) {
-        this.shieldAura.rotation += 0.02; // Rotate shield visual aura
+        this.shieldAura.rotation += 0.02;
       }
     }
 
-    // Auto-shoot / space key input with rapid fire support
-    if ((this.cursors.space.isDown || this.wasd.SPACE.isDown || this.scene.input.activePointer.isDown) && time > this.lastFired) {
+    // Fire: keyboard space, virtual fire button, or any active screen touch
+    const touchFiring = this.scene.input.activePointer.isDown;
+    if ((this.cursors.space.isDown || this.wasd.SPACE.isDown || mc.fire || touchFiring) && time > this.lastFired) {
       this.shoot(time);
     }
 
@@ -640,24 +653,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   shoot(time) {
-    // CHEAT: enderlein grants ultra-rapid triple spread fire
     const isEnderlein = ACTIVE_CHEATS && ACTIVE_CHEATS.enderlein;
     const isRapid = time < this.fireRateBoostUntil;
 
     if (isEnderlein) {
-      // Triple spread: center + angled left/right bullets
       const offsets = [{ x: 0, vx: 0 }, { x: -12, vx: -80 }, { x: 12, vx: 80 }];
       offsets.forEach(off => {
         const bullet = this.scene.playerBullets.get();
         if (bullet) {
           bullet.fire(this.x + off.x, this.y - 30, -GAME_CONFIG.bulletSpeed, true);
-          // Apply slight horizontal spread to angled bullets via body velocity
           if (off.vx !== 0 && bullet.body) {
             bullet.body.velocity.x = off.vx;
           }
         }
       });
-      this.lastFired = time + 40; // Ultra-fast 40ms fire rate
+      this.lastFired = time + 40;
     } else {
       const bullet = this.scene.playerBullets.get();
       if (bullet) {
@@ -975,7 +985,7 @@ class BootScene extends Phaser.Scene {
     // Show simple loading text while assets populate memory
     const loadingText = this.add.text(GAME_CONFIG.width / 2, GAME_CONFIG.height / 2, 'Loading Game Assets...', {
       fontFamily: 'Arial',
-      fontSize: '24px',
+      fontSize: '20px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
@@ -1000,47 +1010,47 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
-    const W = GAME_CONFIG.width;
-    const H = GAME_CONFIG.height;
+    const W  = GAME_CONFIG.width;
+    const H  = GAME_CONFIG.height;
+    const cx = W / 2;
+    const cy = H / 2;
 
     this._audioManager = new AudioManager();
 
-    // Scrolling background
+    // Scrolling star-field background
     this.bg = this.add.tileSprite(0, 0, W, H, 'background').setOrigin(0, 0);
 
-    // Hero ship floating animation
-    const heroShip = this.add.image(cx, cy - 150, 'player').setScale(1.4);
+    // Hero ship floating animation — positioned in the upper third
+    const heroShip = this.add.image(cx, cy - 195, 'player').setScale(1.3);
     this.tweens.add({
       targets: heroShip,
-      y: cy - 162,
+      y: cy - 208,
       duration: 1500,
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut'
     });
 
-    // Game Title
-    const title = this.add.text(cx, cy - 80, 'SPACE INVADERS', {
+    // Game title
+    const title = this.add.text(cx, cy - 130, 'SPACE INVADERS', {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '40px',
+      fontSize: '36px',
       color: '#00ffcc',
       align: 'center'
     }).setOrigin(0.5);
     title.setStroke('#003344', 6);
 
     // Subtitle tagline
-    this.add.text(cx, cy - 38, 'DEFEND THE GALAXY', {
+    this.add.text(cx, cy - 82, 'DEFEND THE GALAXY', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '13px',
       color: '#ffcc00',
       align: 'center',
       letterSpacing: 4
     }).setOrigin(0.5);
 
-    // Buttons
-    this.makeButton(cx, cy + 30, 'PLAY GAME', 0x00aa55, 0x00cc66, () => {
+    // ── Buttons ────────────────────────────────────────────
+    this.makeButton(cx, cy - 24, 'PLAY GAME', 0x00aa55, 0x00cc66, () => {
       this.cameras.main.fadeOut(250, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.start('GameScene');
@@ -1048,7 +1058,7 @@ class MainMenuScene extends Phaser.Scene {
       });
     });
 
-    this.makeButton(cx, cy + 95, 'SETTINGS', 0x223366, 0x334488, () => {
+    this.makeButton(cx, cy + 52, 'SETTINGS', 0x223366, 0x334488, () => {
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.start('SettingsScene');
@@ -1058,29 +1068,52 @@ class MainMenuScene extends Phaser.Scene {
     // High score display
     const hiScore = localStorage.getItem('spaceInvadersHighScore') || 0;
     if (hiScore > 0) {
-      this.add.text(cx, cy + 155, `HIGH SCORE: ${String(hiScore).padStart(6, '0')}`, {
+      this.add.text(cx, cy + 115, `HIGH SCORE: ${String(hiScore).padStart(6, '0')}`, {
         fontFamily: 'Arial, sans-serif',
         fontSize: '14px',
         color: '#8899aa'
       }).setOrigin(0.5);
     }
 
-    // Controls footer
-    this.add.text(cx, H - 20, 'WASD / Arrow Keys to Move  •  Space to Shoot', {
-      fontFamily: 'Arial, sans-serif',
+    // ── Mobile controls info card ──────────────────────────
+    const infoY = cy + 175;
+    const infoCard = this.add.rectangle(cx, infoY, W - 48, 110, 0x0a1020, 0.75);
+    infoCard.setStrokeStyle(1, 0x224466, 0.8);
+
+    this.add.text(cx, infoY - 38, 'HOW TO PLAY', {
+      fontFamily: '"Arial Black", sans-serif',
       fontSize: '12px',
+      color: '#ffcc00',
+      letterSpacing: 2
+    }).setOrigin(0.5);
+
+    this.add.text(cx, infoY - 12, '◀ ▶  Buttons  or  drag to move', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      color: '#aaccff'
+    }).setOrigin(0.5);
+
+    this.add.text(cx, infoY + 12, '🔥 FIRE button  or  tap screen to shoot', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      color: '#aaccff'
+    }).setOrigin(0.5);
+
+    this.add.text(cx, infoY + 36, 'Keyboard: WASD / Arrows  •  Space to shoot', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '11px',
       color: '#556677'
     }).setOrigin(0.5);
 
-    // Cheat status indicator (hidden by default, shows when a cheat is active)
-    this._cheatIndicator = this.add.text(cx, H - 38, '', {
+    // ── Cheat indicator ────────────────────────────────────
+    this._cheatIndicator = this.add.text(cx, H - 28, '', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '11px',
       color: '#00ffcc',
       align: 'center'
     }).setOrigin(0.5).setAlpha(0);
 
-    // Silent cheat code keyboard buffer listener
+    // ── Silent cheat code keyboard listener ────────────────
     this._cheatBuffer = '';
     this._cheatCodes = {
       'freeze':     () => this._activateCheat('freeze',    'FREEZE MODE: Enemies slowed!'),
@@ -1088,16 +1121,13 @@ class MainMenuScene extends Phaser.Scene {
       'motherlode': () => this._activateCheat('motherlode','MOTHERLODE: Full power!')
     };
 
-    // Listen for any keyboard key down silently
     this.input.keyboard.on('keydown', (event) => {
       const char = event.key.toLowerCase();
       if (char.length === 1 && /[a-z]/.test(char)) {
         this._cheatBuffer += char;
-        // Keep buffer to max length of longest cheat code to avoid memory growth
         if (this._cheatBuffer.length > 12) {
           this._cheatBuffer = this._cheatBuffer.slice(-12);
         }
-        // Check if buffer ends with any known cheat code
         for (const code in this._cheatCodes) {
           if (this._cheatBuffer.endsWith(code)) {
             this._cheatCodes[code]();
@@ -1111,16 +1141,12 @@ class MainMenuScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 0, 0, 0);
   }
 
-  // Activate a cheat, play confirmation beep, show brief indicator
   _activateCheat(cheatKey, message) {
-    // Toggle cheat on/off each time the code is entered
     ACTIVE_CHEATS[cheatKey] = !ACTIVE_CHEATS[cheatKey];
     const isOn = ACTIVE_CHEATS[cheatKey];
 
-    // Play triple ascending beep confirmation
     this._audioManager.playCheatBeep();
 
-    // Show brief status flash
     const statusMsg = isOn ? `✓ ${message}` : `✗ ${message.split(':')[0]}: OFF`;
     this._cheatIndicator.setText(statusMsg).setAlpha(1);
 
@@ -1135,15 +1161,15 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   makeButton(x, y, label, colorNormal, colorHover, onClick) {
-    const btnWidth = 240;
-    const btnHeight = 48;
+    const btnWidth  = Math.min(260, GAME_CONFIG.width - 60);
+    const btnHeight = 52;
 
     const bg = this.add.rectangle(x, y, btnWidth, btnHeight, colorNormal).setInteractive({ useHandCursor: true });
     bg.setStrokeStyle(2, 0xffffff, 0.8);
 
     const txt = this.add.text(x, y, label, {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '18px',
+      fontSize: '19px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
@@ -1178,17 +1204,17 @@ class MainMenuScene extends Phaser.Scene {
 
 
 /* --- src/scenes/SettingsScene.js --- */
-// SettingsScene — Simple, clean master volume controls
+// SettingsScene — Simple, clean master volume controls optimised for portrait mobile
 class SettingsScene extends Phaser.Scene {
   constructor() {
     super({ key: 'SettingsScene' });
   }
 
   create() {
-    const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
-    const W = GAME_CONFIG.width;
-    const H = GAME_CONFIG.height;
+    const W  = GAME_CONFIG.width;
+    const H  = GAME_CONFIG.height;
+    const cx = W / 2;
+    const cy = H / 2;
 
     this.audioManager = new AudioManager();
     this.previousVolume = this.audioManager.getVolume();
@@ -1197,59 +1223,62 @@ class SettingsScene extends Phaser.Scene {
     this.bg = this.add.tileSprite(0, 0, W, H, 'background').setOrigin(0, 0);
 
     // Title
-    const titleText = this.add.text(cx, cy - 130, 'SETTINGS', {
+    const titleText = this.add.text(cx, cy - 195, 'SETTINGS', {
       fontFamily: '"Arial Black", Arial, sans-serif',
       fontSize: '32px',
       color: '#00ffcc'
     }).setOrigin(0.5);
     titleText.setStroke('#003344', 4);
 
-    // Main Card Panel
-    const card = this.add.rectangle(cx, cy, 440, 220, 0x11162b, 0.95);
+    // Card panel — fits inside 480px portrait width
+    const cardW = Math.min(420, W - 40);
+    const cardH = 260;
+    const card = this.add.rectangle(cx, cy, cardW, cardH, 0x11162b, 0.95);
     card.setStrokeStyle(2, 0x00ffcc, 0.8);
 
-    // Master Volume Section Label
-    this.add.text(cx, cy - 70, 'MASTER VOLUME', {
+    // Master Volume Label
+    this.add.text(cx, cy - 95, 'MASTER VOLUME', {
       fontFamily: '"Arial Black", Arial, sans-serif',
       fontSize: '16px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Percentage Display
-    this.volumeText = this.add.text(cx, cy - 30, `${Math.round(this.audioManager.getVolume() * 100)}%`, {
+    // Percentage display
+    this.volumeText = this.add.text(cx, cy - 55, `${Math.round(this.audioManager.getVolume() * 100)}%`, {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '28px',
+      fontSize: '30px',
       color: '#ffcc00'
     }).setOrigin(0.5);
 
-    // Volume Slider Track & Fill
-    const trackWidth = 240;
+    // Volume slider track and fill
+    const trackWidth = Math.min(240, cardW - 100);
     const trackX = cx - trackWidth / 2;
-    const trackY = cy + 15;
+    const trackY = cy - 5;
 
-    this.add.rectangle(cx, trackY, trackWidth, 14, 0x222a44).setOrigin(0.5);
+    this.add.rectangle(cx, trackY, trackWidth, 16, 0x222a44).setOrigin(0.5);
+    this.sliderFill = this.add.rectangle(trackX, trackY, trackWidth * this.audioManager.getVolume(), 16, 0x00ffcc).setOrigin(0, 0.5);
 
-    this.sliderFill = this.add.rectangle(trackX, trackY, trackWidth * this.audioManager.getVolume(), 14, 0x00ffcc).setOrigin(0, 0.5);
-
-    // Decrement Button '-'
-    const decBtn = this.add.rectangle(cx - 150, trackY, 36, 36, 0xcc3344).setInteractive({ useHandCursor: true });
+    // Decrement '-' button
+    const decBtn = this.add.rectangle(cx - trackWidth / 2 - 28, trackY, 44, 44, 0xcc3344).setInteractive({ useHandCursor: true });
     decBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx - 150, trackY, '-', { fontFamily: '"Arial Black", sans-serif', fontSize: '24px', color: '#ffffff' }).setOrigin(0.5);
+    this.add.text(cx - trackWidth / 2 - 28, trackY, '-', {
+      fontFamily: '"Arial Black", sans-serif', fontSize: '26px', color: '#ffffff'
+    }).setOrigin(0.5);
     decBtn.on('pointerdown', () => this.adjustVolume(-0.1));
 
-    // Increment Button '+'
-    const incBtn = this.add.rectangle(cx + 150, trackY, 36, 36, 0x00cc66).setInteractive({ useHandCursor: true });
+    // Increment '+' button
+    const incBtn = this.add.rectangle(cx + trackWidth / 2 + 28, trackY, 44, 44, 0x00cc66).setInteractive({ useHandCursor: true });
     incBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx + 150, trackY, '+', { fontFamily: '"Arial Black", sans-serif', fontSize: '24px', color: '#ffffff' }).setOrigin(0.5);
+    this.add.text(cx + trackWidth / 2 + 28, trackY, '+', {
+      fontFamily: '"Arial Black", sans-serif', fontSize: '26px', color: '#ffffff'
+    }).setOrigin(0.5);
     incBtn.on('pointerdown', () => this.adjustVolume(0.1));
 
-    // Mute / Unmute Button
-    const muteBtn = this.add.rectangle(cx - 75, cy + 65, 120, 36, 0x334466).setInteractive({ useHandCursor: true });
+    // Mute / Unmute button
+    const muteBtn = this.add.rectangle(cx - 72, cy + 72, 120, 44, 0x334466).setInteractive({ useHandCursor: true });
     muteBtn.setStrokeStyle(1, 0xffffff);
-    this.muteText = this.add.text(cx - 75, cy + 65, this.audioManager.getVolume() === 0 ? 'UNMUTE' : 'MUTE', {
-      fontFamily: '"Arial Black", sans-serif',
-      fontSize: '14px',
-      color: '#ffffff'
+    this.muteText = this.add.text(cx - 72, cy + 72, this.audioManager.getVolume() === 0 ? 'UNMUTE' : 'MUTE', {
+      fontFamily: '"Arial Black", sans-serif', fontSize: '14px', color: '#ffffff'
     }).setOrigin(0.5);
 
     muteBtn.on('pointerdown', () => {
@@ -1264,28 +1293,24 @@ class SettingsScene extends Phaser.Scene {
       }
     });
 
-    // Test Sound Button
-    const testBtn = this.add.rectangle(cx + 75, cy + 65, 120, 36, 0x3355aa).setInteractive({ useHandCursor: true });
+    // Test sound button
+    const testBtn = this.add.rectangle(cx + 72, cy + 72, 120, 44, 0x3355aa).setInteractive({ useHandCursor: true });
     testBtn.setStrokeStyle(1, 0xffffff);
-    this.add.text(cx + 75, cy + 65, 'TEST SOUND', {
-      fontFamily: '"Arial Black", sans-serif',
-      fontSize: '14px',
-      color: '#ffffff'
+    this.add.text(cx + 72, cy + 72, 'TEST SOUND', {
+      fontFamily: '"Arial Black", sans-serif', fontSize: '14px', color: '#ffffff'
     }).setOrigin(0.5);
     testBtn.on('pointerdown', () => this.audioManager.playShoot());
 
-    // Back to Main Menu Button
-    const backBtn = this.add.rectangle(cx, cy + 150, 180, 44, 0x444466).setInteractive({ useHandCursor: true });
+    // Back button — wider and taller for easy thumb tap
+    const backBtn = this.add.rectangle(cx, cy + 170, 200, 54, 0x444466).setInteractive({ useHandCursor: true });
     backBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx, cy + 150, 'BACK', {
-      fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '18px',
-      color: '#ffffff'
+    this.add.text(cx, cy + 170, 'BACK', {
+      fontFamily: '"Arial Black", Arial, sans-serif', fontSize: '20px', color: '#ffffff'
     }).setOrigin(0.5);
 
-    backBtn.on('pointerover', () => backBtn.setFillStyle(0x666688));
-    backBtn.on('pointerout', () => backBtn.setFillStyle(0x444466));
-    backBtn.on('pointerdown', () => {
+    backBtn.on('pointerover',  () => backBtn.setFillStyle(0x666688));
+    backBtn.on('pointerout',   () => backBtn.setFillStyle(0x444466));
+    backBtn.on('pointerdown',  () => {
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.start('MainMenuScene');
@@ -1303,8 +1328,9 @@ class SettingsScene extends Phaser.Scene {
   setVolumeLevel(val) {
     this.audioManager.setVolume(val);
     const updated = this.audioManager.getVolume();
+    const trackWidth = Math.min(240, GAME_CONFIG.width - 140);
     this.volumeText.setText(`${Math.round(updated * 100)}%`);
-    this.sliderFill.setSize(240 * updated, 14);
+    this.sliderFill.setSize(trackWidth * updated, 16);
     if (this.muteText) {
       this.muteText.setText(updated === 0 ? 'UNMUTE' : 'MUTE');
     }
@@ -1319,7 +1345,7 @@ class SettingsScene extends Phaser.Scene {
 
 
 /* --- src/scenes/UIScene.js --- */
-// UIScene managing HUD displays, wave banners, and simple game-over / win dialogs
+// UIScene managing HUD displays, wave banners, virtual mobile controls, and game-over / win dialogs
 class UIScene extends Phaser.Scene {
   constructor() {
     super({ key: 'UIScene' });
@@ -1331,36 +1357,38 @@ class UIScene extends Phaser.Scene {
     const W = GAME_CONFIG.width;
     const H = GAME_CONFIG.height;
     const cx = W / 2;
+    const ctrlH = GAME_CONFIG.mobileControlsHeight;
+    const ctrlY = H - ctrlH; // Top Y of virtual controls strip
 
-    // HUD top bar strip
+    // ── HUD top bar strip ──────────────────────────────────────────────────
     const hudBar = this.add.graphics();
-    hudBar.fillStyle(0x000011, 0.7);
-    hudBar.fillRect(0, 0, W, 45);
+    hudBar.fillStyle(0x000011, 0.8);
+    hudBar.fillRect(0, 0, W, 48);
 
     // Score display
-    this.scoreText = this.add.text(20, 12, 'SCORE: 0000', {
+    this.scoreText = this.add.text(16, 14, 'SCORE: 0000', {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '18px',
+      fontSize: '16px',
       color: '#00ffcc'
     });
 
-    // Center Title
+    // Center title
     this.add.text(cx, 14, 'SPACE INVADERS', {
       fontFamily: '"Arial Black", sans-serif',
-      fontSize: '16px',
+      fontSize: '13px',
       color: '#ffcc00'
     }).setOrigin(0.5, 0);
 
-    // Numeric HUD Lives display: [ShipIcon] x [Count]
-    this.lifeShipIcon = this.add.image(W - 90, 22, 'life').setScale(0.85);
-    this.numeralXIcon = this.add.image(W - 65, 22, 'numeralX').setScale(0.75);
+    // Numeric HUD lives display
+    this.lifeShipIcon  = this.add.image(W - 76, 24, 'life').setScale(0.75);
+    this.numeralXIcon  = this.add.image(W - 52, 24, 'numeralX').setScale(0.65);
     const initialDigitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
-    this.numeralDigitIcon = this.add.image(W - 40, 22, initialDigitKey).setScale(0.75);
+    this.numeralDigitIcon = this.add.image(W - 30, 24, initialDigitKey).setScale(0.65);
 
-    // Settings HUD Button
-    const settingsBtn = this.add.rectangle(175, 22, 28, 28, 0x334466).setInteractive({ useHandCursor: true });
+    // Settings HUD button
+    const settingsBtn = this.add.rectangle(160, 24, 28, 28, 0x334466).setInteractive({ useHandCursor: true });
     settingsBtn.setStrokeStyle(1, 0x00ffcc);
-    this.add.text(175, 22, 'S', { fontFamily: '"Arial Black"', fontSize: '14px', color: '#00ffcc' }).setOrigin(0.5);
+    this.add.text(160, 24, 'S', { fontFamily: '"Arial Black"', fontSize: '13px', color: '#00ffcc' }).setOrigin(0.5);
 
     settingsBtn.on('pointerdown', (pointer, localX, localY, event) => {
       if (event) event.stopPropagation();
@@ -1368,30 +1396,100 @@ class UIScene extends Phaser.Scene {
       this.scene.start('SettingsScene');
     });
 
-    // Wave Notification Banner
-    this.waveBannerText = this.add.text(cx, H / 2 - 40, '', {
+    // ── Wave notification banner ───────────────────────────────────────────
+    this.waveBannerText = this.add.text(cx, H / 2 - 60, '', {
       fontFamily: '"Arial Black", sans-serif',
-      fontSize: '36px',
+      fontSize: '34px',
       color: '#00ffcc',
       align: 'center'
     }).setOrigin(0.5).setAlpha(0);
 
-    // Controls hint footer
-    this.controlsHint = this.add.text(cx, H - 20, 'WASD / Arrow Keys to Move  •  Space to Shoot', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-      color: '#8888aa',
-      align: 'center'
-    }).setOrigin(0.5);
+    // ── Virtual mobile controls strip ──────────────────────────────────────
+    this.mobileControls = { left: false, right: false, up: false, down: false, fire: false };
+    this._createMobileControls(W, H, ctrlH, ctrlY);
 
-    // Listen for events from GameScene
+    // ── Event listeners from GameScene ─────────────────────────────────────
     const gameScene = this.scene.get('GameScene');
     gameScene.events.on('scoreChanged', this.updateScore, this);
     gameScene.events.on('livesChanged', this.updateLives, this);
-    gameScene.events.on('gameOver', this.showGameOverModal, this);
-    gameScene.events.on('gameWin', this.showWinModal, this);
-    gameScene.events.on('waveStarted', this.showWaveStartedBanner, this);
-    gameScene.events.on('waveCleared', this.showWaveClearedBanner, this);
+    gameScene.events.on('gameOver',     this.showGameOverModal, this);
+    gameScene.events.on('gameWin',      this.showWinModal, this);
+    gameScene.events.on('waveStarted',  this.showWaveStartedBanner, this);
+    gameScene.events.on('waveCleared',  this.showWaveClearedBanner, this);
+  }
+
+  _createMobileControls(W, H, ctrlH, ctrlY) {
+    // Semi-transparent dark background strip for controls area
+    const ctrlBg = this.add.graphics();
+    ctrlBg.fillStyle(0x000820, 0.82);
+    ctrlBg.fillRect(0, ctrlY, W, ctrlH);
+    // Thin separator line at top of control strip
+    ctrlBg.lineStyle(1, 0x00ffcc, 0.3);
+    ctrlBg.lineBetween(0, ctrlY, W, ctrlY);
+
+    const btnY = ctrlY + ctrlH / 2 + 4;     // Vertical center of control strip
+    const btnW = 130;                         // Button width
+    const btnH = ctrlH - 28;                 // Button height
+    const radius = 14;
+
+    // ── LEFT button ───────────────────────────────────────
+    const leftBg = this._makeCtrlButton(70, btnY, btnW, btnH, radius, '◀  LEFT');
+    leftBg.on('pointerdown',  () => { this.mobileControls.left = true; });
+    leftBg.on('pointerup',    () => { this.mobileControls.left = false; });
+    leftBg.on('pointerout',   () => { this.mobileControls.left = false; });
+
+    // ── RIGHT button ──────────────────────────────────────
+    const rightBg = this._makeCtrlButton(W - 70, btnY, btnW, btnH, radius, 'RIGHT  ▶');
+    rightBg.on('pointerdown', () => { this.mobileControls.right = true; });
+    rightBg.on('pointerup',   () => { this.mobileControls.right = false; });
+    rightBg.on('pointerout',  () => { this.mobileControls.right = false; });
+
+    // ── FIRE button (center) ──────────────────────────────
+    const fireBg = this._makeCtrlButton(W / 2, btnY, 100, btnH, radius, '🔥\nFIRE', true);
+    fireBg.on('pointerdown',  () => { this.mobileControls.fire = true; });
+    fireBg.on('pointerup',    () => { this.mobileControls.fire = false; });
+    fireBg.on('pointerout',   () => { this.mobileControls.fire = false; });
+
+    // Drag hint label above the controls strip
+    this.add.text(W / 2, ctrlY - 14, 'drag to aim', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '11px',
+      color: '#4488aa',
+      align: 'center'
+    }).setOrigin(0.5);
+  }
+
+  // Creates a styled rounded-rectangle button and returns the interactive rect
+  _makeCtrlButton(x, y, w, h, r, label, isFire = false) {
+    const normalColor  = isFire ? 0x772200 : 0x112244;
+    const pressedColor = isFire ? 0xff5500 : 0x1a4488;
+    const strokeColor  = isFire ? 0xff6600 : 0x00ccff;
+
+    const gfx = this.add.graphics();
+    const drawBtn = (fill, alpha = 1) => {
+      gfx.clear();
+      gfx.fillStyle(fill, 0.85);
+      gfx.fillRoundedRect(x - w / 2, y - h / 2, w, h, r);
+      gfx.lineStyle(1.5, strokeColor, 0.7);
+      gfx.strokeRoundedRect(x - w / 2, y - h / 2, w, h, r);
+    };
+    drawBtn(normalColor);
+
+    const hitZone = this.add.rectangle(x, y, w, h, 0x000000, 0)
+      .setInteractive({ useHandCursor: true });
+
+    const txt = this.add.text(x, y, label, {
+      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontSize: isFire ? '13px' : '15px',
+      color: isFire ? '#ff8844' : '#88ddff',
+      align: 'center'
+    }).setOrigin(0.5);
+
+    hitZone.on('pointerdown',  () => { drawBtn(pressedColor); txt.setScale(0.93); });
+    hitZone.on('pointerup',    () => { drawBtn(normalColor);  txt.setScale(1.0);  });
+    hitZone.on('pointerout',   () => { drawBtn(normalColor);  txt.setScale(1.0);  });
+
+    return hitZone;
   }
 
   showWaveStartedBanner(waveNum) {
@@ -1436,68 +1534,68 @@ class UIScene extends Phaser.Scene {
     this.showModal('VICTORY!', '#00ffcc', true);
   }
 
-  // Simple, clean game-over and victory dialog modal
   showModal(title, titleColor, isWin) {
     const cx = GAME_CONFIG.width / 2;
-    const cy = GAME_CONFIG.height / 2;
+    // Center modal within the playable area (above virtual controls)
+    const playH = GAME_CONFIG.height - GAME_CONFIG.mobileControlsHeight;
+    const cy = playH / 2 + 10;
 
-    // Dark semi-transparent background overlay
-    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x000000, 0.75);
+    const cardW = Math.min(400, GAME_CONFIG.width - 32);
+    const cardH = 250;
 
-    // Simple Dialog Card
-    const card = this.add.rectangle(cx, cy, 400, 240, 0x11162b, 0.95);
+    this.add.rectangle(cx, playH / 2, GAME_CONFIG.width, playH, 0x000000, 0.75);
+
+    const card = this.add.rectangle(cx, cy, cardW, cardH, 0x11162b, 0.96);
     card.setStrokeStyle(2, titleColor === '#ff4444' ? 0xff4444 : 0x00ffcc);
 
-    // Modal Title
-    this.add.text(cx, cy - 70, title, {
+    this.add.text(cx, cy - 85, title, {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '32px',
+      fontSize: '30px',
       color: titleColor
     }).setOrigin(0.5);
 
-    // Final Score
-    this.add.text(cx, cy - 15, `FINAL SCORE: ${this.score}`, {
+    this.add.text(cx, cy - 28, `FINAL SCORE: ${this.score}`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '20px',
+      fontSize: '18px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Save High Score
     const hiScore = parseInt(localStorage.getItem('spaceInvadersHighScore') || '0');
     if (this.score > hiScore) {
       localStorage.setItem('spaceInvadersHighScore', this.score);
-      this.add.text(cx, cy + 18, 'NEW HIGH SCORE!', {
+      this.add.text(cx, cy + 8, 'NEW HIGH SCORE!', {
         fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
+        fontSize: '13px',
         color: '#ffcc00'
       }).setOrigin(0.5);
     }
 
-    // Button 1: PLAY AGAIN
-    const retryBtn = this.add.rectangle(cx - 95, cy + 65, 160, 44, 0x00cc66).setInteractive({ useHandCursor: true });
+    const btnW = Math.floor((cardW - 48) / 2);
+    const btnY  = cy + 75;
+
+    // PLAY AGAIN button
+    const retryBtn = this.add.rectangle(cx - btnW / 2 - 8, btnY, btnW, 46, 0x00cc66).setInteractive({ useHandCursor: true });
     retryBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx - 95, cy + 65, 'PLAY AGAIN', {
+    this.add.text(cx - btnW / 2 - 8, btnY, 'PLAY AGAIN', {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#ffffff'
     }).setOrigin(0.5);
+    retryBtn.on('pointerover',  () => retryBtn.setFillStyle(0x00ee77));
+    retryBtn.on('pointerout',   () => retryBtn.setFillStyle(0x00cc66));
+    retryBtn.on('pointerdown',  () => this.restartGame());
 
-    retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x00ee77));
-    retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x00cc66));
-    retryBtn.on('pointerdown', () => this.restartGame());
-
-    // Button 2: MAIN MENU
-    const menuBtn = this.add.rectangle(cx + 95, cy + 65, 160, 44, 0x334466).setInteractive({ useHandCursor: true });
+    // MAIN MENU button
+    const menuBtn = this.add.rectangle(cx + btnW / 2 + 8, btnY, btnW, 46, 0x334466).setInteractive({ useHandCursor: true });
     menuBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx + 95, cy + 65, 'MAIN MENU', {
+    this.add.text(cx + btnW / 2 + 8, btnY, 'MAIN MENU', {
       fontFamily: '"Arial Black", Arial, sans-serif',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#ffffff'
     }).setOrigin(0.5);
-
-    menuBtn.on('pointerover', () => menuBtn.setFillStyle(0x556688));
-    menuBtn.on('pointerout', () => menuBtn.setFillStyle(0x334466));
-    menuBtn.on('pointerdown', () => {
+    menuBtn.on('pointerover',  () => menuBtn.setFillStyle(0x556688));
+    menuBtn.on('pointerout',   () => menuBtn.setFillStyle(0x334466));
+    menuBtn.on('pointerdown',  () => {
       this.scene.stop('GameScene');
       this.scene.stop('UIScene');
       this.scene.start('MainMenuScene');
@@ -1531,7 +1629,9 @@ class GameScene extends Phaser.Scene {
     this.playerBullets = this.physics.add.group({ classType: Bullet, maxSize: 16, runChildUpdate: true });
     this.enemyBullets = this.physics.add.group({ classType: Bullet, maxSize: 20, runChildUpdate: true });
 
-    this.player = new Player(this, GAME_CONFIG.width / 2, GAME_CONFIG.height - 70);
+    // Spawn player above virtual controls strip
+    const playerSpawnY = GAME_CONFIG.height - GAME_CONFIG.mobileControlsHeight - 35;
+    this.player = new Player(this, GAME_CONFIG.width / 2, playerSpawnY);
 
     this.enemyGroup = new EnemyGroup(this);
     this.enemyShipGroup = new EnemyShipGroup(this);
@@ -1728,11 +1828,15 @@ class GameScene extends Phaser.Scene {
 const config = {
   type: Phaser.AUTO, // Auto-select WebGL or Canvas renderer
   scale: {
-    mode: Phaser.Scale.FIT, // Scale game canvas to fit screen container while preserving aspect ratio
-    parent: 'game-container', // HTML parent DOM element ID
-    autoCenter: Phaser.Scale.CENTER_BOTH, // Automatically center game canvas horizontally and vertically
-    width: GAME_CONFIG.width, // Virtual design width (800px)
-    height: GAME_CONFIG.height // Virtual design height (600px)
+    mode: Phaser.Scale.FIT,         // Scale canvas to fit screen while preserving aspect ratio
+    parent: 'game-container',       // HTML parent DOM element ID
+    autoCenter: Phaser.Scale.CENTER_BOTH, // Center canvas horizontally and vertically
+    width: GAME_CONFIG.width,       // Virtual design width (480px portrait)
+    height: GAME_CONFIG.height,     // Virtual design height (800px portrait)
+    expandParent: false             // Keep canvas contained, don't expand parent div
+  },
+  input: {
+    activePointers: 3              // Support multi-touch (up to 3 simultaneous touches)
   },
   physics: {
     default: 'arcade', // Enable Phaser Arcade Physics engine
