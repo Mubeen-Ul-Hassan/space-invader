@@ -2,11 +2,9 @@
 const config = {
   type: Phaser.AUTO, // Auto-select WebGL or Canvas renderer
   scale: {
-    mode: Phaser.Scale.FIT, // Scale game canvas to fit screen container while preserving aspect ratio
+    mode: Phaser.Scale.RESIZE, // Resize canvas to fill the full screen on any device
     parent: 'game-container', // HTML parent DOM element ID
-    autoCenter: Phaser.Scale.CENTER_BOTH, // Automatically center game canvas horizontally and vertically
-    width: GAME_CONFIG.width, // Virtual design width (800px)
-    height: GAME_CONFIG.height // Virtual design height (600px)
+    autoCenter: Phaser.Scale.CENTER_BOTH // Automatically center game canvas horizontally and vertically
   },
   physics: {
     default: 'arcade', // Enable Phaser Arcade Physics engine
