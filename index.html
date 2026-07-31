@@ -1443,8 +1443,8 @@ class UIScene extends Phaser.Scene {
     // ── Score display: 6 numeral image sprites (e.g. "000100") ──────
     // Each digit is a numeral0–numeral9 asset image, spaced side by side
     const DIGIT_COUNT = 6;
-    const DIGIT_SCALE = 0.55;   // scale each numeral sprite
-    const DIGIT_GAP   = 14;     // horizontal gap between digit centres
+    const DIGIT_SCALE = 0.75;   // scale each numeral sprite
+    const DIGIT_GAP   = 19;     // horizontal gap between digit centres
     const DIGIT_X_START = 18;   // left edge X for the first digit
     const DIGIT_Y     = 20;     // Y centre for all digits
 
@@ -1463,9 +1463,9 @@ class UIScene extends Phaser.Scene {
 
     // ── Lives display (top-right): ship icon × count digit ──────────
     this.lifeShipIcon    = this.add.image(W - 90, 22, 'life').setScale(0.85);
-    this.numeralXIcon    = this.add.image(W - 65, 22, 'numeralX').setScale(0.75);
+    this.numeralXIcon    = this.add.image(W - 65, 22, 'numeralX').setScale(DIGIT_SCALE);
     const initialDigitKey = 'numeral' + Math.min(9, Math.max(0, this.lives));
-    this.numeralDigitIcon = this.add.image(W - 40, 22, initialDigitKey).setScale(0.75);
+    this.numeralDigitIcon = this.add.image(W - 40, 22, initialDigitKey).setScale(DIGIT_SCALE);
 
     // ── Wave Notification Banner (screen centre) ─────────────────────
     this.waveBannerText = this.add.text(cx, H / 2 - 40, '', {
