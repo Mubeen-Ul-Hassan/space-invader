@@ -48,7 +48,8 @@ const assetMapping = {
   iconPlay: 'PNG/Menu/play_arrow_24dp.svg',
   iconSettings: 'PNG/Menu/settings_24dp.svg',
   iconLeaderboard: 'PNG/Menu/leaderboard_24dp.svg',
-  iconHowToPlay: 'PNG/Menu/developer_guide_24dp.svg'
+  iconHowToPlay: 'PNG/Menu/developer_guide_24dp.svg',
+  logo: 'chickenInvader.png'
 };
 
 // Convert image, SVG, or audio file to base64 data URL
