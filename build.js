@@ -42,6 +42,21 @@ sourceFiles.forEach(file => {
   }
 });
 
+// Embed EurostileExtendedBlack font asset as Base64 font face rule
+const fontPath = path.join(__dirname, 'assets/Bonus/EurostileExtendedBlack.ttf');
+let fontFaceCss = '';
+if (fs.existsSync(fontPath)) {
+  const fontBase64 = fs.readFileSync(fontPath).toString('base64');
+  fontFaceCss = `
+    @font-face {
+      font-family: 'EurostileExtendedBlack';
+      src: url('data:font/ttf;charset=utf-8;base64,${fontBase64}') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  `;
+}
+
 // Single HTML template content
 const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -51,6 +66,7 @@ const htmlContent = `<!DOCTYPE html>
   <title>Space Invaders - Playable Ad</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
   <style>
+    ${fontFaceCss}
     /* Reset body and full viewport canvas centering CSS */
     * {
       margin: 0;
