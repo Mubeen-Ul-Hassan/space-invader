@@ -49,6 +49,10 @@ const assetMapping = {
   iconSettings: 'PNG/Menu/settings_24dp.svg',
   iconLeaderboard: 'PNG/Menu/leaderboard_24dp.svg',
   iconHowToPlay: 'PNG/Menu/developer_guide_24dp.svg',
+  iconMute: 'PNG/Menu/volume_off_24dp.svg',
+  iconBack: 'PNG/Menu/keyboard_backspace_24dp.svg',
+  iconMenu: 'PNG/Menu/menu_24dp.svg',
+  iconReplay: 'PNG/Menu/replay_24dp.svg',
   logo: 'chickenInvader.png'
 };
 
