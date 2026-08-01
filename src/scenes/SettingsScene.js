@@ -62,7 +62,7 @@ class SettingsScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Slider track
-    const trackW = cardW - 100;
+    const trackW = cardW - 136;
     const trackY = cy;
     const trackG = this.add.graphics();
     trackG.fillStyle(0x1e2a44, 1);
@@ -73,10 +73,10 @@ class SettingsScene extends Phaser.Scene {
     this._drawSliderFill(trackW, trackY);
 
     // Decrement '-' pill button
-    this._makePillBtn(cx - trackW / 2 - 28, trackY, 44, 44, '-', 0xaa2233, 0xcc3344, () => this.adjustVolume(-0.1));
+    this._makePillBtn(cx - trackW / 2 - 30, trackY, 44, 44, '-', 0xaa2233, 0xcc3344, () => this.adjustVolume(-0.1));
 
     // Increment '+' pill button
-    this._makePillBtn(cx + trackW / 2 + 28, trackY, 44, 44, '+', 0x006633, 0x00aa55, () => this.adjustVolume(0.1));
+    this._makePillBtn(cx + trackW / 2 + 30, trackY, 44, 44, '+', 0x006633, 0x00aa55, () => this.adjustVolume(0.1));
 
     // ── Mute / Test buttons row ────────────────────────────────────────────
     const btnY = cy + 68;
@@ -99,8 +99,8 @@ class SettingsScene extends Phaser.Scene {
     });
 
     // ── Back Button ────────────────────────────────────────────────────────
-    const backY = cy + cardH / 2 - 30;
-    this._makePillBtn(cx, backY, 160, 44, 'BACK', 0x1a2240, 0x2a3460, 'iconBack', () => {
+    const backY = cy + cardH / 2 - 42;
+    this._makePillBtn(cx, backY, 160, 44, 'BACK', 0x1a2240, 0x2a3460, () => {
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.start('MainMenuScene');
