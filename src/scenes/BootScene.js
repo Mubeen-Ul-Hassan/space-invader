@@ -9,7 +9,7 @@ class BootScene extends Phaser.Scene {
   preload() {
     // Show simple loading text while assets populate memory
     const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Loading Game Assets...', {
-      fontFamily: 'Arial',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '24px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -20,8 +20,16 @@ class BootScene extends Phaser.Scene {
     }
   }
 
-  // Transition to main menu scene once base64 assets are registered
+  // Transition to main menu scene once base64 assets and custom fonts are ready
   create() {
-    this.scene.start('MainMenuScene'); // Launch MainMenuScene directly
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('16px "EurostileExtendedBlack"').then(() => {
+        this.scene.start('MainMenuScene');
+      }).catch(() => {
+        this.scene.start('MainMenuScene');
+      });
+    } else {
+      this.scene.start('MainMenuScene');
+    }
   }
 }
