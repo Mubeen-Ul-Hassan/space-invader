@@ -66,6 +66,18 @@ class UIScene extends Phaser.Scene {
     gameScene.events.on('gameWin',      this.showWinModal, this);
     gameScene.events.on('waveStarted',  this.showWaveStartedBanner, this);
     gameScene.events.on('waveCleared',  this.showWaveClearedBanner, this);
+
+    // Clean up event listeners on shutdown to avoid calling stale/destroyed references
+    this.events.once('shutdown', () => {
+      if (gameScene && gameScene.events) {
+        gameScene.events.off('scoreChanged', this.updateScore, this);
+        gameScene.events.off('livesChanged', this.updateLives, this);
+        gameScene.events.off('gameOver',     this.showGameOverModal, this);
+        gameScene.events.off('gameWin',      this.showWinModal, this);
+        gameScene.events.off('waveStarted',  this.showWaveStartedBanner, this);
+        gameScene.events.off('waveCleared',  this.showWaveClearedBanner, this);
+      }
+    });
   }
 
   // Render current score as 6 individual numeral image sprites

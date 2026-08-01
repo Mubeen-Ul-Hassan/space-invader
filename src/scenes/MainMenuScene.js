@@ -167,6 +167,7 @@ class MainMenuScene extends Phaser.Scene {
       }
     });
 
+    this.cameras.main.resetFX();
     this.cameras.main.fadeIn(300, 0, 0, 0);
   }
 
