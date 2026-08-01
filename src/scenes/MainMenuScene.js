@@ -28,7 +28,7 @@ class MainMenuScene extends Phaser.Scene {
 
     // Game Title
     const title = this.add.text(cx, cy - 80, 'SPACE INVADERS', {
-      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '40px',
       color: '#00ffcc',
       align: 'center'
@@ -37,7 +37,7 @@ class MainMenuScene extends Phaser.Scene {
 
     // Subtitle tagline
     this.add.text(cx, cy - 38, 'DEFEND THE GALAXY', {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '14px',
       color: '#ffcc00',
       align: 'center',
@@ -64,7 +64,7 @@ class MainMenuScene extends Phaser.Scene {
     const hiScore = localStorage.getItem('spaceInvadersHighScore') || 0;
     if (hiScore > 0) {
       this.add.text(cx, cy + 155, `HIGH SCORE: ${String(hiScore).padStart(6, '0')}`, {
-        fontFamily: 'Arial, sans-serif',
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
         fontSize: '14px',
         color: '#8899aa'
       }).setOrigin(0.5);
@@ -76,14 +76,14 @@ class MainMenuScene extends Phaser.Scene {
       ? 'Touch & Drag to Move  •  Tap to Shoot'
       : 'WASD / Arrow Keys to Move  •  Space to Shoot';
     this.add.text(cx, H - 20, controlsLabel, {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '12px',
       color: '#556677'
     }).setOrigin(0.5);
 
     // Cheat status indicator (hidden by default, shows when a cheat is active)
     this._cheatIndicator = this.add.text(cx, H - 38, '', {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '11px',
       color: '#00ffcc',
       align: 'center'
@@ -151,7 +151,7 @@ class MainMenuScene extends Phaser.Scene {
     bg.setStrokeStyle(2, 0xffffff, 0.8);
 
     const txt = this.add.text(x, y, label, {
-      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '18px',
       color: '#ffffff'
     }).setOrigin(0.5);
