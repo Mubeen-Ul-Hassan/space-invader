@@ -16,39 +16,52 @@ class MainMenuScene extends Phaser.Scene {
     // Scrolling background
     this.bg = this.add.tileSprite(0, 0, W, H, 'background').setOrigin(0, 0);
 
-    // Hero ship floating animation
-    const heroShip = this.add.image(cx, cy - 215, 'player').setScale(1.2);
-    this.tweens.add({
-      targets: heroShip,
-      y: cy - 227,
-      duration: 1500,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
+    // ── Responsive Layout ─────────────────────────────────────────────────────
+    // Original chickenInvader.png aspect ratio: 1774 × 887 (≈ 2 : 1)
+    const LOGO_ASPECT  = 887 / 1774; // rendered height / width
+    const FOOTER_H     = 45;         // height reserved at bottom for footer
+    const BTN_H        = 46;         // single button height
+    const BTN_GAP      = 12;         // vertical gap between buttons
+    const BTN_COUNT    = 4;
+    const LOGO_BTN_GAP = 22;         // gap between logo bottom and first button
 
-    // Existing Game Title Style
-    const title = this.add.text(cx, cy - 165, 'SPACE INVADERS', {
-      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-      fontSize: '40px',
-      color: '#00ffcc',
-      align: 'center'
-    }).setOrigin(0.5);
-    title.setStroke('#003344', 6);
+    // Total buttons block height
+    const totalBtnH = BTN_COUNT * BTN_H + (BTN_COUNT - 1) * BTN_GAP;
 
-    // Subtitle tagline
-    this.add.text(cx, cy - 122, 'DEFEND THE GALAXY', {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-      fontSize: '14px',
-      color: '#ffcc00',
-      align: 'center',
-      letterSpacing: 4
-    }).setOrigin(0.5);
+    // Usable vertical space (screen minus footer)
+    const usableH = H - FOOTER_H;
 
-    // Menu Buttons with generous vertical spacing (gapY = 60)
-    const startY = cy - 54;
-    const gapY = 60;
+    // Max logo height = usable space minus buttons block and gap
+    const maxLogoH = usableH - LOGO_BTN_GAP - totalBtnH;
 
+    // Desired logo width (90% of screen, capped at 520px)
+    const logoTargetW = Math.min(W * 0.90, 520);
+    const logoTargetH = logoTargetW * LOGO_ASPECT;
+
+    // Clamp so buttons always fit
+    const clampedLogoH = Math.min(logoTargetH, maxLogoH);
+    const clampedLogoW = clampedLogoH / LOGO_ASPECT;
+
+    // Total content block height
+    const totalContentH = clampedLogoH + LOGO_BTN_GAP + totalBtnH;
+
+    // Top offset to vertically center the whole block
+    const topOffset = (usableH - totalContentH) / 2;
+
+    // Derived positions
+    const logoY  = topOffset + clampedLogoH / 2;
+    const startY = topOffset + clampedLogoH + LOGO_BTN_GAP + BTN_H / 2;
+    const gapY   = BTN_H + BTN_GAP;
+
+    // ── Title Logo ────────────────────────────────────────────────────────────
+    if (this.textures.exists('logo')) {
+      const logoImg = this.add.image(cx, logoY, 'logo').setOrigin(0.5);
+      if (logoImg.width > 0) {
+        logoImg.setScale(clampedLogoW / logoImg.width);
+      }
+    }
+
+    // ── Menu Buttons ──────────────────────────────────────────────────────────
     // 1. PLAY BUTTON
     this.makeSciFiButton(cx, startY, 'PLAY', 'iconPlay', 0x00aa55, 0x00cc66, () => {
       if (this._activeModal) return;
@@ -76,6 +89,38 @@ class MainMenuScene extends Phaser.Scene {
     // 4. HOW TO PLAY BUTTON
     this.makeSciFiButton(cx, startY + gapY * 3, 'HOW TO PLAY', 'iconHowToPlay', 0x11162b, 0x222a44, () => {
       this._showHowToPlayModal();
+    });
+
+    // ── Ship Below Menu ───────────────────────────────────────────────────────
+    // Bottom of last button
+    const lastBtnBottom = startY + gapY * (BTN_COUNT - 1) + BTN_H / 2;
+    // Available space between last button and footer
+    const shipZoneH = H - FOOTER_H - lastBtnBottom;
+    // Centre the ship vertically in that gap
+    const shipY = lastBtnBottom + shipZoneH / 2;
+
+    const heroShip = this.add.image(cx, shipY, 'player')
+      .setOrigin(0.5)
+      .setScale(0.9);
+
+    // Gentle vertical bob
+    this.tweens.add({
+      targets: heroShip,
+      y: shipY - 10,
+      duration: 1400,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Slow horizontal drift left → right → left
+    this.tweens.add({
+      targets: heroShip,
+      x: cx + 28,
+      duration: 2800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
     });
 
     // Controls footer
@@ -125,7 +170,7 @@ class MainMenuScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 0, 0, 0);
   }
 
-  // Refined Chamfered Button Factory with Clean White Borders and Vector Asset Icons
+  // Smooth Rounded Sci-Fi Pill Button Factory with Dual Outline & Top-Edge Highlight
   makeSciFiButton(x, y, labelText, iconKey, colorNormal, colorHover, onClick) {
     // Support optional overload when iconKey is omitted
     if (typeof iconKey === 'number') {
@@ -135,33 +180,31 @@ class MainMenuScene extends Phaser.Scene {
       iconKey = null;
     }
 
-    const W = 250;
-    const H = 44;
-    const chamfer = 8;
+    const W = 252;
+    const H = 46;
+    const radius = 12; // Smooth rounded corner radius
     const container = this.add.container(x, y);
 
-    // Main Chamfered Polygon Body Graphics
+    // Main Button Body & Frame Graphics
     const body = this.add.graphics();
-    const drawBody = (fillColor, fillAlpha, strokeColor, strokeAlpha, strokeWidth) => {
+    const drawBody = (fillColor, fillAlpha, isHovered) => {
       body.clear();
+
+      // 1. Solid Body Fill (Rounded Rectangle)
       body.fillStyle(fillColor, fillAlpha);
-      body.lineStyle(strokeWidth, strokeColor, strokeAlpha);
-      const poly = [
-        { x: -W/2 + chamfer, y: -H/2 },
-        { x:  W/2 - chamfer, y: -H/2 },
-        { x:  W/2,           y: -H/2 + chamfer },
-        { x:  W/2,           y:  H/2 - chamfer },
-        { x:  W/2 - chamfer, y:  H/2 },
-        { x: -W/2 + chamfer, y:  H/2 },
-        { x: -W/2,           y:  H/2 - chamfer },
-        { x: -W/2,           y: -H/2 + chamfer }
-      ];
-      body.fillPoints(poly, true);
-      body.strokePoints(poly, true);
+      body.fillRoundedRect(-W / 2, -H / 2, W, H, radius);
+
+      // 2. Main White Border
+      body.lineStyle(isHovered ? 2.5 : 2, 0xffffff, isHovered ? 1.0 : 0.85);
+      body.strokeRoundedRect(-W / 2, -H / 2, W, H, radius);
+
+      // 3. Top-Edge Glass Bevel Highlight Line
+      body.lineStyle(1.5, 0xffffff, isHovered ? 0.5 : 0.25);
+      body.lineBetween(-W / 2 + radius, -H / 2 + 3, W / 2 - radius, -H / 2 + 3);
     };
 
-    // Draw initial button state with clean white border (no outer glow)
-    drawBody(colorNormal, 0.92, 0xffffff, 0.8, 2);
+    // Initial Button Paint
+    drawBody(colorNormal, 0.92, false);
 
     // Vector Icon Image Asset (from assets/PNG/Menu/)
     let iconObj = null;
@@ -179,30 +222,20 @@ class MainMenuScene extends Phaser.Scene {
       align: 'center'
     }).setOrigin(iconKey ? 0.4 : 0.5, 0.5);
 
-    // Interactive Chamfered Hit Polygon Area
-    const hitArea = new Phaser.Geom.Polygon([
-      -W/2 + chamfer, -H/2,
-       W/2 - chamfer, -H/2,
-       W/2,           -H/2 + chamfer,
-       W/2,            H/2 - chamfer,
-       W/2 - chamfer,  H/2,
-      -W/2 + chamfer,  H/2,
-      -W/2,            H/2 - chamfer,
-      -W/2,           -H/2 + chamfer
-    ]);
-
-    body.setInteractive(hitArea, Phaser.Geom.Polygon.Contains);
+    // Interactive Rounded Rectangle Hit Area
+    const hitArea = new Phaser.Geom.Rectangle(-W / 2, -H / 2, W, H);
+    body.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
     body.input.cursor = 'pointer';
 
     body.on('pointerover', () => {
       if (this._activeModal) return;
-      drawBody(colorHover, 0.98, 0xffffff, 1.0, 2);
+      drawBody(colorHover, 0.98, true);
       txt.setScale(1.03);
       if (iconObj) iconObj.setScale(1.08);
     });
 
     body.on('pointerout', () => {
-      drawBody(colorNormal, 0.92, 0xffffff, 0.8, 2);
+      drawBody(colorNormal, 0.92, false);
       txt.setScale(1.0);
       if (iconObj) iconObj.setScale(1.0);
       container.setY(y);
@@ -211,7 +244,7 @@ class MainMenuScene extends Phaser.Scene {
     body.on('pointerdown', () => {
       if (this._activeModal) return;
       container.setY(y + 2);
-      drawBody(colorHover, 1.0, 0xffffff, 1.0, 2);
+      drawBody(colorHover, 1.0, true);
     });
 
     body.on('pointerup', () => {
