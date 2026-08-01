@@ -24,11 +24,14 @@ class AudioManager {
   }
 
   // Set global audio master volume (0.0 to 1.0)
-  setVolume(volume) {
+  setVolume(volume, scene) {
     this.volume = Phaser.Math.Clamp(volume, 0, 1);
     this.init();
     if (this.masterGain && this.ctx) {
       this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+    }
+    if (scene) {
+      this.updateBgMusicVolume(scene);
     }
   }
 
@@ -197,6 +200,39 @@ class AudioManager {
       osc.start(this.ctx.currentTime + idx * 0.12);
       osc.stop(this.ctx.currentTime + idx * 0.12 + 0.1);
     });
+  }
+
+  // Play or resume looping background music track ('bgMusic') in Phaser scene
+  playBgMusic(scene) {
+    if (!scene || !scene.sound) return;
+    this.init();
+    try {
+      let music = scene.sound.get('bgMusic');
+      if (!music) {
+        scene.sound.play('bgMusic', { loop: true, volume: this.volume * 0.5 });
+      } else if (!music.isPlaying) {
+        music.play({ loop: true, volume: this.volume * 0.5 });
+      }
+    } catch (e) {
+      console.warn('Background music playback pending user interaction:', e);
+    }
+  }
+
+  // Stop background music track
+  stopBgMusic(scene) {
+    if (scene && scene.sound) {
+      scene.sound.stopByKey('bgMusic');
+    }
+  }
+
+  // Update background music volume dynamically
+  updateBgMusicVolume(scene) {
+    if (scene && scene.sound) {
+      const music = scene.sound.get('bgMusic');
+      if (music) {
+        music.setVolume(this.volume * 0.5);
+      }
+    }
   }
 }
 
