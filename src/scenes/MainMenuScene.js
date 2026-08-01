@@ -342,7 +342,7 @@ class MainMenuScene extends Phaser.Scene {
       entries.push(rankBg, rankTxt, nameTxt, scoreTxt);
     });
 
-    const closeBtn = this.makeSciFiButton(0, cardH / 2 - 28, 'CLOSE', 0x1a2240, 0x2a3460, () => {
+    const closeBtn = this.makeSciFiButton(0, cardH / 2 - 43, 'BACK', 0x1a2240, 0x2a3460, () => {
       modal.destroy();
       this._activeModal = null;
     });
@@ -394,7 +394,7 @@ class MainMenuScene extends Phaser.Scene {
         align: indent !== 0 ? 'left' : 'center'
       }).setOrigin(indent !== 0 ? 0 : 0.5, 0).setDepth(52);
       items.push(t);
-      cursor += size * 1.55;
+      cursor += size * 1.48;
       return t;
     };
     const addGap = (px = 10) => { cursor += px; };
@@ -421,12 +421,12 @@ class MainMenuScene extends Phaser.Scene {
       addText('WASD / ARROWS  →  Move', 16, '#ffffff');
       addText('SPACEBAR / CLICK  →  Fire', 16, '#ffffff');
     }
-    addGap(6);
+    addGap(4);
     addDivider();
 
     // ── Power-ups ─────────────────────────────────────────────────────────────
     addText('POWER-UPS', 17, '#ffcc00');
-    addGap(6);
+    addGap(4);
 
     const powerups = [
       { key: 'shield1',    label: 'SHIELD',  desc: 'Invulnerability barrier',   color: '#88ddff' },
@@ -453,14 +453,13 @@ class MainMenuScene extends Phaser.Scene {
         fontSize: '13px', color: '#d0ddf0'
       }).setOrigin(0, 0).setDepth(52);
       items.push(lbl, dsc);
-      cursor += 50;
+      cursor += 47;
     });
 
-    // ── Close Button ──────────────────────────────────────────────────────────
-    addGap(8);
+    // ── Back Button ──────────────────────────────────────────────────────────
     const btnW = 160, btnH = 44, btnR = 14;
     const btnX = cx - btnW / 2;
-    const btnY = cursor;
+    const btnY = cardY + cardH - 64;
 
     const btnBg = this.add.graphics().setDepth(52);
     const drawBtn = (hovered) => {
@@ -469,21 +468,24 @@ class MainMenuScene extends Phaser.Scene {
       btnBg.fillRoundedRect(btnX, btnY, btnW, btnH, btnR);
       btnBg.lineStyle(hovered ? 2.5 : 2, 0xffffff, hovered ? 1 : 0.85);
       btnBg.strokeRoundedRect(btnX, btnY, btnW, btnH, btnR);
+      btnBg.lineStyle(1, 0xffffff, hovered ? 0.35 : 0.15);
+      btnBg.lineBetween(btnX + btnR, btnY + 3, btnX + btnW - btnR, btnY + 3);
     };
     drawBtn(false);
 
-    const btnTxt = this.add.text(cx, btnY + btnH / 2, 'CLOSE', {
+    const btnTxt = this.add.text(cx, btnY + btnH / 2, 'BACK', {
       fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '16px', color: '#ffffff'
-    }).setOrigin(0.5).setDepth(53);
+    }).setOrigin(0.5, 0.5).setDepth(53);
 
     btnBg.setInteractive(new Phaser.Geom.Rectangle(btnX, btnY, btnW, btnH), Phaser.Geom.Rectangle.Contains);
     btnBg.input.cursor = 'pointer';
-    btnBg.on('pointerover',  () => drawBtn(true));
-    btnBg.on('pointerout',   () => drawBtn(false));
+    btnBg.on('pointerover',  () => { drawBtn(true); });
+    btnBg.on('pointerout',   () => { drawBtn(false); });
     btnBg.on('pointerup',    () => destroy());
 
     items.push(btnBg, btnTxt);
+    if (iconObj) items.push(iconObj);
 
     // Store as active modal (use a dummy container to satisfy the guard)
     this._activeModal = { destroy };
