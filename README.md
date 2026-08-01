@@ -1,3 +1,6 @@
+<img width="1920" height="1013" alt="Screenshot from 2026-08-01 22-46-57" src="https://github.com/user-attachments/assets/8834d14e-3879-4d70-a250-eda9d19f46a8" />
+
+
 # Space Invader (Phaser 3 Game)
 
 This is a simple 2D space shooter game. It is made with Phaser 3 for a technical assessment. The whole game is built into one HTML file, so it is easy to run and share.
@@ -9,6 +12,8 @@ You control a spaceship at the bottom of the screen. Enemies (meteors and enemy 
 - Survive 5 waves of enemies to win the game.
 - If you lose all your lives, it is game over.
 - You start with 3 lives. You can find power-ups that give more lives, faster shooting, or a shield.
+
+<img width="1920" height="1013" alt="Screenshot from 2026-08-01 23-12-11" src="https://github.com/user-attachments/assets/ab0d6c0e-6d26-43c1-b4e1-c4a2420adf62" />
 
 ## Controls
 
