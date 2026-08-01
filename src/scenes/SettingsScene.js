@@ -121,7 +121,7 @@ class SettingsScene extends Phaser.Scene {
   }
 
   setVolumeLevel(val) {
-    this.audioManager.setVolume(val);
+    this.audioManager.setVolume(val, this);
     const updated = this.audioManager.getVolume();
     this.volumeText.setText(`${Math.round(updated * 100)}%`);
     this.sliderFill.setSize(240 * updated, 14);
