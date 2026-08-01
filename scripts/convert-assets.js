@@ -44,8 +44,7 @@ const assetMapping = {
   numeral7: 'PNG/Power-ups/numeral7.png',
   numeral8: 'PNG/Power-ups/numeral8.png',
   numeral9: 'PNG/Power-ups/numeral9.png',
-  numeralX: 'PNG/Power-ups/numeralX.png',
-  bgMusic: 'Backgrounds/starsmix.ogg'
+  numeralX: 'PNG/Power-ups/numeralX.png'
 };
 
 // Convert image or audio file to base64 data URL
