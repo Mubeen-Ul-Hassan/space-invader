@@ -53,6 +53,7 @@ const assetMapping = {
   iconBack: 'PNG/Menu/keyboard_backspace_24dp.svg',
   iconMenu: 'PNG/Menu/menu_24dp.svg',
   iconReplay: 'PNG/Menu/replay_24dp.svg',
+  iconGameOver: 'PNG/Menu/game-over.svg',
   logo: 'chickenInvader.png'
 };
 
