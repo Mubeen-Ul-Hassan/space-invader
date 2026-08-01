@@ -11,7 +11,6 @@ class MainMenuScene extends Phaser.Scene {
     const cy = H / 2;
 
     this._audioManager = new AudioManager();
-    this._audioManager.playBgm();
     this._activeModal = null;
 
     // Scrolling background

@@ -11,7 +11,6 @@ class GameScene extends Phaser.Scene {
     this._invincible = false;
 
     this.audioManager = new AudioManager();
-    this.audioManager.playBgm();
 
     this.bg = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'background').setOrigin(0, 0);
 
