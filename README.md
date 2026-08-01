@@ -1,144 +1,85 @@
-# Space Invaders — Phaser 3 Playable
+# Space Invader (Phaser 3 Game)
 
-A responsive, wave-based **Space Invaders** game built with **Phaser 3** as a single-file HTML deliverable.
+This is a simple 2D space shooter game. It is made with Phaser 3 for a technical assessment. The whole game is built into one HTML file, so it is easy to run and share.
 
----
+## What is this game about
 
-## 🎮 Game Overview
+You control a spaceship at the bottom of the screen. Enemies (meteors and enemy ships) come down from the top. You move your ship and shoot lasers to destroy them.
 
-Pilot a starship to defend the galaxy against waves of incoming meteorites and enemy ships. Collect power-ups, survive all 5 waves, and achieve victory.
+- Survive 5 waves of enemies to win the game.
+- If you lose all your lives, it is game over.
+- You start with 3 lives. You can find power-ups that give more lives, faster shooting, or a shield.
 
-### Objective
-- Survive all 5 enemy waves to win.
-- Lose all lives and it's game over.
+## Controls
 
-### Controls
-| Input | Action |
-|-------|--------|
-| `Arrow Keys` / `WASD` | Move ship (Left, Right, Up, Down) |
-| `Space` | Fire laser |
-| `Click / Touch Drag` | Move ship (mobile & mouse) |
+| Key / Action | What it does |
+|---|---|
+| Arrow keys or WASD | Move the ship |
+| Space | Shoot laser |
+| Touch and drag (mobile) | Move the ship |
+| Click and drag (mouse) | Move the ship |
 
-### Features
-- **5-Wave Progression** — structured wave system with meteorite formations and enemy ships
-- **Enemy Ships** — appear after a 40-second grace period; shoot lasers at the player
-- **Power-Ups** (drop randomly with 10% chance):
-  - 💊 `pill_red` — +1 extra life (max 5)
-  - ⚡ `powerupRed` — 12-second rapid-fire boost
-  - 🛡 `shield` — 15-second invincibility shield with visual aura
-- **Lives System** — 3 starting lives displayed via ship icon HUD
-- **Score Tracking** — high score persisted via `localStorage`
-- **Settings** — in-game master volume control with mute toggle
-- **Respawn Invincibility** — 2-second flash immunity after taking damage
+The game shows these controls on screen, so new players know what to do.
 
----
+## How the project is built
 
-## 🛠 Technical Specifications
+- The game logic is written in normal JavaScript files inside the `src` folder (scenes, entities, managers, etc).
+- All images are turned into base64 text and saved in `src/assets`, so the game does not need to load outside image files.
+- A build script (`build.js`) puts everything together (Phaser library, game code, and assets) into one file: `index.html`.
+- This final `index.html` file is small (about 3 MB), so it is under the 5 MB limit.
+- Sound effects are made using the Web Audio API in code, not separate sound files. This keeps the file size small.
 
-- **Engine:** Phaser 3 (`v3.70.0`)
-- **Deliverable:** Single HTML file (`index.html`) — **1.24 MB** (well under 5 MB limit)
-- **Asset Encoding:** All sprites and backgrounds embedded as base64 data URLs — no external network requests
-- **Audio:** Web Audio API procedural sound effects (no audio file dependencies)
-- **Responsive Scaling:** `Phaser.Scale.FIT` + `CENTER_BOTH` — scales and centers correctly on all screen sizes
+## How to run this project on your computer
 
-### Architecture
-```
-src/
-├── assets/          # Auto-generated base64 asset strings
-├── entities/
-│   ├── Player.js    # 4-directional ship movement, shield/rapid-fire boosts
-│   ├── Enemy.js     # Meteorite objects with exponential speed scaling
-│   ├── EnemyShip.js # Enemy ships with sine-wave movement and laser firing
-│   ├── Bullet.js    # Pooled physics projectiles (player & enemy)
-│   └── PowerUp.js   # Collectible drop items (pill, powerup, shield)
-├── managers/
-│   ├── AudioManager.js  # Web Audio API synthesized sound effects
-│   └── WaveManager.js   # 5-wave progression with formation spawning
-├── scenes/
-│   ├── BootScene.js     # Asset preloading
-│   ├── MainMenuScene.js # Main menu with title, buttons, high score
-│   ├── SettingsScene.js # Volume control settings screen
-│   ├── GameScene.js     # Core game physics, collisions, and state
-│   └── UIScene.js       # HUD, wave banners, game-over/win modals
-└── utils/
-    └── constants.js     # Shared game configuration constants
-```
+### What you need first
 
----
+- Node.js (version 16 or newer)
+- npm (comes with Node.js)
 
-## 🚀 Getting Started
+### Steps
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v16 or higher)
-- npm
-
-### Installation
-
+1. Clone this repository:
 ```bash
 git clone <repository-url>
 cd space-invader
+```
+
+2. Install the packages:
+```bash
 npm install
 ```
 
-### Build
-
-Generates the single-file `index.html` deliverable:
-
+3. Build the game (this creates the final `index.html` file):
 ```bash
 npm run build
 ```
 
-### Run Locally
-
+4. Start a local server to play the game:
 ```bash
 npm start
 ```
 
-Open [http://localhost:8080](http://localhost:8080) in your browser.
+5. Open your browser and go to:
+```
+http://localhost:8080
+```
 
----
+You can also just open the built `index.html` file directly in a browser, since everything is inside that one file.
 
-## ⚖️ Trade-offs & Assumptions
+## Assumptions and trade-offs
 
-1. **Single-file bundle over modular server deployment**
-   - All assets, Phaser, and game code are inlined into one HTML file for maximum portability and ad-network compatibility.
-   - Trade-off: Base64 encoding increases asset size ~33% vs binary — still well within the 5 MB limit at 1.24 MB.
+- I put everything (code, images, and Phaser) into one HTML file. This makes the file a bit bigger than normal, but it makes the game very easy to share and run anywhere, which is needed for ad networks like AppLovin.
+- I used code-generated sound effects instead of real audio files. This keeps the file size small, but the sounds are simple, not real recordings.
+- I made a wave-based enemy system (5 waves) instead of the old classic grid of enemies. This makes the game feel more alive, but it is a bit different from the very old, original Space Invaders style.
+- New players get about 40 seconds before enemy ships start shooting. This gives them time to learn the controls first.
 
-2. **Procedural audio via Web Audio API**
-   - Eliminates audio file dependencies and saves 1–2 MB of payload.
-   - Trade-off: Synthesized tones have a retro character rather than realistic sound design.
+## Improvements (if I had more time)
 
-3. **Wave-based enemy system over classic grid formation**
-   - Progressive waves with meteorite formations and individually spawned enemy ships feel more dynamic and game-like.
-   - Trade-off: Less visually iconic than the classic Space Invaders grid, but more engaging over longer sessions.
+- **Game mechanics** – Add better physics to the game world (for example, more realistic movement, gravity-like effects, or collision responses) so the gameplay feels more real and fun.
+- **Story line** – Add a simple story or theme to the game, like a short intro, mission goals, or small cutscenes between waves, so players feel more connected to the game.
+- **Sound effects** – Use better, more impressive sound effects (or real recorded sounds) instead of simple code-generated ones, to make the game feel more exciting.
+- Other ideas: more types of power-ups, a boss fight at the last wave, and a leaderboard to save top scores from different players.
 
-4. **40-second grace period before enemy ships appear**
-   - Gives new players time to learn controls and game mechanics before enemy ships introduce additional threat.
+## Assets used
 
-### Potential Improvements
-- Add more power-up types (spread shot, bomb, magnet)
-- Leaderboard with multiple named high-score entries
-- Animated background parallax layers
-- Boss enemy wave at Wave 5
-- Sound effects library with recorded audio assets
-
----
-
-## 🕹 Fun Facts & Easter Eggs
-
-This game includes **3 hidden cheat codes** that can be entered silently from the **Main Menu** screen. Just type the code on your keyboard — no prompt, no button. If the code is accepted, you'll hear a triple ascending beep to confirm it's active. Type the same code again to toggle it off.
-
-| Cheat Code | Effect |
-|---|---|
-| `freeze` | Slows all enemies and meteorites to **20% speed** (your ship is completely unaffected). Frozen enemies glow **blue**. Enemy ships also stop firing lasers. |
-| `enderlein` | Unleashes **maximum firepower** — ultra-fast 40ms fire rate with a **triple spread shot** (center + left + right). Your ship glows **gold** when active. |
-| `motherlode` | The ultimate cheat — grants **5 lives**, **infinite rapid fire**, and an **infinite shield** from the moment the game starts. |
-
-> The cheat system is implemented entirely client-side via a rolling keyboard buffer that silently checks typed characters against known codes — no UI required.
-
----
-
-## 🎨 Asset Credits
-
-- Sprite assets from [Kenney.nl — Space Shooter Redux](https://kenney.nl/assets/space-shooter-redux) (CC0 1.0 Universal — Public Domain)
-- Background tile from the same Kenney.nl pack
+All images used in this game are free and open for anyone to use. They come from the **Kenney.nl – Space Shooter Redux** pack (CC0 license, which means public domain / free to use). No paid or copyrighted assets were used.
