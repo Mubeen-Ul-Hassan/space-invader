@@ -40,7 +40,7 @@ class UIScene extends Phaser.Scene {
 
     // ── Wave Notification Banner (screen centre) ─────────────────────
     this.waveBannerText = this.add.text(cx, H / 2 - 40, '', {
-      fontFamily: '"Arial Black", sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", sans-serif',
       fontSize: '36px',
       color: '#00ffcc',
       align: 'center'
@@ -52,7 +52,7 @@ class UIScene extends Phaser.Scene {
       ? 'Touch & Drag to Move  •  Tap to Shoot'
       : 'WASD / Arrow Keys to Move  •  Space to Shoot';
     this.add.text(cx, H - 20, controlsLabel, {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '13px',
       color: '#8888aa',
       align: 'center'
@@ -131,14 +131,14 @@ class UIScene extends Phaser.Scene {
 
     // Modal Title
     this.add.text(cx, cy - 70, title, {
-      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '32px',
       color: titleColor
     }).setOrigin(0.5);
 
     // Final Score
     this.add.text(cx, cy - 15, `FINAL SCORE: ${this.score}`, {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '20px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -148,7 +148,7 @@ class UIScene extends Phaser.Scene {
     if (this.score > hiScore) {
       localStorage.setItem('spaceInvadersHighScore', this.score);
       this.add.text(cx, cy + 18, 'NEW HIGH SCORE!', {
-        fontFamily: 'Arial, sans-serif',
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
         fontSize: '14px',
         color: '#ffcc00'
       }).setOrigin(0.5);
@@ -158,7 +158,7 @@ class UIScene extends Phaser.Scene {
     const retryBtn = this.add.rectangle(cx - 95, cy + 65, 160, 44, 0x00cc66).setInteractive({ useHandCursor: true });
     retryBtn.setStrokeStyle(2, 0xffffff);
     this.add.text(cx - 95, cy + 65, 'PLAY AGAIN', {
-      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '16px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -171,7 +171,7 @@ class UIScene extends Phaser.Scene {
     const menuBtn = this.add.rectangle(cx + 95, cy + 65, 160, 44, 0x334466).setInteractive({ useHandCursor: true });
     menuBtn.setStrokeStyle(2, 0xffffff);
     this.add.text(cx + 95, cy + 65, 'MAIN MENU', {
-      fontFamily: '"Arial Black", Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '16px',
       color: '#ffffff'
     }).setOrigin(0.5);
