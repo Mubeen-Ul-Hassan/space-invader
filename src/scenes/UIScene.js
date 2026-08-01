@@ -117,48 +117,108 @@ class UIScene extends Phaser.Scene {
     this.showModal('VICTORY!', '#00ffcc', true);
   }
 
-  // Simple, clean game-over and victory dialog modal
+  // Premium Sci-Fi Game-Over and Victory Modal matching the main design system
   showModal(title, titleColor, isWin) {
-    const cx = this.scale.width / 2;
-    const cy = this.scale.height / 2;
+    const W = this.scale.width;
+    const H = this.scale.height;
+    const cx = W / 2;
+    const cy = H / 2;
 
-    // Dark semi-transparent background overlay
-    this.add.rectangle(cx, cy, this.scale.width, this.scale.height, 0x000000, 0.75);
+    // Dark semi-transparent overlay
+    this.add.rectangle(cx, cy, W, H, 0x000000, 0.85).setInteractive();
 
-    // Simple Dialog Card
-    const card = this.add.rectangle(cx, cy, 400, 240, 0x11162b, 0.95);
-    card.setStrokeStyle(2, titleColor === '#ff4444' ? 0xff4444 : 0x00ffcc);
+    // ── Pill-Rounded Card (matching Settings & Main Menu modals) ───────────
+    const cardW = Math.min(W * 0.90, 380);
+    const cardH = 320; // Increased height to fit icon cleanly
+    const radius = 18;
 
-    // Modal Title
-    this.add.text(cx, cy - 70, title, {
-      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-      fontSize: '32px',
-      color: titleColor
-    }).setOrigin(0.5);
+    const cardBg = this.add.graphics();
+    cardBg.fillStyle(0x0d1226, 0.97);
+    cardBg.fillRoundedRect(cx - cardW / 2, cy - cardH / 2, cardW, cardH, radius);
+    // Glass top bevel highlight
+    cardBg.lineStyle(1.5, 0xffffff, 0.2);
+    cardBg.lineBetween(cx - cardW / 2 + radius, cy - cardH / 2 + 4, cx + cardW / 2 - radius, cy - cardH / 2 + 4);
+    // Outer white border
+    cardBg.lineStyle(2, 0xffffff, 0.85);
+    cardBg.strokeRoundedRect(cx - cardW / 2, cy - cardH / 2, cardW, cardH, radius);
 
-    // Final Score
-    this.add.text(cx, cy - 15, `FINAL SCORE: ${this.score}`, {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-      fontSize: '20px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
-
-    // Save High Score
-    const hiScore = parseInt(localStorage.getItem('spaceInvadersHighScore') || '0');
-    if (this.score > hiScore) {
-      localStorage.setItem('spaceInvadersHighScore', this.score);
-      this.add.text(cx, cy + 18, 'NEW HIGH SCORE!', {
-        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-        fontSize: '14px',
-        color: '#ffcc00'
-      }).setOrigin(0.5);
+    // ── Icon Header (like Main Menu) ───────────────────────────────────────
+    let titleY = cy - cardH / 2 + 32;
+    if (!isWin && this.textures.exists('iconGameOver')) {
+      const gameOverIcon = this.add.image(cx, cy - cardH / 2 + 42, 'iconGameOver')
+        .setDisplaySize(54, 54)
+        .setTint(0xff3344);
+      titleY = cy - cardH / 2 + 92;
     }
 
-    // ── Game-over buttons (pill style matching main menu) ──────────────────
-    const btnW = 152, btnH = 44, btnGap = 10;
-    const leftBtnX  = cx - btnW / 2 - btnGap / 2;
-    const rightBtnX = cx + btnW / 2 + btnGap / 2;
-    const btnY = cy + 65;
+    // Title Header text with high-resolution crisp rendering
+    this.add.text(cx, titleY, title, {
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
+      fontSize: '26px',
+      color: titleColor
+    }).setOrigin(0.5).setResolution(2);
+
+    // Header Divider Y depends on whether we had the icon
+    const divY = titleY + 24;
+    const divG = this.add.graphics();
+    divG.lineStyle(1, 0xffffff, 0.2);
+    divG.lineBetween(cx - cardW / 2 + 16, divY, cx + cardW / 2 - 16, divY);
+
+    // ── High Score Logic & Display ──────────────────────────────────────────
+    const currentHiScore = parseInt(localStorage.getItem('spaceInvadersHighScore') || '0');
+    const isNewHigh = this.score > currentHiScore;
+    if (isNewHigh) {
+      localStorage.setItem('spaceInvadersHighScore', this.score);
+    }
+    const displayHiScore = Math.max(this.score, currentHiScore);
+
+    // Score layout elements Y positions
+    const scoreLabelY = divY + 22;
+    const scoreValY = scoreLabelY + 22;
+    const badgeY = scoreValY + 38; // Increased vertical spacing by 12px
+
+    // Score Label
+    this.add.text(cx, scoreLabelY, 'FINAL SCORE', {
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+      fontSize: '13px',
+      color: '#88aacc'
+    }).setOrigin(0.5).setResolution(2);
+
+    // Score Digits Value
+    this.add.text(cx, scoreValY, String(this.score).padStart(6, '0'), {
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
+      fontSize: '32px',
+      color: '#ffffff'
+    }).setOrigin(0.5).setResolution(2);
+
+    // High Score Badge or Best Score Info
+    if (isNewHigh && this.score > 0) {
+      // Gold pill badge
+      const badgeW = 200, badgeH = 26; // Increased size to fit larger text
+      const badgeBg = this.add.graphics();
+      badgeBg.fillStyle(0xaa7700, 0.9);
+      badgeBg.fillRoundedRect(cx - badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH, 6);
+      badgeBg.lineStyle(1, 0xffcc00, 0.8);
+      badgeBg.strokeRoundedRect(cx - badgeW / 2, badgeY - badgeH / 2, badgeW, badgeH, 6);
+
+      this.add.text(cx, badgeY, '★ NEW HIGH SCORE! ★', {
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+        fontSize: '13px', // Increased from 11px
+        color: '#ffffff'
+      }).setOrigin(0.5).setResolution(2);
+    } else {
+      this.add.text(cx, badgeY, `BEST SCORE: ${String(displayHiScore).padStart(6, '0')}`, {
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+        fontSize: '16px', // Increased from 12px
+        color: '#ffcc00'
+      }).setOrigin(0.5).setResolution(2);
+    }
+
+    // ── Pill Buttons Row ──────────────────────────────────────────────────
+    const btnW = Math.min(cardW / 2 - 20, 156);
+    const btnH = 44;
+    const btnY = cy + cardH / 2 - 32;
+    const halfGap = cardW / 4 - 2;
 
     const makePillBtn = (x, y, w, h, label, iconKey, fillNormal, fillHover, cb) => {
       const r = 12;
@@ -169,6 +229,7 @@ class UIScene extends Phaser.Scene {
         bg.fillRoundedRect(x - w / 2, y - h / 2, w, h, r);
         bg.lineStyle(2, 0xffffff, col === fillHover ? 1.0 : 0.85);
         bg.strokeRoundedRect(x - w / 2, y - h / 2, w, h, r);
+        // Bevel highlight
         bg.lineStyle(1, 0xffffff, col === fillHover ? 0.4 : 0.18);
         bg.lineBetween(x - w / 2 + r, y - h / 2 + 3, x + w / 2 - r, y - h / 2 + 3);
       };
@@ -176,13 +237,14 @@ class UIScene extends Phaser.Scene {
 
       let iconObj = null;
       if (iconKey && this.textures.exists(iconKey)) {
-        iconObj = this.add.image(x - w / 2 + 24, y, iconKey)
+        iconObj = this.add.image(x - w / 2 + 22, y, iconKey)
           .setDisplaySize(22, 22).setTint(0xffffff);
       }
       this.add.text(x + (iconObj ? 10 : 0), y, label, {
         fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-        fontSize: '14px', color: '#ffffff'
-      }).setOrigin(iconObj ? 0.4 : 0.5, 0.5);
+        fontSize: '13px',
+        color: '#ffffff'
+      }).setOrigin(iconObj ? 0.4 : 0.5, 0.5).setResolution(2);
 
       bg.setInteractive(new Phaser.Geom.Rectangle(x - w / 2, y - h / 2, w, h), Phaser.Geom.Rectangle.Contains);
       bg.input.cursor = 'pointer';
@@ -192,11 +254,11 @@ class UIScene extends Phaser.Scene {
       bg.on('pointerup',   () => cb());
     };
 
-    // PLAY AGAIN
-    makePillBtn(leftBtnX, btnY, btnW, btnH, 'PLAY AGAIN', 'iconReplay', 0x007733, 0x00aa55, () => this.restartGame());
+    // 1. PLAY AGAIN BUTTON
+    makePillBtn(cx - halfGap, btnY, btnW, btnH, 'RETRY', 'iconReplay', 0x007733, 0x00aa55, () => this.restartGame());
 
-    // MAIN MENU
-    makePillBtn(rightBtnX, btnY, btnW, btnH, 'MAIN MENU', 'iconMenu', 0x1a2240, 0x2a3460, () => {
+    // 2. MAIN MENU BUTTON
+    makePillBtn(cx + halfGap, btnY, btnW, btnH, 'MENU', 'iconMenu', 0x1a2240, 0x2a3460, () => {
       this.scene.stop('GameScene');
       this.scene.stop('UIScene');
       this.scene.start('MainMenuScene');
