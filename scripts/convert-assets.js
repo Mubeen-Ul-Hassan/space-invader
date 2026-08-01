@@ -44,10 +44,14 @@ const assetMapping = {
   numeral7: 'PNG/Power-ups/numeral7.png',
   numeral8: 'PNG/Power-ups/numeral8.png',
   numeral9: 'PNG/Power-ups/numeral9.png',
-  numeralX: 'PNG/Power-ups/numeralX.png'
+  numeralX: 'PNG/Power-ups/numeralX.png',
+  iconPlay: 'PNG/Menu/play_arrow_24dp.svg',
+  iconSettings: 'PNG/Menu/settings_24dp.svg',
+  iconLeaderboard: 'PNG/Menu/leaderboard_24dp.svg',
+  iconHowToPlay: 'PNG/Menu/developer_guide_24dp.svg'
 };
 
-// Convert image or audio file to base64 data URL
+// Convert image, SVG, or audio file to base64 data URL
 function getBase64DataUrl(relativePath) {
   const fullPath = path.join(assetsDir, relativePath);
   if (!fs.existsSync(fullPath)) {
@@ -58,6 +62,7 @@ function getBase64DataUrl(relativePath) {
   const extension = path.extname(fullPath).replace('.', '').toLowerCase();
   let mimeType = 'image/png';
   if (extension === 'jpg' || extension === 'jpeg') mimeType = 'image/jpeg';
+  else if (extension === 'svg') mimeType = 'image/svg+xml';
   else if (extension === 'ogg') mimeType = 'audio/ogg';
   else if (extension === 'mp3') mimeType = 'audio/mp3';
   return `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
