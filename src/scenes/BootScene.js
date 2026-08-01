@@ -14,13 +14,9 @@ class BootScene extends Phaser.Scene {
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Register all base64 encoded texture and audio assets directly into Phaser Loader
+    // Register all base64 encoded texture images directly into Phaser Loader
     for (const [key, base64Data] of Object.entries(BASE64_ASSETS)) {
-      if (key === 'bgMusic') {
-        this.load.audio(key, base64Data); // Preload base64 audio data URL into Phaser Loader queue
-      } else {
-        this.load.image(key, base64Data); // Preload base64 image data URL into Loader queue
-      }
+      this.load.image(key, base64Data); // Preload base64 image data URL into Loader queue
     }
   }
 

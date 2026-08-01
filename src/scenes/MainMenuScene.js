@@ -11,12 +11,6 @@ class MainMenuScene extends Phaser.Scene {
     const cy = H / 2;
 
     this._audioManager = new AudioManager();
-    this._audioManager.playBgMusic(this);
-
-    // Guarantee audio context unlock on first user click/touch
-    this.input.once('pointerdown', () => {
-      this._audioManager.playBgMusic(this);
-    });
 
     // Scrolling background
     this.bg = this.add.tileSprite(0, 0, W, H, 'background').setOrigin(0, 0);
