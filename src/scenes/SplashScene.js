@@ -26,7 +26,7 @@ class SplashScene extends Phaser.Scene {
 
     // "wrp" Main Company Logo Text
     const logoText = this.add.text(cx, cy - 60, 'wrp', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '84px',
       color: '#00ffcc',
       align: 'center'
@@ -36,7 +36,7 @@ class SplashScene extends Phaser.Scene {
 
     // Subtitle "WE R PLAY"
     const subTitle = this.add.text(cx, cy + 20, 'WE R PLAY', {
-      fontFamily: 'Arial Black, Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
       fontSize: '24px',
       color: '#ffffff',
       letterSpacing: 6
@@ -44,7 +44,7 @@ class SplashScene extends Phaser.Scene {
 
     // Clickable Website URL
     const urlText = this.add.text(cx, cy + 70, 'https://www.werplay.com/', {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '18px',
       color: '#ffcc00',
       align: 'center'
@@ -59,7 +59,7 @@ class SplashScene extends Phaser.Scene {
 
     // Tap to continue hint
     const tapHint = this.add.text(cx, H - 40, 'Tap anywhere to continue', {
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '14px',
       color: '#8888aa'
     }).setOrigin(0.5);
