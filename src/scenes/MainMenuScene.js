@@ -270,68 +270,83 @@ class MainMenuScene extends Phaser.Scene {
     const modal = this.add.container(cx, cy).setDepth(100);
     this._activeModal = modal;
 
-    const overlay = this.add.rectangle(0, 0, W, H, 0x000000, 0.75).setInteractive();
+    const overlay = this.add.rectangle(0, 0, W, H, 0x000000, 0.8).setInteractive();
 
-    const cardW = 380;
-    const cardH = 310;
+    // Pill-rounded card matching menu buttons
+    const cardW = Math.min(W * 0.88, 380);
+    const cardH = 320;
+    const radius = 18;
     const cardBg = this.add.graphics();
-    cardBg.fillStyle(0x11162b, 0.96);
-    cardBg.lineStyle(2, 0xffffff, 0.8);
-    const p = [
-      { x: -cardW/2 + 12, y: -cardH/2 },
-      { x:  cardW/2 - 12, y: -cardH/2 },
-      { x:  cardW/2,      y: -cardH/2 + 12 },
-      { x:  cardW/2,      y:  cardH/2 - 12 },
-      { x:  cardW/2 - 12, y:  cardH/2 },
-      { x: -cardW/2 + 12, y:  cardH/2 },
-      { x: -cardW/2,      y:  cardH/2 - 12 },
-      { x: -cardW/2,      y: -cardH/2 + 12 }
-    ];
-    cardBg.fillPoints(p, true);
-    cardBg.strokePoints(p, true);
+    cardBg.fillStyle(0x0d1226, 0.97);
+    cardBg.fillRoundedRect(-cardW / 2, -cardH / 2, cardW, cardH, radius);
+    // Top bevel
+    cardBg.lineStyle(1.5, 0xffffff, 0.2);
+    cardBg.lineBetween(-cardW / 2 + radius, -cardH / 2 + 4, cardW / 2 - radius, -cardH / 2 + 4);
+    // Outer border
+    cardBg.lineStyle(2, 0xffffff, 0.85);
+    cardBg.strokeRoundedRect(-cardW / 2, -cardH / 2, cardW, cardH, radius);
 
-    const titleText = this.add.text(0, -cardH/2 + 28, '♛  HIGH SCORES', {
+    // Title
+    const titleText = this.add.text(0, -cardH / 2 + 30, 'HIGH SCORES', {
       fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-      fontSize: '20px',
+      fontSize: '22px',
       color: '#00ffcc'
     }).setOrigin(0.5);
 
+    // Divider
+    const divG = this.add.graphics();
+    divG.lineStyle(1, 0xffffff, 0.2);
+    divG.lineBetween(-cardW / 2 + 16, -cardH / 2 + 56, cardW / 2 - 16, -cardH / 2 + 56);
+
     const userHighScore = parseInt(localStorage.getItem('spaceInvadersHighScore') || '0');
     const ranks = [
-      { rank: '1ST', name: 'GALAXY ACE', score: Math.max(userHighScore, 50000) },
-      { rank: '2ND', name: 'STAR COMMANDER', score: userHighScore > 0 && userHighScore < 50000 ? userHighScore : 35000 },
-      { rank: '3RD', name: 'SPACE REAPER', score: 25000 },
-      { rank: '4TH', name: 'COSMIC PILOT', score: 15000 },
-      { rank: '5TH', name: 'ROOKIE DEFENDER', score: 8000 }
+      { rank: '#1', name: 'GALAXY ACE',      score: Math.max(userHighScore, 50000) },
+      { rank: '#2', name: 'STAR COMMANDER',  score: userHighScore > 0 && userHighScore < 50000 ? userHighScore : 35000 },
+      { rank: '#3', name: 'SPACE REAPER',    score: 25000 },
+      { rank: '#4', name: 'COSMIC PILOT',    score: 15000 },
+      { rank: '#5', name: 'ROOKIE DEFENDER', score: 8000  }
     ];
 
     const entries = [];
+    const rowStartY = -cardH / 2 + 75;
+    const rowGap = 33;
     ranks.forEach((r, idx) => {
-      const yPos = -cardH/2 + 75 + idx * 34;
+      const yPos = rowStartY + idx * rowGap;
       const isUser = (userHighScore > 0 && r.score === userHighScore);
-      const color = isUser ? '#ffcc00' : '#ffffff';
+      const nameColor = isUser ? '#ffcc00' : '#ccddee';
+      const scoreColor = isUser ? '#ffcc00' : '#ffffff';
 
-      const rankTxt = this.add.text(-140, yPos, `${r.rank}  ${r.name}`, {
+      // Rank badge pill
+      const rankBg = this.add.graphics();
+      rankBg.fillStyle(isUser ? 0xaa7700 : 0x1a2240, 0.9);
+      rankBg.fillRoundedRect(-cardW / 2 + 12, yPos - 11, 34, 22, 6);
+      const rankTxt = this.add.text(-cardW / 2 + 29, yPos, r.rank, {
         fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-        fontSize: '12px',
-        color: color
+        fontSize: '13px',
+        color: nameColor
+      }).setOrigin(0.5);
+
+      const nameTxt = this.add.text(-cardW / 2 + 54, yPos, r.name, {
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+        fontSize: '14px',
+        color: nameColor
       }).setOrigin(0, 0.5);
 
-      const scoreTxt = this.add.text(140, yPos, String(r.score).padStart(6, '0'), {
+      const scoreTxt = this.add.text(cardW / 2 - 14, yPos, String(r.score).padStart(6, '0'), {
         fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-        fontSize: '12px',
-        color: color
+        fontSize: '14px',
+        color: scoreColor
       }).setOrigin(1, 0.5);
 
-      entries.push(rankTxt, scoreTxt);
+      entries.push(rankBg, rankTxt, nameTxt, scoreTxt);
     });
 
-    const closeBtn = this.makeSciFiButton(0, cardH/2 - 32, '✖  CLOSE', 0x334466, 0x556688, () => {
+    const closeBtn = this.makeSciFiButton(0, cardH / 2 - 28, 'CLOSE', 0x1a2240, 0x2a3460, () => {
       modal.destroy();
       this._activeModal = null;
     });
 
-    modal.add([overlay, cardBg, titleText, ...entries, closeBtn]);
+    modal.add([overlay, cardBg, titleText, divG, ...entries, closeBtn]);
   }
 
   // Show How To Play Modal
@@ -341,83 +356,138 @@ class MainMenuScene extends Phaser.Scene {
     const W = this.scale.width;
     const H = this.scale.height;
     const cx = W / 2;
-    const cy = H / 2;
 
-    const modal = this.add.container(cx, cy).setDepth(100);
-    this._activeModal = modal;
-
-    const overlay = this.add.rectangle(0, 0, W, H, 0x000000, 0.75).setInteractive();
-
-    const cardW = 400;
-    const cardH = 340;
-    const cardBg = this.add.graphics();
-    cardBg.fillStyle(0x11162b, 0.96);
-    cardBg.lineStyle(2, 0xffffff, 0.8);
-    const p = [
-      { x: -cardW/2 + 12, y: -cardH/2 },
-      { x:  cardW/2 - 12, y: -cardH/2 },
-      { x:  cardW/2,      y: -cardH/2 + 12 },
-      { x:  cardW/2,      y:  cardH/2 - 12 },
-      { x:  cardW/2 - 12, y:  cardH/2 },
-      { x: -cardW/2 + 12, y:  cardH/2 },
-      { x: -cardW/2,      y:  cardH/2 - 12 },
-      { x: -cardW/2,      y: -cardH/2 + 12 }
-    ];
-    cardBg.fillPoints(p, true);
-    cardBg.strokePoints(p, true);
-
-    const titleText = this.add.text(0, -cardH/2 + 28, '📖  HOW TO PLAY', {
-      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-      fontSize: '20px',
-      color: '#00ffcc'
-    }).setOrigin(0.5);
-
-    const isMobile = this.sys.game.device.input.touch;
-    const controlsTitle = this.add.text(0, -cardH/2 + 65, 'MISSION CONTROLS', {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-      fontSize: '13px',
-      color: '#ffcc00'
-    }).setOrigin(0.5);
-
-    const controlsDesc = isMobile
-      ? '• Touch & Drag finger to move ship\n• Automatic / Tap screen to fire lasers'
-      : '• WASD / Arrow Keys to move ship\n• Spacebar / Left Click to fire lasers';
-
-    const controlsTxt = this.add.text(0, -cardH/2 + 100, controlsDesc, {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-      fontSize: '11px',
-      color: '#ffffff',
-      align: 'center',
-      lineSpacing: 4
-    }).setOrigin(0.5);
-
-    const powerTitle = this.add.text(0, -cardH/2 + 148, 'POWER-UPS & DROPS', {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-      fontSize: '13px',
-      color: '#ffcc00'
-    }).setOrigin(0.5);
-
-    const powerDesc = 
-      '🛡 SHIELD: Temporal invulnerability barrier\n' +
-      '⚡ BOLT: Rapid triple-stream laser cannons\n' +
-      '💊 PILL: Emergency starship hull repair\n' +
-      '☄ METEORS: Destroy meteors for bonus score';
-
-    const powerTxt = this.add.text(0, -cardH/2 + 208, powerDesc, {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
-      fontSize: '11px',
-      color: '#88ccff',
-      align: 'left',
-      lineSpacing: 6
-    }).setOrigin(0.5);
-
-    const closeBtn = this.makeSciFiButton(0, cardH/2 - 32, '✖  CLOSE', 0x334466, 0x556688, () => {
-      modal.destroy();
+    // Keep all objects in an array to destroy as a group
+    const items = [];
+    const destroy = () => {
+      items.forEach(o => o.destroy());
       this._activeModal = null;
+    };
+
+    // Dark overlay
+    const overlay = this.add.rectangle(cx, H / 2, W, H, 0x000000, 0.88)
+      .setDepth(50).setInteractive();
+    items.push(overlay);
+
+    // Card — compact, vertically centered
+    const cardW = Math.min(W * 0.90, 390);
+    const cardH = Math.min(H * 0.82, 500);
+    const cardX = cx - cardW / 2;
+    const cardY = (H - cardH) / 2;
+    const r = 18;
+
+    const bg = this.add.graphics().setDepth(51);
+    bg.fillStyle(0x080e1a, 1);
+    bg.fillRoundedRect(cardX, cardY, cardW, cardH, r);
+    bg.lineStyle(2, 0xffffff, 1);
+    bg.strokeRoundedRect(cardX, cardY, cardW, cardH, r);
+    items.push(bg);
+
+    // ── Helper: add text at absolute Y ───────────────────────────────────────
+    let cursor = cardY + 36;
+    const addText = (str, size, color, indent = 0) => {
+      const t = this.add.text(cx + indent, cursor, str, {
+        fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
+        fontSize: `${size}px`,
+        color,
+        align: indent !== 0 ? 'left' : 'center'
+      }).setOrigin(indent !== 0 ? 0 : 0.5, 0).setDepth(52);
+      items.push(t);
+      cursor += size * 1.55;
+      return t;
+    };
+    const addGap = (px = 10) => { cursor += px; };
+    const addDivider = () => {
+      const g = this.add.graphics().setDepth(52);
+      g.lineStyle(1, 0xffffff, 0.2);
+      g.lineBetween(cardX + 20, cursor, cardX + cardW - 20, cursor);
+      items.push(g);
+      cursor += 14;
+    };
+
+    // ── Title ─────────────────────────────────────────────────────────────────
+    addText('HOW TO PLAY', 26, '#00ffcc');
+    addDivider();
+
+    // ── Controls ─────────────────────────────────────────────────────────────
+    addText('CONTROLS', 17, '#ffcc00');
+    addGap(4);
+    const isMobile = this.sys.game.device.input.touch;
+    if (isMobile) {
+      addText('DRAG  →  Move ship', 16, '#ffffff');
+      addText('TAP   →  Fire lasers', 16, '#ffffff');
+    } else {
+      addText('WASD / ARROWS  →  Move', 16, '#ffffff');
+      addText('SPACEBAR / CLICK  →  Fire', 16, '#ffffff');
+    }
+    addGap(6);
+    addDivider();
+
+    // ── Power-ups ─────────────────────────────────────────────────────────────
+    addText('POWER-UPS', 17, '#ffcc00');
+    addGap(6);
+
+    const powerups = [
+      { key: 'shield1',    label: 'SHIELD',  desc: 'Invulnerability barrier',   color: '#88ddff' },
+      { key: 'powerupRed', label: 'BOLT',    desc: 'Triple rapid-fire cannons', color: '#ffee55' },
+      { key: 'pillRed',    label: 'PILL',    desc: 'Restore hull / +1 life',    color: '#ff99bb' },
+      { key: 'stone',      label: 'METEOR',  desc: 'Destroy for bonus score',   color: '#ccbbaa' }
+    ];
+
+    powerups.forEach(pu => {
+      const rowY = cursor;
+      // Icon
+      if (this.textures.exists(pu.key)) {
+        const ico = this.add.image(cardX + 30, rowY + 14, pu.key)
+          .setDisplaySize(28, 28).setDepth(52);
+        items.push(ico);
+      }
+      // Label + desc inline
+      const lbl = this.add.text(cardX + 62, rowY, pu.label, {
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+        fontSize: '17px', color: pu.color
+      }).setOrigin(0, 0).setDepth(52);
+      const dsc = this.add.text(cardX + 62, rowY + 22, pu.desc, {
+        fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+        fontSize: '13px', color: '#d0ddf0'
+      }).setOrigin(0, 0).setDepth(52);
+      items.push(lbl, dsc);
+      cursor += 50;
     });
 
-    modal.add([overlay, cardBg, titleText, controlsTitle, controlsTxt, powerTitle, powerTxt, closeBtn]);
+    // ── Close Button ──────────────────────────────────────────────────────────
+    addGap(8);
+    const btnW = 160, btnH = 44, btnR = 14;
+    const btnX = cx - btnW / 2;
+    const btnY = cursor;
+
+    const btnBg = this.add.graphics().setDepth(52);
+    const drawBtn = (hovered) => {
+      btnBg.clear();
+      btnBg.fillStyle(hovered ? 0x2a3460 : 0x1a2240, 0.95);
+      btnBg.fillRoundedRect(btnX, btnY, btnW, btnH, btnR);
+      btnBg.lineStyle(hovered ? 2.5 : 2, 0xffffff, hovered ? 1 : 0.85);
+      btnBg.strokeRoundedRect(btnX, btnY, btnW, btnH, btnR);
+    };
+    drawBtn(false);
+
+    const btnTxt = this.add.text(cx, btnY + btnH / 2, 'CLOSE', {
+      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+      fontSize: '16px', color: '#ffffff'
+    }).setOrigin(0.5).setDepth(53);
+
+    btnBg.setInteractive(new Phaser.Geom.Rectangle(btnX, btnY, btnW, btnH), Phaser.Geom.Rectangle.Contains);
+    btnBg.input.cursor = 'pointer';
+    btnBg.on('pointerover',  () => drawBtn(true));
+    btnBg.on('pointerout',   () => drawBtn(false));
+    btnBg.on('pointerup',    () => destroy());
+
+    items.push(btnBg, btnTxt);
+
+    // Store as active modal (use a dummy container to satisfy the guard)
+    this._activeModal = { destroy };
   }
+
 
   // Show Exit Modal
   _activateCheat(cheatKey, message) {

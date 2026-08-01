@@ -154,31 +154,49 @@ class UIScene extends Phaser.Scene {
       }).setOrigin(0.5);
     }
 
-    // Button 1: PLAY AGAIN
-    const retryBtn = this.add.rectangle(cx - 95, cy + 65, 160, 44, 0x00cc66).setInteractive({ useHandCursor: true });
-    retryBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx - 95, cy + 65, 'PLAY AGAIN', {
-      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-      fontSize: '16px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+    // ── Game-over buttons (pill style matching main menu) ──────────────────
+    const btnW = 152, btnH = 44, btnGap = 10;
+    const leftBtnX  = cx - btnW / 2 - btnGap / 2;
+    const rightBtnX = cx + btnW / 2 + btnGap / 2;
+    const btnY = cy + 65;
 
-    retryBtn.on('pointerover', () => retryBtn.setFillStyle(0x00ee77));
-    retryBtn.on('pointerout', () => retryBtn.setFillStyle(0x00cc66));
-    retryBtn.on('pointerdown', () => this.restartGame());
+    const makePillBtn = (x, y, w, h, label, iconKey, fillNormal, fillHover, cb) => {
+      const r = 12;
+      const bg = this.add.graphics();
+      const draw = (col) => {
+        bg.clear();
+        bg.fillStyle(col, 0.95);
+        bg.fillRoundedRect(x - w / 2, y - h / 2, w, h, r);
+        bg.lineStyle(2, 0xffffff, col === fillHover ? 1.0 : 0.85);
+        bg.strokeRoundedRect(x - w / 2, y - h / 2, w, h, r);
+        bg.lineStyle(1, 0xffffff, col === fillHover ? 0.4 : 0.18);
+        bg.lineBetween(x - w / 2 + r, y - h / 2 + 3, x + w / 2 - r, y - h / 2 + 3);
+      };
+      draw(fillNormal);
 
-    // Button 2: MAIN MENU
-    const menuBtn = this.add.rectangle(cx + 95, cy + 65, 160, 44, 0x334466).setInteractive({ useHandCursor: true });
-    menuBtn.setStrokeStyle(2, 0xffffff);
-    this.add.text(cx + 95, cy + 65, 'MAIN MENU', {
-      fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
-      fontSize: '16px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
+      let iconObj = null;
+      if (iconKey && this.textures.exists(iconKey)) {
+        iconObj = this.add.image(x - w / 2 + 24, y, iconKey)
+          .setDisplaySize(22, 22).setTint(0xffffff);
+      }
+      this.add.text(x + (iconObj ? 10 : 0), y, label, {
+        fontFamily: '"EurostileExtendedBlack", "Arial Black", Arial, sans-serif',
+        fontSize: '14px', color: '#ffffff'
+      }).setOrigin(iconObj ? 0.4 : 0.5, 0.5);
 
-    menuBtn.on('pointerover', () => menuBtn.setFillStyle(0x556688));
-    menuBtn.on('pointerout', () => menuBtn.setFillStyle(0x334466));
-    menuBtn.on('pointerdown', () => {
+      bg.setInteractive(new Phaser.Geom.Rectangle(x - w / 2, y - h / 2, w, h), Phaser.Geom.Rectangle.Contains);
+      bg.input.cursor = 'pointer';
+      bg.on('pointerover', () => { draw(fillHover); if (iconObj) iconObj.setScale(1.08); });
+      bg.on('pointerout',  () => { draw(fillNormal); if (iconObj) iconObj.setScale(1); });
+      bg.on('pointerdown', () => { draw(fillHover); });
+      bg.on('pointerup',   () => cb());
+    };
+
+    // PLAY AGAIN
+    makePillBtn(leftBtnX, btnY, btnW, btnH, 'PLAY AGAIN', 'iconReplay', 0x007733, 0x00aa55, () => this.restartGame());
+
+    // MAIN MENU
+    makePillBtn(rightBtnX, btnY, btnW, btnH, 'MAIN MENU', 'iconMenu', 0x1a2240, 0x2a3460, () => {
       this.scene.stop('GameScene');
       this.scene.stop('UIScene');
       this.scene.start('MainMenuScene');
