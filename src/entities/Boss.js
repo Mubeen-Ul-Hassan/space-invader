@@ -88,19 +88,28 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    // Hit tint flash fade
+    // Hit tint flash fade or enraged red pulse when health <= 20
     if (this.hitTintTime && time > this.hitTintTime) {
       this.clearTint();
       this.hitTintTime = 0;
     } else if (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) {
       this.setTint(0x88ccff);
+    } else if (this.health <= 20) {
+      // Enraged low-health red pulse effect
+      const pulse = Math.floor((Math.sin(time * 0.01) + 1) * 50);
+      this.setTint(Phaser.Display.Color.GetColor(255, 100 - pulse, 100 - pulse));
+    } else {
+      this.clearTint();
     }
 
     this.drawHealthBar();
   }
 
   triggerAttack(time) {
-    this.nextAttackTime = time + this.attackInterval;
+    // When health <= 20, attack interval is faster (1800ms vs 3500ms)
+    const isLowHealth = this.health <= 20;
+    const interval = isLowHealth ? 1800 : this.attackInterval;
+    this.nextAttackTime = time + interval;
 
     if (this.attackCycle === 0) {
       this.shootTargeted();
@@ -111,16 +120,20 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  // Attack 1: Fire 3 consecutive aimed lasers towards player position
+  // Attack 1: Fire aimed lasers towards player position (5 lasers when low health, 3 normally)
   shootTargeted() {
     if (!this.scene.player || !this.scene.player.active) return;
 
-    for (let i = 0; i < 3; i++) {
-      this.scene.time.delayedCall(i * 200, () => {
+    const isLowHealth = this.health <= 20;
+    const count = isLowHealth ? 5 : 3;
+    const delay = isLowHealth ? 140 : 200;
+    const speed = isLowHealth ? 340 : 280;
+
+    for (let i = 0; i < count; i++) {
+      this.scene.time.delayedCall(i * delay, () => {
         if (!this.active || this.bossState !== 'active' || !this.scene.player || !this.scene.player.active) return;
 
         const angle = Phaser.Math.Angle.Between(this.x, this.y + 40, this.scene.player.x, this.scene.player.y);
-        const speed = 280;
         const vx = Math.cos(angle) * speed;
         const vy = Math.sin(angle) * speed;
 
@@ -142,10 +155,11 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  // Attack 2: Fire 12 lasers in a radial circle
+  // Attack 2: Fire lasers in a radial circle (18 lasers when low health, 12 normally)
   shootRadial() {
-    const laserCount = 12;
-    const speed = 180;
+    const isLowHealth = this.health <= 20;
+    const laserCount = isLowHealth ? 18 : 12;
+    const speed = isLowHealth ? 230 : 180;
     const angleStep = (2 * Math.PI) / laserCount;
 
     for (let i = 0; i < laserCount; i++) {
