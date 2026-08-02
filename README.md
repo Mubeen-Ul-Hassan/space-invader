@@ -15,6 +15,10 @@ You control a spaceship at the bottom of the screen. Enemies (meteors and enemy 
 
 <img width="1920" height="1013" alt="Screenshot from 2026-08-01 23-12-11" src="https://github.com/user-attachments/assets/ab0d6c0e-6d26-43c1-b4e1-c4a2420adf62" />
 
+### Boss Fight
+
+<img width="1920" height="1021" alt="Screenshot from 2026-08-02 10-33-35" src="https://github.com/user-attachments/assets/96472906-aab8-4065-b473-1b790d2bba26" />
+
 ## Controls
 
 | Key / Action | What it does |
