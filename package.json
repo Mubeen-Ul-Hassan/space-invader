@@ -1,5 +1,5 @@
 {
-  "name": "space-invader-playable",
+  "name": "space-invader",
   "version": "1.0.0",
   "description": "Space Invaders Playable Ad built with Phaser 3",
   "main": "build.js",
