@@ -5,14 +5,19 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.setScale(0.85);
+    // Detect mobile: scale down the boss on narrow screens
+    const isMobile = scene.scale.width < 600;
+    this.setScale(isMobile ? 0.55 : 0.85);
+
     if (this.body) {
       this.body.setSize(this.width * 0.9, this.height * 0.8);
-      this.body.setCollideWorldBounds(true);
+      // Do NOT use setCollideWorldBounds — it fights the sin-wave x assignment
+      // and causes jitter/stuck behaviour on mobile. We clamp manually instead.
+      this.body.setCollideWorldBounds(false);
     }
 
-    this.maxHealth = 40;
-    this.health = 40;
+    this.maxHealth = 100;
+    this.health = 100;
     this.bossState = 'entering'; // 'entering' | 'active' | 'dead'
 
     this.nextAttackTime = 0;
@@ -20,8 +25,12 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     this.attackCycle = 0; // 0 = targeted, 1 = radial
 
     this.startX = x;
-    this.targetY = 130; // Y position boss settles at
+    // On mobile keep the boss a bit higher so it fits
+    this.targetY = isMobile ? 100 : 130;
     this.speedY = 50;   // entry speed
+
+    // Accumulated oscillation time (separate from game time) so freeze works correctly
+    this._oscTime = 0;
 
     this.healthBar = scene.add.graphics();
   }
@@ -62,9 +71,17 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.nextAttackTime = time + 1500; // First attack after 1.5 seconds
       }
     } else if (this.bossState === 'active') {
-      // Hover side to side
-      this.x = this.startX + Math.sin(time * 0.001 * freezeMult) * 150;
-      this.x = Phaser.Math.Clamp(this.x, 100, this.scene.scale.width - 100);
+      // Accumulate oscillation time (freeze-aware)
+      this._oscTime += deltaSec * freezeMult;
+
+      // Oscillation amplitude scales with screen width
+      const margin = 80;
+      const halfRange = Math.max(60, (this.scene.scale.width / 2) - margin);
+      this.x = this.startX + Math.sin(this._oscTime * 0.8) * halfRange;
+
+      // Manual clamp so the boss never leaves the screen (no world bounds needed)
+      const halfW = (this.displayWidth || 60) / 2;
+      this.x = Phaser.Math.Clamp(this.x, halfW + 10, this.scene.scale.width - halfW - 10);
 
       if (!ACTIVE_CHEATS.freeze && time > this.nextAttackTime) {
         this.triggerAttack(time);
