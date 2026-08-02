@@ -6,7 +6,7 @@ class BootScene extends Phaser.Scene {
 
   preload() {
     this.add.text(this.scale.width / 2, this.scale.height / 2, 'Loading Game Assets...', {
-      fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
+      fontFamily: '"Arial Black", Arial, sans-serif',
       fontSize: '24px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -16,16 +16,7 @@ class BootScene extends Phaser.Scene {
     }
   }
 
-  // Wait for the custom font before showing the menu, so text doesn't reflow
   create() {
-    if (document.fonts && document.fonts.load) {
-      document.fonts.load('16px "EurostileExtendedBlack"').then(() => {
-        this.scene.start('MainMenuScene');
-      }).catch(() => {
-        this.scene.start('MainMenuScene');
-      });
-    } else {
-      this.scene.start('MainMenuScene');
-    }
+    this.scene.start('MainMenuScene');
   }
 }
