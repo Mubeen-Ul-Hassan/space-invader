@@ -44,32 +44,16 @@ sourceFiles.forEach(file => {
   }
 });
 
-// Embed EurostileExtendedBlack font asset as Base64 font face rule
-const fontPath = path.join(__dirname, 'assets/Bonus/EurostileExtendedBlack.ttf');
-let fontFaceCss = '';
-if (fs.existsSync(fontPath)) {
-  const fontBase64 = fs.readFileSync(fontPath).toString('base64');
-  fontFaceCss = `
-    @font-face {
-      font-family: 'EurostileExtendedBlack';
-      src: url('data:font/ttf;charset=utf-8;base64,${fontBase64}') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-  `;
-}
-
 // Single HTML template content
+// Note: mraid is injected by AppLovin SDK at runtime — do not load mraid.js locally
 const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Space Invaders - Playable Ad</title>
-  <script src="mraid.js"></script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
   <style>
-    ${fontFaceCss}
     /* Reset body and full viewport canvas centering CSS */
     * {
       margin: 0;
