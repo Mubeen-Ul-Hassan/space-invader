@@ -27,8 +27,18 @@ class GameScene extends Phaser.Scene {
 
     this.setupCollisions();
 
-    // Start wave progression
-    this.waveManager.startNextWave();
+    this.bossActive = false;
+    this.boss = null;
+
+    // Start wave progression or skip to boss fight
+    if (ACTIVE_CHEATS && ACTIVE_CHEATS.boss) {
+      this.waveManager.currentWave = 5;
+      this.time.delayedCall(1000, () => {
+        this.startBossFight();
+      });
+    } else {
+      this.waveManager.startNextWave();
+    }
 
     // CHEAT: motherlode — grants max 5 lives + all power-up effects on game start
     if (ACTIVE_CHEATS && ACTIVE_CHEATS.motherlode) {
@@ -191,6 +201,56 @@ class GameScene extends Phaser.Scene {
     this.player.update(time, delta);
     this.enemyGroup.update(time, delta);
     this.enemyShipGroup.update(time, delta);
+    if (this.boss && this.boss.active) {
+      this.boss.update(time, delta);
+    }
+  }
+
+  startBossFight() {
+    if (this.isGameOver || this.bossActive) return;
+    this.bossActive = true;
+    this.events.emit('bossFightStarted');
+
+    // Clean up existing enemy ships on screen with explosion effects
+    this.enemyShipGroup.group.getChildren().forEach(ship => {
+      if (ship.active) {
+        this.createExplosion(ship.x, ship.y);
+        ship.setActive(false).setVisible(false);
+      }
+    });
+
+    // Instantiate Boss ship off-screen at top center
+    this.boss = new Boss(this, this.scale.width / 2, -150);
+
+    // Setup overlap collision between player bullets and the boss
+    this.physics.add.overlap(this.playerBullets, this.boss, this.handleBossHit, null, this);
+  }
+
+  handleBossHit(boss, bullet) {
+    if (!bullet.active || boss.bossState !== 'active') return;
+    bullet.kill();
+
+    boss.damage(1);
+
+    if (boss.health <= 0) {
+      boss.bossState = 'dead';
+      
+      // Play a sequence of explosions over 1.5s
+      for (let i = 0; i < 6; i++) {
+        this.time.delayedCall(i * 250, () => {
+          const rx = boss.x + Phaser.Math.Between(-60, 60);
+          const ry = boss.y + Phaser.Math.Between(-40, 40);
+          this.createExplosion(rx, ry);
+          this.audioManager.playExplosion();
+        });
+      }
+
+      // Finish defeat and trigger win
+      this.time.delayedCall(1600, () => {
+        boss.destroy();
+        this.triggerWin();
+      });
+    }
   }
 
   triggerWin() {

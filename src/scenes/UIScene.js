@@ -66,6 +66,7 @@ class UIScene extends Phaser.Scene {
     gameScene.events.on('gameWin',      this.showWinModal, this);
     gameScene.events.on('waveStarted',  this.showWaveStartedBanner, this);
     gameScene.events.on('waveCleared',  this.showWaveClearedBanner, this);
+    gameScene.events.on('bossFightStarted', this.showBossFightBanner, this);
 
     // Clean up event listeners on shutdown to avoid calling stale/destroyed references
     this.events.once('shutdown', () => {
@@ -76,6 +77,7 @@ class UIScene extends Phaser.Scene {
         gameScene.events.off('gameWin',      this.showWinModal, this);
         gameScene.events.off('waveStarted',  this.showWaveStartedBanner, this);
         gameScene.events.off('waveCleared',  this.showWaveClearedBanner, this);
+        gameScene.events.off('bossFightStarted', this.showBossFightBanner, this);
       }
     });
   }
@@ -104,6 +106,16 @@ class UIScene extends Phaser.Scene {
       targets: this.waveBannerText,
       alpha: { from: 1, to: 0 },
       duration: 1500,
+      ease: 'Power2'
+    });
+  }
+
+  showBossFightBanner() {
+    this.waveBannerText.setText('BOSS FIGHT').setColor('#ff3333').setAlpha(1);
+    this.tweens.add({
+      targets: this.waveBannerText,
+      alpha: { from: 1, to: 0 },
+      duration: 3000,
       ease: 'Power2'
     });
   }
