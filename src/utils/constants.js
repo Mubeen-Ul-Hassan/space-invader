@@ -22,6 +22,7 @@ const GAME_CONFIG = {
 const ACTIVE_CHEATS = {
   freeze: false,     // TRUE = enemy time-slow is active
   enderlein: false,  // TRUE = max firepower mode is active
-  motherlode: false  // TRUE = full lives + all power-ups activated
+  motherlode: false, // TRUE = full lives + all power-ups activated
+  boss: false        // TRUE = start game directly at boss fight
 };
 
