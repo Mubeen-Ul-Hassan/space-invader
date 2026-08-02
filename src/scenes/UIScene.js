@@ -278,14 +278,14 @@ class UIScene extends Phaser.Scene {
       bg.on('pointerup',   () => cb());
     };
 
-    // 1. PLAY AGAIN BUTTON
+    // 1. RETRY BUTTON
     makePillBtn(cx - halfGap, btnY, btnW, btnH, 'RETRY', 'iconReplay', 0x007733, 0x00aa55, () => this.restartGame());
 
-    // 2. MAIN MENU BUTTON
-    makePillBtn(cx + halfGap, btnY, btnW, btnH, 'MENU', 'iconMenu', 0x1a2240, 0x2a3460, () => {
-      this.scene.stop('GameScene');
-      this.scene.stop('UIScene');
-      this.scene.start('MainMenuScene');
+    // 2. INSTALL NOW CTA BUTTON (Calls MRAIDHelper.openCTA for AppLovin)
+    makePillBtn(cx + halfGap, btnY, btnW, btnH, 'INSTALL', null, 0xcc2200, 0xff4400, () => {
+      if (typeof MRAIDHelper !== 'undefined') {
+        MRAIDHelper.openCTA();
+      }
     });
   }
 
