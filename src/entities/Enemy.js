@@ -1,109 +1,99 @@
-// Reusable Falling Meteorite obstacle sprite component
+// Falling meteorite obstacle sprite
 class Enemy extends Phaser.Physics.Arcade.Sprite {
-  // Construct falling meteorite obstacle with texture key and points reward
   constructor(scene, x, y, textureKey, points) {
-    const key = (typeof textureKey === 'string' && textureKey) ? textureKey : 'stone'; // Default to stone texture
-    super(scene, x, y, key); // Call parent Sprite constructor
-    scene.add.existing(this); // Render sprite in active scene
-    scene.physics.add.existing(this); // Register body with Arcade physics engine
+    const key = (typeof textureKey === 'string' && textureKey) ? textureKey : 'stone';
+    super(scene, x, y, key);
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
 
-    this.points = points || 20; // Assign score point reward value
-    this.resetMeteor(); // Initialize random position, scale, and velocity parameters
+    this.points = points || 20;
+    this.resetMeteor();
   }
 
-  // Reset meteorite parameters for spawning/recycling
+  // Reset meteorite for spawning/recycling
   resetMeteor() {
-    const textures = ['stone', 'stoneBig']; // Available stone meteor textures
-    const chosenTexture = Phaser.Utils.Array.GetRandom(textures); // Pick random texture
-    this.setTexture(chosenTexture); // Assign valid texture to sprite
+    const textures = ['stone', 'stoneBig'];
+    this.setTexture(Phaser.Utils.Array.GetRandom(textures));
     if (this.body) {
-      this.body.setSize(this.width, this.height); // Refresh physics body size
+      this.body.setSize(this.width, this.height);
     }
 
-    const x = Phaser.Math.Between(40, this.scene.scale.width - 40); // Pick random horizontal position
-    const y = Phaser.Math.Between(-80, -40); // Pick random off-screen vertical spawn height
-    this.setPosition(x, y); // Set sprite coordinates
+    const x = Phaser.Math.Between(40, this.scene.scale.width - 40);
+    const y = Phaser.Math.Between(-80, -40);
+    this.setPosition(x, y);
+    this.setScale(Phaser.Math.FloatBetween(0.7, 1.2));
 
-    const scale = Phaser.Math.FloatBetween(0.7, 1.2); // Pick random scale factor
-    this.setScale(scale); // Set sprite graphic scale
-
+    // Gentle 0.8% compounding speed increase per destroyed meteorite, capped at 1.35x
     const destroyedCount = this.scene.enemyGroup ? this.scene.enemyGroup.destroyedCount : 0;
-    // Very gentle 0.8% compounding speed increase per destroyed meteorite, capped at 1.35x maximum
-    // This keeps early waves manageable and extends overall gameplay duration
     const speedMultiplier = Math.min(1.35, Math.pow(1.008, destroyedCount));
 
-    this.speedY = Phaser.Math.Between(120, 200) * speedMultiplier; // Slower baseline speed for longer engagement
-    this.speedX = Phaser.Math.Between(-25, 25) * speedMultiplier; // Slight horizontal drift
-    this.rotationSpeed = Phaser.Math.FloatBetween(-0.04, 0.04) * speedMultiplier; // Spin rotation rate
+    this.speedY = Phaser.Math.Between(120, 200) * speedMultiplier;
+    this.speedX = Phaser.Math.Between(-25, 25) * speedMultiplier;
+    this.rotationSpeed = Phaser.Math.FloatBetween(-0.04, 0.04) * speedMultiplier;
 
-    this.setActive(true); // Enable object in active pool
-    this.setVisible(true); // Show sprite graphics
+    this.setActive(true);
+    this.setVisible(true);
   }
 
-  // Frame update lifecycle to move meteorite downwards and spin
   update(time, delta) {
-    if (!this.active) return; // Guard clause if inactive
+    if (!this.active) return;
 
     // CHEAT: freeze slows all enemies to 20% speed
     const freezeMult = (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) ? 0.20 : 1.0;
+    const deltaSec = delta / 1000;
 
-    const deltaSec = delta / 1000; // Convert time delta to seconds
-    this.y += this.speedY * deltaSec * freezeMult; // Fall downwards (slowed if freeze cheat active)
-    this.x += this.speedX * deltaSec * freezeMult; // Apply slight horizontal drift
-    this.rotation += this.rotationSpeed * freezeMult; // Spin meteorite graphic
+    this.y += this.speedY * deltaSec * freezeMult;
+    this.x += this.speedX * deltaSec * freezeMult;
+    this.rotation += this.rotationSpeed * freezeMult;
 
-    // Visual tint: blue tint when frozen
     if (ACTIVE_CHEATS && ACTIVE_CHEATS.freeze) {
       this.setTint(0x88ccff);
     } else {
       this.clearTint();
     }
 
-    // Recycle meteorite when it passes below bottom screen boundary
     if (this.y > this.scene.scale.height + 60) {
-      this.resetMeteor(); // Respawn meteorite at top of screen
+      this.resetMeteor();
     }
   }
 }
 
-// Manager class orchestrating balanced meteorite spawning and wave progression
+// Manages meteorite spawning and pooling
 class EnemyGroup {
-  // Construct meteorite swarm manager inside given scene
   constructor(scene) {
-    this.scene = scene; // Store scene reference
-    this.group = scene.physics.add.group({ classType: Enemy, runChildUpdate: true }); // Create physics group container
-    this.nextSpawnTime = 0; // Timestamp of next meteorite spawn
-    this.spawnInterval = 1800; // Spawn delay in milliseconds
-    this.destroyedCount = 0; // Track count of meteorites destroyed by player
-    this.targetCount = 25; // Target count needed to trigger victory
+    this.scene = scene;
+    this.group = scene.physics.add.group({ classType: Enemy, runChildUpdate: true });
+    this.nextSpawnTime = 0;
+    this.spawnInterval = 1800;
+    this.destroyedCount = 0;
+    this.targetCount = 25;
 
-    this.initialSpawn(); // Spawn initial wave of falling meteorites
+    this.initialSpawn();
   }
 
-  // Spawn initial cluster of meteorites staggered vertically above the screen
+  // Spawn initial meteorites staggered above the screen
   initialSpawn() {
     for (let i = 0; i < 2; i++) {
-      const meteor = this.group.get(); // Fetch free meteorite from group pool
+      const meteor = this.group.get();
       if (meteor) {
-        meteor.resetMeteor(); // Reset meteorite to top of screen
-        meteor.y -= i * 120; // Stagger vertical spawn positions
+        meteor.resetMeteor();
+        meteor.y -= i * 120;
       }
     }
   }
 
-  // Update loop for continuous random meteorite spawning (background filler between wave formations)
+  // Slow ambient spawning, respecting the max on-screen cap
   update(time, delta) {
-    // Spawn ambient meteors at a slow rate — respect the hard cap so screen never overcrowds
     if (time > this.nextSpawnTime) {
       const cap = this.scene.waveManager ? this.scene.waveManager.MAX_METEORS : 10;
       const activeCount = this.group.getChildren().filter(m => m.active).length;
       if (activeCount < cap) {
-        const meteor = this.group.get(); // Fetch free meteorite from group pool
+        const meteor = this.group.get();
         if (meteor) {
-          meteor.resetMeteor(); // Reset meteorite to random spawn location
+          meteor.resetMeteor();
         }
       }
-      this.nextSpawnTime = time + Phaser.Math.Between(2800, 4500); // Very slow ambient spawning
+      this.nextSpawnTime = time + Phaser.Math.Between(2800, 4500);
     }
   }
 }

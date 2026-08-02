@@ -1,7 +1,7 @@
-// Reusable Enemy Spaceship entity component with shooting capability
+// Enemy ship that weaves down the screen and fires at the player
 class EnemyShip extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, textureKey) {
-    const key = (typeof textureKey === 'string' && textureKey) ? textureKey : 'enemyRed';
+    const key = (typeof textureKey === 'string' && textureKey) ? textureKey : 'enemyShip';
     super(scene, x, y, key);
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -13,9 +13,7 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
 
   // Reset ship parameters for spawning/recycling
   resetShip() {
-    const textures = ['enemyRed', 'enemyGreen', 'enemyBlue'];
-    const chosenTexture = Phaser.Utils.Array.GetRandom(textures);
-    this.setTexture(chosenTexture);
+    this.setTexture('enemyShip');
     if (this.body) {
       this.body.setSize(this.width, this.height);
     }
@@ -25,11 +23,11 @@ class EnemyShip extends Phaser.Physics.Arcade.Sprite {
     this.setPosition(x, y);
 
     this.startX = x;
-    this.speedY = Phaser.Math.Between(90, 150); // Downward velocity
-    this.waveAmplitude = Phaser.Math.Between(30, 70); // Horizontal weaving amplitude
-    this.waveFrequency = Phaser.Math.FloatBetween(0.002, 0.004); // Weaving frequency
+    this.speedY = Phaser.Math.Between(90, 150);
+    this.waveAmplitude = Phaser.Math.Between(30, 70);
+    this.waveFrequency = Phaser.Math.FloatBetween(0.002, 0.004);
     this.lastFired = 0;
-    this.fireInterval = Phaser.Math.Between(1200, 2200); // Shoot delay in ms
+    this.fireInterval = Phaser.Math.Between(1200, 2200);
 
     this.setActive(true);
     this.setVisible(true);

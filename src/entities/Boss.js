@@ -1,11 +1,11 @@
-// Reusable Boss Spaceship entity component with two shooting modes: aimed burst and radial ring
+// Boss ship with two attack modes: aimed burst and radial ring
 class Boss extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'bossShip');
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.setScale(0.85); // Adjust scale to make it look big and powerful
+    this.setScale(0.85);
     if (this.body) {
       this.body.setSize(this.width * 0.9, this.height * 0.8);
       this.body.setCollideWorldBounds(true);
@@ -14,18 +14,15 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     this.maxHealth = 40;
     this.health = 40;
     this.bossState = 'entering'; // 'entering' | 'active' | 'dead'
-    
-    // Attacks timer and loop
+
     this.nextAttackTime = 0;
-    this.attackInterval = 3500; // Attack every 3.5 seconds
+    this.attackInterval = 3500;
     this.attackCycle = 0; // 0 = targeted, 1 = radial
 
-    // Hover variables
     this.startX = x;
-    this.targetY = 130; // Boss moves down to this Y coordinate
-    this.speedY = 50;   // Slow entry speed
+    this.targetY = 130; // Y position boss settles at
+    this.speedY = 50;   // entry speed
 
-    // Custom health bar graphics
     this.healthBar = scene.add.graphics();
   }
 
@@ -37,15 +34,13 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     const width = 300;
     const height = 12;
     const x = (this.scene.scale.width - width) / 2;
-    const y = 60; // Render just below score hud
+    const y = 60;
 
-    // Border and background
     this.healthBar.fillStyle(0x0a0c16, 0.7);
     this.healthBar.fillRect(x, y, width, height);
     this.healthBar.lineStyle(1.5, 0xff0033, 0.9);
     this.healthBar.strokeRect(x, y, width, height);
 
-    // Health filled bar
     const ratio = Math.max(0, this.health) / this.maxHealth;
     this.healthBar.fillStyle(0xff3333, 0.95);
     this.healthBar.fillRect(x + 2, y + 2, (width - 4) * ratio, height - 4);
@@ -67,13 +62,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.nextAttackTime = time + 1500; // First attack after 1.5 seconds
       }
     } else if (this.bossState === 'active') {
-      // Active phase: hover side to side slowly
+      // Hover side to side
       this.x = this.startX + Math.sin(time * 0.001 * freezeMult) * 150;
-      
-      // Keep within bounds
       this.x = Phaser.Math.Clamp(this.x, 100, this.scene.scale.width - 100);
 
-      // Periodically trigger attacks (disabled during freeze cheat)
       if (!ACTIVE_CHEATS.freeze && time > this.nextAttackTime) {
         this.triggerAttack(time);
       }
@@ -109,8 +101,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     for (let i = 0; i < 3; i++) {
       this.scene.time.delayedCall(i * 200, () => {
         if (!this.active || this.bossState !== 'active' || !this.scene.player || !this.scene.player.active) return;
-        
-        // Target player's current coordinate
+
         const angle = Phaser.Math.Angle.Between(this.x, this.y + 40, this.scene.player.x, this.scene.player.y);
         const speed = 280;
         const vx = Math.cos(angle) * speed;
@@ -162,15 +153,13 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  // Trigger hit damage
   damage(amount) {
     if (this.bossState !== 'active') return;
 
     this.health = Math.max(0, this.health - amount);
-    
-    // Set tint flash on hit
-    this.setTint(0xff8888);
-    this.hitTintTime = this.scene.time.now + 60; // flash for 60ms
+
+    this.setTint(0xff8888); // brief hit flash
+    this.hitTintTime = this.scene.time.now + 60;
 
     if (this.scene.audioManager) {
       this.scene.audioManager.playHit();

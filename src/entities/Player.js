@@ -1,4 +1,4 @@
-// Reusable Player ship game object with 4-directional movement (Left, Right, Up, Down), firing logic, and power-up boosts
+// Player ship: 4-directional movement, firing, and power-up boosts
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'player');
