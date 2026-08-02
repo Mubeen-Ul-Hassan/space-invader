@@ -9,7 +9,7 @@ This is a simple 2D space shooter game. It is made with Phaser 3 for a technical
 
 You control a spaceship at the bottom of the screen. Enemies (meteors and enemy ships) come down from the top. You move your ship and shoot lasers to destroy them.
 
-- Survive 5 waves of enemies to win the game.
+- Survive 5 waves of enemies, then beat a boss ship to win the game.
 - If you lose all your lives, it is game over.
 - You start with 3 lives. You can find power-ups that give more lives, faster shooting, or a shield.
 
@@ -83,7 +83,7 @@ You can also just open the built `index.html` file directly in a browser, since 
 - **Game mechanics** – Add better physics to the game world (for example, more realistic movement, gravity-like effects, or collision responses) so the gameplay feels more real and fun.
 - **Story line** – Add a simple story or theme to the game, like a short intro, mission goals, or small cutscenes between waves, so players feel more connected to the game.
 - **Sound effects** – Use better, more impressive sound effects (or real recorded sounds) instead of simple code-generated ones, to make the game feel more exciting.
-- Other ideas: more types of power-ups, a boss fight at the last wave, and a leaderboard to save top scores from different players.
+- Other ideas: more types of power-ups, more boss ships with different attacks, and a leaderboard to save top scores from different players.
 
 ## Assets used
 
