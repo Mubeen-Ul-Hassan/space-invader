@@ -98,6 +98,7 @@ class EnemyShipGroup {
   }
 
   update(time, delta) {
+    if (this.scene.bossActive) return;
     // Ambient ship spawn is very rare — respect hard cap so ships don't overcrowd
     if (time > this.nextSpawnTime) {
       const cap = this.scene.waveManager ? this.scene.waveManager.MAX_SHIPS : 5;
