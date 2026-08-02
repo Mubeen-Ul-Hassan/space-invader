@@ -23,6 +23,7 @@ const sourceFiles = [
   'src/entities/Enemy.js',
   'src/entities/EnemyShip.js',
   'src/entities/PowerUp.js',
+  'src/entities/Boss.js',
   'src/scenes/BootScene.js',
   'src/scenes/MainMenuScene.js',
   'src/scenes/SettingsScene.js',
