@@ -256,7 +256,7 @@ class WaveManager {
 
         if (this.currentWave >= this.maxWaves) {
           this.scene.time.delayedCall(1500, () => {
-            this.scene.triggerWin();
+            this.scene.startBossFight();
           });
         } else {
           // 3-second pause before launching next major wave

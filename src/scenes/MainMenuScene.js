@@ -147,7 +147,8 @@ class MainMenuScene extends Phaser.Scene {
     this._cheatCodes = {
       'freeze':     () => this._activateCheat('freeze',    'FREEZE MODE: Enemies slowed!'),
       'enderlein':  () => this._activateCheat('enderlein', 'ENDERLEIN: Max firepower!'),
-      'motherlode': () => this._activateCheat('motherlode','MOTHERLODE: Full power!')
+      'motherlode': () => this._activateCheat('motherlode','MOTHERLODE: Full power!'),
+      'boss':       () => this._activateCheat('boss',      'BOSS MODE: Start at boss fight!')
     };
 
     this.input.keyboard.on('keydown', (event) => {
