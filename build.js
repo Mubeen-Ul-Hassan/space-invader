@@ -15,6 +15,7 @@ const phaserCode = fs.readFileSync(phaserPath, 'utf8');
 // Array of source files in dependency order
 const sourceFiles = [
   'src/utils/constants.js',
+  'src/utils/mraidHelper.js',
   'src/assets/base64Assets.js',
   'src/managers/AudioManager.js',
   'src/managers/WaveManager.js',
@@ -65,6 +66,7 @@ const htmlContent = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Space Invaders - Playable Ad</title>
+  <script src="mraid.js"></script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
   <style>
     ${fontFaceCss}
