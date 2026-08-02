@@ -65,18 +65,7 @@ class WaveManager {
     const elapsedMs = this.scene.time.now - this.gameStartTime;
     const shipsAllowed = (elapsedMs >= 30000);
 
-    /*
-     * Wave design — each wave has more stages and denser formations.
-     *   Meteor = 20 pts  |  Ship = 50 pts
-     *   W1 (6 stages): 4 meteors + 0-1 ship  ≈  500 pts
-     *   W2 (7 stages): 5 meteors + 1-2 ships ≈ 1500 pts cumulative
-     *   W3 (8 stages): 6 meteors + 2-3 ships ≈ 3000 pts cumulative
-     *   W4 (9 stages): 7 meteors + 2-3 ships ≈ 5000 pts cumulative
-     *   W5 (10 stages): 8 meteors + 3-4 ships ≈ 7500+ pts cumulative
-     *
-     * All formation helpers stagger spawns (one enemy every 400 ms) and
-     * respect the active-count caps so the screen never overcrowds.
-     */
+    // Each wave adds more stages and denser formations (see class header for point targets)
     switch (this.currentWave) {
       case 1:
         this.totalStagesInWave = 6;
