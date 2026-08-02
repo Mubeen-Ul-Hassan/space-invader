@@ -16,6 +16,18 @@ const config = {
   scene: [BootScene, MainMenuScene, SettingsScene, GameScene, UIScene]
 };
 
-window.addEventListener('load', () => {
+// Initialize game when MRAID is ready (or DOM loaded)
+MRAIDHelper.init(() => {
   window.game = new Phaser.Game(config);
+
+  // WebGL context loss listener & fallback handler
+  window.game.events.once('ready', () => {
+    const canvas = window.game.canvas;
+    if (canvas) {
+      canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        console.warn('WebGL context lost. Handling gracefully...');
+      });
+    }
+  });
 });
