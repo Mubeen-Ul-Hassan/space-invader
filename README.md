@@ -1,94 +1,72 @@
 <img width="1920" height="1013" alt="Screenshot from 2026-08-01 22-46-57" src="https://github.com/user-attachments/assets/8834d14e-3879-4d70-a250-eda9d19f46a8" />
 
+# Space Invader
 
-# Space Invader (Phaser 3 Game)
+This is a 2D space shooter I built with Phaser 3 for a technical assessment. Everything (code, images, sound) is packed into one HTML file, so you can just open it and play, no server needed.
 
-This is a simple 2D space shooter game. It is made with Phaser 3 for a technical assessment. The whole game is built into one HTML file, so it is easy to run and share.
+Live preview: https://space-invader-2d.netlify.app/
 
-## What is this game about
+## The game
 
-You control a spaceship at the bottom of the screen. Enemies (meteors and enemy ships) come down from the top. You move your ship and shoot lasers to destroy them.
+You fly a small ship at the bottom of the screen and shoot down whatever comes at you from the top, meteors and enemy ships mostly. There are 5 waves, each one a bit harder than the last, and after you clear all of them a boss ship shows up. Beat the boss and you win. Run out of lives before that and it's game over.
 
-- Survive 5 waves of enemies, then beat a boss ship to win the game.
-- If you lose all your lives, it is game over.
-- You start with 3 lives. You can find power-ups that give more lives, faster shooting, or a shield.
+You start with 3 lives, but power-ups drop sometimes when you kill enemies. One gives you an extra life, one gives faster shooting for a while, and one gives a shield so you can't get hit for a bit.
 
 <img width="1920" height="1013" alt="Screenshot from 2026-08-01 23-12-11" src="https://github.com/user-attachments/assets/ab0d6c0e-6d26-43c1-b4e1-c4a2420adf62" />
 
-### Boss Fight
+### Boss fight
 
 <img width="1920" height="1021" alt="Screenshot from 2026-08-02 10-33-35" src="https://github.com/user-attachments/assets/96472906-aab8-4065-b473-1b790d2bba26" />
 
 ## Controls
 
-| Key / Action | What it does |
-|---|---|
-| Arrow keys or WASD | Move the ship |
-| Space | Shoot laser |
-| Touch and drag (mobile) | Move the ship |
-| Click and drag (mouse) | Move the ship |
+On desktop you move with the arrow keys or WASD and shoot with space. On mobile you just drag your finger to move and tap to shoot. Mouse click-and-drag also works if you'd rather not use the keyboard. The game shows these controls on the main menu too, so no one has to guess.
 
-The game shows these controls on screen, so new players know what to do.
+## How it's built
 
-## How the project is built
+The actual game code lives in the `src` folder, split into scenes, entities (player, enemies, bullets, etc.), and a couple of manager classes for waves and audio. Nothing fancy, just plain JavaScript classes that Phaser picks up.
 
-- The game logic is written in normal JavaScript files inside the `src` folder (scenes, entities, managers, etc).
-- All images are turned into base64 text and saved in `src/assets`, so the game does not need to load outside image files.
-- A build script (`build.js`) puts everything together (Phaser library, game code, and assets) into one file: `index.html`.
-- This final `index.html` file is small (about 3 MB), so it is under the 5 MB limit.
-- Sound effects are made using the Web Audio API in code, not separate sound files. This keeps the file size small.
+For the final build, every image gets turned into a base64 string and dropped into `src/assets`, so the game never has to fetch an image file from disk. A small build script then glues the Phaser library, the game code, and those assets together into one `index.html`. That file comes out to a bit over 3 MB, so it's well inside the 5 MB limit this assessment asks for. Sound effects aren't audio files either, they're generated in code with the Web Audio API, which keeps things smaller.
 
-## How to run this project on your computer
+## Running it yourself
 
-### What you need first
+You'll need Node.js (v16 or newer) and npm.
 
-- Node.js (version 16 or newer)
-- npm (comes with Node.js)
-
-### Steps
-
-1. Clone this repository:
+1. Clone the repo and go into the folder:
 ```bash
 git clone <repository-url>
 cd space-invader
 ```
 
-2. Install the packages:
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Build the game (this creates the final `index.html` file):
+3. Build the game (this regenerates `index.html`):
 ```bash
 npm run build
 ```
 
-4. Start a local server to play the game:
+4. Start a local server:
 ```bash
 npm start
 ```
 
-5. Open your browser and go to:
-```
-http://localhost:8080
-```
+5. Then open `http://localhost:8080` in your browser.
 
-You can also just open the built `index.html` file directly in a browser, since everything is inside that one file.
+You don't actually need steps 3-5 to just play it though. Since everything is bundled into `index.html`, you can double-click that file and it'll open straight in your browser.
 
 ## Assumptions and trade-offs
 
-- I put everything (code, images, and Phaser) into one HTML file. This makes the file a bit bigger than normal, but it makes the game very easy to share and run anywhere, which is needed for ad networks like AppLovin.
-- I used code-generated sound effects instead of real audio files. This keeps the file size small, but the sounds are simple, not real recordings.
-- I made a wave-based enemy system (5 waves) instead of the old classic grid of enemies. This makes the game feel more alive, but it is a bit different from the very old, original Space Invaders style.
-- New players get about 40 seconds before enemy ships start shooting. This gives them time to learn the controls first.
+Putting everything into a single file makes it a bit heavier than a normal web build, but that's the point, ad networks like AppLovin need one self-contained file with no outside requests. I went with generated sound instead of recorded audio for the same reason, it keeps the size down, though the sounds end up sounding more retro than realistic.
 
-## Improvements (if I had more time)
+I also moved away from the classic Space Invaders grid and used a wave system instead, meteors and ships spawn in different patterns each wave. It plays better over a longer session, even if it's less close to the original arcade layout. New players also get about 40 seconds before enemy ships start firing back, just to give them a moment to get used to the controls first.
 
-- **Game mechanics** – Add better physics to the game world (for example, more realistic movement, gravity-like effects, or collision responses) so the gameplay feels more real and fun.
-- **Story line** – Add a simple story or theme to the game, like a short intro, mission goals, or small cutscenes between waves, so players feel more connected to the game.
-- **Sound effects** – Use better, more impressive sound effects (or real recorded sounds) instead of simple code-generated ones, to make the game feel more exciting.
-- Other ideas: more types of power-ups, more boss ships with different attacks, and a leaderboard to save top scores from different players.
+## What I'd improve with more time
 
-## Assets used
+The physics right now is pretty basic, arcade collisions and straight-line movement mostly. Given more time I'd add more realistic movement and better collision responses so it feels less flat. There's also no real story to the game, just wave after wave, so some kind of intro or mission context between waves would help players feel more invested. The sound is the other big one, the procedural effects work fine but real recorded sound design would make hits and explosions land a lot harder. Beyond that, more power-up types, a couple more boss variations, and an online leaderboard would all be nice additions.
 
-All images used in this game are free and open for anyone to use. They come from the **Kenney.nl – Space Shooter Redux** pack (CC0 license, which means public domain / free to use). No paid or copyrighted assets were used.
+## Assets
+
+All art comes from Kenney.nl's Space Shooter Redux pack, which is CC0, meaning free to use for anything, no credit required. Nothing paid or copyrighted was used anywhere in this project.
