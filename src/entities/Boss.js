@@ -25,8 +25,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     this.attackCycle = 0; // 0 = targeted, 1 = radial
 
     this.startX = x;
-    // On mobile keep the boss a bit higher so it fits
-    this.targetY = isMobile ? 100 : 130;
+    // Keep targetY low enough so there's plenty of space below top HUD/health bar
+    this.targetY = isMobile ? 120 : 145;
     this.speedY = 50;   // entry speed
 
     // Accumulated oscillation time (separate from game time) so freeze works correctly
@@ -40,19 +40,26 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     this.healthBar.clear();
     if (!this.active || this.bossState === 'entering' || this.bossState === 'dead') return;
 
-    const width = 300;
-    const height = 12;
+    const isMobile = this.scene.scale.width < 600;
+    const width = isMobile ? 140 : 180;
+    const height = 8;
     const x = (this.scene.scale.width - width) / 2;
-    const y = 60;
+    const y = 22; // Top-center HUD position
 
-    this.healthBar.fillStyle(0x0a0c16, 0.7);
+    this.healthBar.fillStyle(0x0a0c16, 0.75);
     this.healthBar.fillRect(x, y, width, height);
-    this.healthBar.lineStyle(1.5, 0xff0033, 0.9);
+
+    const isLowHealth = this.health <= 20;
+    const borderColor = isLowHealth ? 0xff3300 : 0xff0033;
+    this.healthBar.lineStyle(1.5, borderColor, 0.9);
     this.healthBar.strokeRect(x, y, width, height);
 
     const ratio = Math.max(0, this.health) / this.maxHealth;
-    this.healthBar.fillStyle(0xff3333, 0.95);
-    this.healthBar.fillRect(x + 2, y + 2, (width - 4) * ratio, height - 4);
+    const fillColor = isLowHealth ? 0xff2200 : 0xff3333;
+    this.healthBar.fillStyle(fillColor, 0.95);
+    if (ratio > 0) {
+      this.healthBar.fillRect(x + 2, y + 2, Math.max(0, (width - 4) * ratio), height - 4);
+    }
   }
 
   update(time, delta) {
