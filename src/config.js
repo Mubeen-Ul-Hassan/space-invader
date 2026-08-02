@@ -1,22 +1,21 @@
-// Main Phaser 3 Game configuration file
+// Main Phaser 3 game configuration
 const config = {
-  type: Phaser.AUTO, // Auto-select WebGL or Canvas renderer
+  type: Phaser.AUTO,
   scale: {
-    mode: Phaser.Scale.RESIZE, // Resize canvas to fill the full screen on any device
-    parent: 'game-container', // HTML parent DOM element ID
-    autoCenter: Phaser.Scale.CENTER_BOTH // Automatically center game canvas horizontally and vertically
+    mode: Phaser.Scale.RESIZE, // fill full screen on any device
+    parent: 'game-container',
+    autoCenter: Phaser.Scale.CENTER_BOTH
   },
   physics: {
-    default: 'arcade', // Enable Phaser Arcade Physics engine
+    default: 'arcade',
     arcade: {
-      gravity: { y: 0 }, // Zero gravity for space shooter physics
-      debug: false // Disable physics collision wireframe bounding boxes
+      gravity: { y: 0 },
+      debug: false
     }
   },
-  scene: [BootScene, MainMenuScene, SettingsScene, GameScene, UIScene] // Ordered list of game scenes
+  scene: [BootScene, MainMenuScene, SettingsScene, GameScene, UIScene]
 };
 
-// Initialize Phaser Game instance on DOM window load event
 window.addEventListener('load', () => {
-  window.game = new Phaser.Game(config); // Instantiate global Phaser Game object
+  window.game = new Phaser.Game(config);
 });
