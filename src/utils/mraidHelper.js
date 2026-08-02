@@ -41,11 +41,12 @@ const MRAIDHelper = {
     onReady();
   },
 
-  openCTA(url = 'https://apps.apple.com') {
+  openCTA(url) {
+    const targetUrl = url || GAME_CONFIG.ctaUrl;
     if (typeof mraid !== 'undefined' && mraid.open) {
-      mraid.open(url);
+      mraid.open(targetUrl);
     } else {
-      window.open(url, '_blank');
+      window.open(targetUrl, '_blank');
     }
   }
 };
