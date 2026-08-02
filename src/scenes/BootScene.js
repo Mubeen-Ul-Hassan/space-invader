@@ -1,26 +1,22 @@
-// Boot scene responsible for loading base64 texture assets into Phaser memory
+// Loads base64 texture assets into Phaser before the menu opens
 class BootScene extends Phaser.Scene {
-  // Construct BootScene with unique scene key
   constructor() {
-    super({ key: 'BootScene' }); // Initialize scene with key name
+    super({ key: 'BootScene' });
   }
 
-  // Preload base64 image data into Phaser texture cache
   preload() {
-    // Show simple loading text while assets populate memory
-    const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Loading Game Assets...', {
+    this.add.text(this.scale.width / 2, this.scale.height / 2, 'Loading Game Assets...', {
       fontFamily: '"EurostileExtendedBlack", Arial, sans-serif',
       fontSize: '24px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Register all base64 encoded texture images directly into Phaser Loader
     for (const [key, base64Data] of Object.entries(BASE64_ASSETS)) {
-      this.load.image(key, base64Data); // Preload base64 image data URL into Loader queue
+      this.load.image(key, base64Data);
     }
   }
 
-  // Transition to main menu scene once base64 assets and custom fonts are ready
+  // Wait for the custom font before showing the menu, so text doesn't reflow
   create() {
     if (document.fonts && document.fonts.load) {
       document.fonts.load('16px "EurostileExtendedBlack"').then(() => {

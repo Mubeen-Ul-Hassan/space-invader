@@ -486,7 +486,6 @@ class MainMenuScene extends Phaser.Scene {
     btnBg.on('pointerup',    () => destroy());
 
     items.push(btnBg, btnTxt);
-    if (iconObj) items.push(iconObj);
 
     // Store as active modal (use a dummy container to satisfy the guard)
     this._activeModal = { destroy };
