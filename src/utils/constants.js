@@ -4,7 +4,8 @@ const GAME_CONFIG = {
   playerFireRate: 250,
   bulletSpeed: 500,
   enemyBulletSpeed: 220,
-  initialLives: 3
+  initialLives: 3,
+  ctaUrl: 'https://playables42.com/creative-closet'
 };
 
 // Cheat flags — toggled by typing a code on the Main Menu screen
