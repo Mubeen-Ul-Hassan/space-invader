@@ -44,7 +44,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     const width = isMobile ? 140 : 180;
     const height = 8;
     const x = (this.scene.scale.width - width) / 2;
-    const y = 22; // Top-center HUD position
+    const y = isMobile ? 42 : 22;
 
     this.healthBar.fillStyle(0x0a0c16, 0.75);
     this.healthBar.fillRect(x, y, width, height);
