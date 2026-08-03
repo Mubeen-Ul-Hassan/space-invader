@@ -20,7 +20,8 @@ You start with 3 lives, but power-ups drop sometimes when you kill enemies. One 
 
 ## Controls
 
-On desktop you move with the arrow keys or WASD and shoot with space. On mobile you just drag your finger to move and tap to shoot. Mouse click-and-drag also works if you'd rather not use the keyboard. The game shows these controls on the main menu too, so no one has to guess.
+- On desktop you move with the arrow keys or WASD and shoot with space. 
+- On mobile you just drag your finger to move and tap to shoot. Mouse click-and-drag also works if you'd rather not use the keyboard. The game shows these controls on the main menu too, so no one has to guess.
 
 ## How it's built
 
