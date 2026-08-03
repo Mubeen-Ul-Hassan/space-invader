@@ -60,13 +60,18 @@ You don't actually need steps 3-5 to just play it though. Since everything is bu
 
 ## Assumptions and trade-offs
 
-Putting everything into a single file makes it a bit heavier than a normal web build, but that's the point, ad networks like AppLovin need one self-contained file with no outside requests. I went with generated sound instead of recorded audio for the same reason, it keeps the size down, though the sounds end up sounding more retro than realistic.
-
-I also moved away from the classic Space Invaders grid and used a wave system instead, meteors and ships spawn in different patterns each wave. It plays better over a longer session, even if it's less close to the original arcade layout. New players also get about 40 seconds before enemy ships start firing back, just to give them a moment to get used to the controls first.
+- **Single-file bundle**: Packed everything into a single HTML file with base64 assets. It makes the initial payload a bit heavier (~3 MB), but meets ad network requirements (e.g., AppLovin) for self-contained builds with no external asset requests.
+- **Procedural audio**: Used Web Audio API synthesized sound effects instead of recorded audio files to keep the total build size minimal, even though it gives the game a retro synth feel rather than realistic sound design.
+- **Dynamic wave system**: Moved away from the classic Space Invaders grid to a wave system with dynamic meteor and enemy spawn patterns for better engagement during longer sessions.
+- **Beginner grace period**: Provided a ~40-second initial window before enemy ships start firing back, giving new players time to get comfortable with the controls.
 
 ## What I'd improve with more time
 
-The physics right now is pretty basic, arcade collisions and straight-line movement mostly. Given more time I'd add more realistic movement and better collision responses so it feels less flat. There's also no real story to the game, just wave after wave, so some kind of intro or mission context between waves would help players feel more invested. The sound is the other big one, the procedural effects work fine but real recorded sound design would make hits and explosions land a lot harder. Beyond that, more power-up types, a couple more boss variations, and an online leaderboard would all be nice additions.
+- **Physics & movement**: Add smoother inertia, vector-based movement, and refined collision dynamics to make ship movement and impacts feel less flat.
+- **Visual feedback & damage effects**: Add visual damage states (smoke/sparks) when the player ship gets hit, along with floating score text animations when destroying enemies.
+- **Story & context**: Introduce brief mission intros or narrative context between waves so players feel more invested in their progress.
+- **Sound design**: Upgrade from synthesized effects to custom recorded audio for punchier explosions and weapon hits.
+- **Gameplay depth**: Add more power-up varieties, multiple boss battle phases/variations, and an online leaderboard for competitive replayability.
 
 ## Assets
 
