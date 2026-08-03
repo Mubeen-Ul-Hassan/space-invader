@@ -29,6 +29,15 @@ You start with 3 lives, but power-ups drop sometimes when you kill enemies. One 
 - On desktop you move with the arrow keys or WASD and shoot with space. 
 - On mobile you just drag your finger to move and tap to shoot. Mouse click-and-drag also works if you'd rather not use the keyboard. The game shows these controls on the main menu too, so no one has to guess.
 
+## Cheat codes
+
+Type any of the following secret codes on the **Main Menu** (using your keyboard) to toggle special modes before starting the game. A confirmation sound and status text will confirm activation:
+
+- `freeze` – Slows enemies and meteors down to 20% speed and disables enemy weapons.
+- `enderlein` – Unlocks max firepower with triple spread lasers and a golden ship tint.
+- `motherlode` – Starts the game with 5 lives plus active shield and rapid fire power-ups.
+- `boss` – Skips all wave progression and jumps straight into the final Boss Fight.
+
 ## How it's built
 
 The actual game code lives in the `src` folder, split into scenes, entities (player, enemies, bullets, etc.), and a couple of manager classes for waves and audio. Nothing fancy, just plain JavaScript classes that Phaser picks up.
