@@ -99,4 +99,8 @@ You don't actually need steps 3-5 to just play it though. Since everything is bu
 
 ## Assets
 
-All art comes from Kenney.nl's Space Shooter Redux pack, which is CC0, meaning free to use for anything, no credit required. Nothing paid or copyrighted was used anywhere in this project.
+- **[Space Shooter Remastered](https://kenney.nl/assets/space-shooter-remastered)** by Kenney – Creative Commons CC0 (Public Domain)
+- **[Space Shooter Extension](https://kenney.nl/assets/space-shooter-extension)** by Kenney – Creative Commons CC0 (Public Domain)
+- **AI-Generated Assets**: Custom graphics generated using ChatGPT image generation.
+
+All assets are CC0 or royalty-free, and no paid or copyrighted materials were used anywhere in this project.
