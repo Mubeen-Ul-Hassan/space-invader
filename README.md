@@ -2,6 +2,12 @@
 
 # Space Invader
 
+![Phaser 3](https://img.shields.io/badge/Phaser-v3.80-orange?style=flat-square&logo=phaser)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?style=flat-square&logo=javascript)
+![Web Audio API](https://img.shields.io/badge/Web%20Audio-API-blue?style=flat-square)
+![Node.js](https://img.shields.io/badge/Node.js-v16+-green?style=flat-square&logo=nodedotjs)
+![Netlify](https://img.shields.io/badge/Netlify-Live-00C7B7?style=flat-square&logo=netlify)
+
 This is a 2D space shooter I built with Phaser 3 for a technical assessment. Everything (code, images, sound) is packed into one HTML file, so you can just open it and play, no server needed.
 
 Live preview: https://space-invader-2d.netlify.app/
@@ -26,6 +32,24 @@ You start with 3 lives, but power-ups drop sometimes when you kill enemies. One 
 ## How it's built
 
 The actual game code lives in the `src` folder, split into scenes, entities (player, enemies, bullets, etc.), and a couple of manager classes for waves and audio. Nothing fancy, just plain JavaScript classes that Phaser picks up.
+
+### Project structure
+
+```text
+space-invader/
+├── assets/              # Raw game art assets (Kenney CC0 pack)
+├── scripts/             # Asset processing & base64 encoding scripts
+├── src/                 # Main game source code
+│   ├── assets/          # Base64 encoded asset modules
+│   ├── entities/        # Game object classes (Player, Enemy, Boss, Bullet, PowerUp)
+│   ├── managers/        # Game systems (WaveManager, AudioManager)
+│   ├── scenes/          # Phaser scenes (Boot, MainMenu, Game, Settings, UI)
+│   ├── utils/           # MRAID helper and constants
+│   └── config.js        # Phaser game configuration
+├── build.js             # Inlining build script (bundles into single index.html)
+├── index.html           # Production build (~3 MB self-contained single HTML file)
+└── package.json
+```
 
 For the final build, every image gets turned into a base64 string and dropped into `src/assets`, so the game never has to fetch an image file from disk. A small build script then glues the Phaser library, the game code, and those assets together into one `index.html`. That file comes out to a bit over 3 MB, so it's well inside the 5 MB limit this assessment asks for. Sound effects aren't audio files either, they're generated in code with the Web Audio API, which keeps things smaller.
 
